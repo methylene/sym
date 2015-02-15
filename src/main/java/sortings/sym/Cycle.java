@@ -1,4 +1,4 @@
-package com.hotels.sym;
+package sortings.sym;
 
 import java.util.Arrays;
 

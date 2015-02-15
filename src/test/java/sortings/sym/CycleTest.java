@@ -1,12 +1,10 @@
-package com.hotels.sym;
+package sortings.sym;
 
-import static com.hotels.sym.Permutation.cycle;
+import static sortings.sym.Permutation.cycle;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 public class CycleTest {
 
