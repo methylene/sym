@@ -123,4 +123,8 @@ public final class Permutation {
     return Arrays.equals(Util.pad(posmap, targetLength), Util.pad(that.posmap, targetLength));
   }
 
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(posmap);
+  }
 }

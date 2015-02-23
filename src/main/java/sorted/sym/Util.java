@@ -1,7 +1,11 @@
 package sorted.sym;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
 class Util {
 
@@ -65,6 +69,44 @@ class Util {
     } else {
       return s.substring(0, s.length() - 1) + ((char) (last + 1));
     }
+  }
+
+  static class State {
+    final int[] prefix;
+    final int[] suffix;
+    State(int[] prefix, int[] suffix) {
+      this.prefix = prefix;
+      this.suffix = suffix;
+    }
+  }
+
+  static List<int[]> permutations(int n) {
+    int[] start = new int[n];
+    for (int i = 0; i < n; i += 1) {
+      start[i] = i + 1;
+    }
+    Stack<State> stack = new Stack<State>();
+    stack.push(new State(new int[0], start));
+    List<int[]> result = new LinkedList<int[]>();
+    while (!stack.isEmpty()) {
+      State state = stack.pop();
+      if (state.suffix.length == 0) {
+        result.add(state.prefix);
+      } else {
+        for (int i = 0; i < state.suffix.length; i += 1) {
+          int[] newPrefix = new int[state.prefix.length + 1];
+          System.arraycopy(state.prefix, 0, newPrefix, 0, state.prefix.length);
+          newPrefix[state.prefix.length] = state.suffix[i];
+          int[] newSuffix = new int[state.suffix.length - 1];
+          if (i != 0)
+            System.arraycopy(state.suffix, 0, newSuffix, 0, i);
+          if (i < state.suffix.length - 1)
+            System.arraycopy(state.suffix, i + 1, newSuffix, i, state.suffix.length - 1 - i);
+          stack.push(new State(newPrefix, newSuffix));
+        }
+      }
+    }
+    return result;
   }
 
 }
