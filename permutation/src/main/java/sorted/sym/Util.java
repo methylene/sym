@@ -165,11 +165,11 @@ class Util {
   }
 
   public static Iterable<Permutation> commutatorIterable(final Collection<Permutation> input) {
-    List<Permutation> inlist = Arrays.asList(input.toArray(new Permutation[input.size()]));
-    final Iterator<Permutation[]> cartesian = cartesian(inlist, inlist).iterator();
     return new Iterable<Permutation>() {
       @Override
       public Iterator<Permutation> iterator() {
+        List<Permutation> inlist = Arrays.asList(input.toArray(new Permutation[input.size()]));
+        final Iterator<Permutation[]> cartesian = cartesian(inlist, inlist).iterator();
         return new Iterator<Permutation>() {
           @Override
           public boolean hasNext() {
@@ -192,11 +192,11 @@ class Util {
   }
 
   public static <E> Iterable<E> distinct(final Iterable<E> input) {
-    final Iterator<E> it = input.iterator();
-    final Set<E> set = new HashSet<E>();
     return new Iterable<E>() {
       @Override
       public Iterator<E> iterator() {
+        final Set<E> set = new HashSet<E>();
+        final Iterator<E> it = input.iterator();
         return new Iterator<E>() {
           E current = null;
 
