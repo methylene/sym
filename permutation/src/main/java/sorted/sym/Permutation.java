@@ -2,7 +2,7 @@ package sorted.sym;
 
 import java.util.Arrays;
 
-public final class Permutation {
+public final class Permutation implements Comparable<Permutation> {
 
   public static Permutation IDENTITY = new Permutation(new int[0]);
 
@@ -126,5 +126,14 @@ public final class Permutation {
   @Override
   public int hashCode() {
     return Arrays.hashCode(posmap);
+  }
+
+  @Override
+  public int compareTo(Permutation permutation) {
+    if (this == permutation) return 0;
+    for (int i = 0; i < Math.min(this.posmap.length, permutation.posmap.length); i += 1)
+      if (this.posmap[i] != permutation.posmap[i])
+        return this.posmap[i] - permutation.posmap[i];
+    return permutation.posmap.length - this.posmap.length;
   }
 }

@@ -1,15 +1,12 @@
 package sorted.sym;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 class Util {
 
@@ -114,13 +111,6 @@ class Util {
     return result;
   }
 
-  static List<Permutation> toPermutations(List<int[]> input) {
-    ArrayList<Permutation> result = new ArrayList<Permutation>(input.size());
-    for (int[] ints : input)
-      result.add(Permutation.perm1(ints));
-    return result;
-  }
-
   static Iterable<Permutation[]> cartesian(final List<Permutation> a, final List<Permutation> b) {
     return new Iterable<Permutation[]>() {
       @Override
@@ -157,14 +147,14 @@ class Util {
   }
 
 
-  public static List<Permutation> commutator(final Collection<Permutation> input) {
-    ArrayList<Permutation> result = new ArrayList<Permutation>();
+  public static List<Permutation> commutator(final List<Permutation> input) {
+    List<Permutation> result = new LinkedList<Permutation>();
     for (Permutation p : distinct(commutatorIterable(input)))
       result.add(p);
     return result;
   }
 
-  public static Iterable<Permutation> commutatorIterable(final Collection<Permutation> input) {
+  public static Iterable<Permutation> commutatorIterable(final List<Permutation> input) {
     return new Iterable<Permutation>() {
       @Override
       public Iterator<Permutation> iterator() {
@@ -191,11 +181,11 @@ class Util {
     };
   }
 
-  public static <E> Iterable<E> distinct(final Iterable<E> input) {
+  public static <E extends Comparable> Iterable<E> distinct(final Iterable<E> input) {
     return new Iterable<E>() {
       @Override
       public Iterator<E> iterator() {
-        final Set<E> set = new HashSet<E>();
+        final TreeSet<E> set = new TreeSet<E>();
         final Iterator<E> it = input.iterator();
         return new Iterator<E>() {
           E current = null;
@@ -226,7 +216,7 @@ class Util {
     };
   }
 
-  public static List<Permutation> center(final Collection<Permutation> input) {
+  public static List<Permutation> center(final List<Permutation> input) {
     LinkedList<Permutation> result = new LinkedList<Permutation>();
     outer:
     for (Permutation a : input) {
