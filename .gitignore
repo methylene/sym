@@ -1,19 +1,19 @@
 # Eclipse
-/.classpath
-/.project
-/.metadata
-/.settings
+.classpath
+.project
+.metadata
+.settings
 
 # Intellij
-/.idea
-/*.iml
-/*.iws
+.idea
+*.iml
+*.iws
 
 # Mac
-/.DS_Store
+.DS_Store
 
 # Maven
-target/
+target
 
 # Backup files
 *~

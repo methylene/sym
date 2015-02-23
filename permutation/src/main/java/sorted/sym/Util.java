@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 class Util {
@@ -154,7 +156,15 @@ class Util {
     };
   }
 
-  public static Iterable<Permutation> commutator(final Collection<Permutation> input) {
+
+  public static List<Permutation> commutator(final Collection<Permutation> input) {
+    ArrayList<Permutation> result = new ArrayList<Permutation>();
+    for (Permutation p : distinct(commutatorIterable(input)))
+      result.add(p);
+    return result;
+  }
+
+  public static Iterable<Permutation> commutatorIterable(final Collection<Permutation> input) {
     List<Permutation> inlist = Arrays.asList(input.toArray(new Permutation[input.size()]));
     final Iterator<Permutation[]> cartesian = cartesian(inlist, inlist).iterator();
     return new Iterable<Permutation>() {
@@ -165,11 +175,48 @@ class Util {
           public boolean hasNext() {
             return cartesian.hasNext();
           }
+
           @Override
           public Permutation next() {
             Permutation[] p = cartesian.next();
             return Permutation.prod(p[0].invert(), p[1].invert(), p[0], p[1]);
           }
+
+          @Override
+          public void remove() {
+            throw new IllegalAccessError();
+          }
+        };
+      }
+    };
+  }
+
+  public static <E> Iterable<E> distinct(final Iterable<E> input) {
+    final Iterator<E> it = input.iterator();
+    final Set<E> set = new HashSet<E>();
+    return new Iterable<E>() {
+      @Override
+      public Iterator<E> iterator() {
+        return new Iterator<E>() {
+          E current = null;
+
+          @Override
+          public boolean hasNext() {
+            while (it.hasNext()) {
+              E candidate = it.next();
+              if (set.add(candidate)) {
+                current = candidate;
+                return true;
+              }
+            }
+            return false;
+          }
+
+          @Override
+          public E next() {
+            return current;
+          }
+
           @Override
           public void remove() {
             throw new IllegalAccessError();
@@ -181,8 +228,9 @@ class Util {
 
   public static List<Permutation> center(final Collection<Permutation> input) {
     LinkedList<Permutation> result = new LinkedList<Permutation>();
-    outer: for (Permutation a: input) {
-      for (Permutation b: input)
+    outer:
+    for (Permutation a : input) {
+      for (Permutation b : input)
         if (!a.comp(b).equals(b.comp(a))) continue outer;
       result.add(a);
     }
