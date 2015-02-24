@@ -12,10 +12,7 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   static public Permutation perm1(int... posmap1based) {
-    int[] posmap = new int[posmap1based.length];
-    for (int i = 0; i < posmap1based.length; i += 1)
-      posmap[i] = posmap1based[i] - 1;
-    return new Permutation(posmap);
+    return new Permutation(Util.add(posmap1based, -1));
   }
 
   static public Permutation cycle1(int... cycle1based) {
@@ -111,18 +108,14 @@ public final class Permutation implements Comparable<Permutation> {
 
   @Override
   public String toString() {
-    int[] posmap1based = new int[posmap.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      posmap1based[i] = posmap[i] + 1;
-    return Arrays.toString(posmap1based);
+    return Arrays.toString(Util.add(posmap, 1));
   }
 
   @Override
   public boolean equals(Object other) {
     if (this == other) return true;
     if (other == null || getClass() != other.getClass()) return false;
-    Permutation that = (Permutation) other;
-    return Arrays.equals(posmap, that.posmap);
+    return Arrays.equals(posmap, ((Permutation) other).posmap);
   }
 
   @Override

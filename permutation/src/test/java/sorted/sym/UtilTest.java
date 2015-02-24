@@ -52,16 +52,23 @@ public class UtilTest {
   @Test
   public void testCommutator5() throws Exception {
     assertEquals(120, permutations(5).size());
+    assertTrue(isClosed(permutations(5)));
     assertEquals(60, commutator(permutations(5)).size());
+    assertTrue(isClosed(commutator(permutations(5))));
     assertEquals(60, commutator(commutator(permutations(5))).size());
+    assertTrue(isClosed(commutator(commutator(permutations(5)))));
   }
 
   @Test
   public void testCommutator4() throws Exception {
     assertEquals(24, permutations(4).size());
+    assertTrue(isClosed(permutations(4)));
     assertEquals(12, commutator(permutations(4)).size());
+    assertTrue(isClosed(commutator(permutations(4))));
     assertEquals(4, commutator(commutator(permutations(4))).size());
+    assertTrue(isClosed(commutator(commutator(permutations(4)))));
     assertEquals(1, commutator(commutator(commutator(permutations(4)))).size());
+    assertTrue(isClosed(commutator(commutator(commutator(permutations(4))))));
   }
 
 }

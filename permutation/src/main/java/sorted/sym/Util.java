@@ -29,6 +29,13 @@ class Util {
     throw new IllegalStateException();
   }
 
+  static int[] add(int[] a, int k) {
+    int[] result = new int[a.length];
+    for (int i = 0; i < a.length; i += 1)
+      result[i] = a[i] + k;
+    return result;
+  }
+
   static int[] pad(int[] unpadded, int targetLength) {
     if (targetLength <= unpadded.length)
       return unpadded;
@@ -238,6 +245,16 @@ class Util {
       result.add(a);
     }
     return result;
+  }
+
+  public static boolean isClosed(final List<Permutation> permutations) {
+    TreeSet<Permutation> set = new TreeSet<Permutation>();
+    for (Permutation p : permutations)
+      set.add(p);
+    for (Permutation[] p : cartesian(permutations, permutations))
+      if (!set.contains(p[0].comp(p[1])) || !set.contains(p[1].comp(p[0])))
+        return false;
+    return true;
   }
 
 }
