@@ -2,9 +2,11 @@ package sorted.sym;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static sorted.sym.Permutation.IDENTITY;
 import static sorted.sym.Permutation.cycle1;
+import static sorted.sym.Permutation.identity;
 import static sorted.sym.Permutation.perm1;
 import static sorted.sym.Permutation.prod;
 import org.junit.Test;
@@ -35,12 +37,30 @@ public class PermutationTest {
   @Test
   public void testInvert() throws Exception {
     Permutation p = perm1(2, 3, 1);
-    assertEquals(IDENTITY, prod(p.invert(), p));
-    assertEquals(IDENTITY, prod(p, p.invert()));
-    assertEquals(IDENTITY, prod(p, p.pow(2)));
-    assertEquals(IDENTITY, prod(p.pow(2), p));
-    assertEquals(IDENTITY, p.pow(3));
+    assertTrue(prod(p.invert(), p).isIdentity());
+    assertTrue(prod(p, p.invert()).isIdentity());
+    assertTrue(prod(p, p.pow(2)).isIdentity());
+    assertTrue(prod(p.pow(2), p).isIdentity());
+    assertTrue(prod().isIdentity());
+    assertTrue(p.pow(0).isIdentity());
+    assertFalse(p.pow(1).isIdentity());
+    assertFalse(p.pow(2).isIdentity());
+    assertEquals(p.pow(0), p.pow(3));
+    assertEquals(p.pow(2), prod(p, p));
+    assertEquals(p.pow(1), p);
+    assertEquals(p.pow(-1), prod(p, p));
+    assertEquals(p.pow(-1), p.invert());
+    assertEquals(p.pow(2), p.comp(p));
     assertArrayEquals(new Object[]{"a", "b", "c"}, prod(p, p.invert()).apply());
+  }
+
+  @Test
+  public void testIdentity() {
+    assertTrue(identity(5).isIdentity());
+    assertTrue(identity(5).invert().isIdentity());
+    assertTrue(identity(0).invert().isIdentity());
+    assertTrue(prod(prod(), identity(2)).isIdentity());
+    assertEquals(5, identity(5).length());
   }
 
   @Test
@@ -67,7 +87,7 @@ public class PermutationTest {
 
   @Test
   public void testCycleEquals() throws Exception {
-    assertEquals(IDENTITY, prod(cycle1(1, 2), cycle1(2, 1)));
+    assertTrue(prod(cycle1(1, 2), cycle1(2, 1)).isIdentity());
     assertEquals(cycle1(2, 3), prod(cycle1(1, 2),
             prod(cycle1(1, 2), cycle1(2, 3))));
   }

@@ -46,7 +46,7 @@ public class UtilTest {
     List<Permutation> a = permutations(5);
     List<Permutation> center = center(a);
     assertEquals(1, center.size());
-    assertEquals(Permutation.IDENTITY, center.get(0));
+    assertTrue(center.get(0).isIdentity());
   }
 
   @Test

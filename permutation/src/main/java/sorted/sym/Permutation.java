@@ -4,11 +4,9 @@ import java.util.Arrays;
 
 public final class Permutation implements Comparable<Permutation> {
 
-  public static Permutation IDENTITY = new Permutation(new int[0]);
-
   private final int[] posmap;
 
-  public Permutation(int[] posmap) {
+  private Permutation(int[] posmap) {
     Util.validate(posmap);
     this.posmap = posmap;
   }
@@ -25,12 +23,6 @@ public final class Permutation implements Comparable<Permutation> {
     for (int i = 0; i < posmap1based.length; i += 1)
       posmap[i] = posmap1based[i] - 1;
     return new Permutation(posmap);
-  }
-
-  private static int indexOf(int[] ints, int k) {
-    for (int i = 0; i < ints.length; i += 1)
-      if (ints[i] == k) return i;
-    throw new IllegalStateException();
   }
 
   static public Permutation cycle1(int... cycle1based) {
@@ -53,6 +45,19 @@ public final class Permutation implements Comparable<Permutation> {
               ? i
               : cycle[(indexOf(cycle, i) + 1) % cycle.length];
     return new Permutation(result);
+  }
+
+  static public Permutation identity(int length) {
+    int[] posmap = new int[length];
+    for (int i = 0; i < length; i += 1)
+      posmap[i] = i;
+    return new Permutation(posmap);
+  }
+
+  private static int indexOf(int[] ints, int k) {
+    for (int i = 0; i < ints.length; i += 1)
+      if (ints[i] == k) return i;
+    throw new IllegalStateException();
   }
 
   public Object[] apply(Object[] input) {
@@ -81,7 +86,7 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   public static Permutation prod(Permutation... permutations) {
-    if (permutations.length == 0) return IDENTITY;
+    if (permutations.length == 0) return identity(0);
     Permutation result = permutations[0];
     for (int i = 1; i < permutations.length; i += 1)
       result = result.comp(permutations[i]);
@@ -89,7 +94,7 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   public Permutation pow(int power) {
-    if (power == 0) return IDENTITY;
+    if (power == 0) return identity(length());
     Permutation seed = power < 0 ? invert() : this;
     Permutation result = seed;
     for (int i = 1; i < Math.abs(power); i += 1)
@@ -106,6 +111,17 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  public boolean isIdentity() {
+    for (int i = 0; i < posmap.length; i += 1)
+      if (posmap[i] != i)
+        return false;
+    return true;
+  }
+
+  public int length() {
+    return posmap.length;
+  }
+
   @Override
   public String toString() {
     int[] posmap1based = new int[posmap.length];
@@ -119,8 +135,7 @@ public final class Permutation implements Comparable<Permutation> {
     if (this == other) return true;
     if (other == null || getClass() != other.getClass()) return false;
     Permutation that = (Permutation) other;
-    int targetLength = Math.max(posmap.length, that.posmap.length);
-    return Arrays.equals(Util.pad(posmap, targetLength), Util.pad(that.posmap, targetLength));
+    return Arrays.equals(posmap, that.posmap);
   }
 
   @Override
@@ -136,4 +151,5 @@ public final class Permutation implements Comparable<Permutation> {
         return this.posmap[i] - permutation.posmap[i];
     return permutation.posmap.length - this.posmap.length;
   }
+
 }
