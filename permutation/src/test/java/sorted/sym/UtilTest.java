@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static sorted.sym.Util.*;
+import static sorted.sym.Permutation.*;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -47,6 +48,22 @@ public class UtilTest {
     List<Permutation> center = center(a);
     assertEquals(1, center.size());
     assertTrue(center.get(0).isIdentity());
+  }
+
+  @Test
+  public void testClosed() throws Exception {
+    Permutation id = Permutation.perm1(1, 2, 3, 4);
+    Permutation p = Permutation.perm1(2, 1, 3, 4);
+    Permutation k = Permutation.perm1(1, 2, 4, 3);
+    Permutation p2 = Permutation.perm1(2, 3, 1, 4);
+    assertTrue(isClosed(Arrays.asList(id)));
+    assertTrue(isClosed(Arrays.asList(id, p)));
+    assertTrue(isClosed(Arrays.asList(id, p2, p2.pow(2))));
+    assertTrue(isClosed(Arrays.asList(id, p, k, prod(p, k))));
+    assertFalse(isClosed(Arrays.asList(id, p2)));
+    assertFalse(isClosed(Arrays.asList(p)));
+    assertFalse(isClosed(Arrays.asList(id, p, p2)));
+    assertTrue(prod(p, k).pow(2).isIdentity());
   }
 
   @Test
