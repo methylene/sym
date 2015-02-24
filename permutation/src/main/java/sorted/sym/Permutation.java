@@ -11,13 +11,6 @@ public final class Permutation implements Comparable<Permutation> {
     this.posmap = posmap;
   }
 
-  private int[][] withIndex() {
-    int[][] result = new int[posmap.length][];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[i] = new int[]{i, posmap[i]};
-    return result;
-  }
-
   static public Permutation perm1(int... posmap1based) {
     int[] posmap = new int[posmap1based.length];
     for (int i = 0; i < posmap1based.length; i += 1)
@@ -43,7 +36,7 @@ public final class Permutation implements Comparable<Permutation> {
     for (int i = 0; i < resultLength; i += 1)
       result[i] = cycleIndexes[i] == 0
               ? i
-              : cycle[(indexOf(cycle, i) + 1) % cycle.length];
+              : cycle[(Util.indexOf(cycle, i) + 1) % cycle.length];
     return new Permutation(result);
   }
 
@@ -52,12 +45,6 @@ public final class Permutation implements Comparable<Permutation> {
     for (int i = 0; i < length; i += 1)
       posmap[i] = i;
     return new Permutation(posmap);
-  }
-
-  private static int indexOf(int[] ints, int k) {
-    for (int i = 0; i < ints.length; i += 1)
-      if (ints[i] == k) return i;
-    throw new IllegalStateException();
   }
 
   public Object[] apply(Object[] input) {
@@ -103,7 +90,7 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   public Permutation invert() {
-    int[][] posmapWithIndex = withIndex();
+    int[][] posmapWithIndex = Util.withIndex(posmap);
     Arrays.sort(posmapWithIndex, Util.COMPARE_2ND);
     int[] result = new int[posmap.length];
     for (int i = 0; i < posmap.length; i += 1)
@@ -144,12 +131,12 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   @Override
-  public int compareTo(Permutation permutation) {
-    if (this == permutation) return 0;
-    for (int i = 0; i < Math.min(this.posmap.length, permutation.posmap.length); i += 1)
-      if (this.posmap[i] != permutation.posmap[i])
-        return this.posmap[i] - permutation.posmap[i];
-    return permutation.posmap.length - this.posmap.length;
+  public int compareTo(Permutation other) {
+    if (this == other) return 0;
+    for (int i = 0; i < Math.min(this.posmap.length, other.posmap.length); i += 1)
+      if (this.posmap[i] != other.posmap[i])
+        return this.posmap[i] - other.posmap[i];
+    return other.posmap.length - this.posmap.length;
   }
 
 }

@@ -16,6 +16,19 @@ class Util {
     }
   };
 
+  static int[][] withIndex(int[] a) {
+    int[][] result = new int[a.length][];
+    for (int i = 0; i < a.length; i += 1)
+      result[i] = new int[]{i, a[i]};
+    return result;
+  }
+
+  static int indexOf(int[] ints, int k) {
+    for (int i = 0; i < ints.length; i += 1)
+      if (ints[i] == k) return i;
+    throw new IllegalStateException();
+  }
+
   static int[] pad(int[] unpadded, int targetLength) {
     if (targetLength <= unpadded.length)
       return unpadded;
