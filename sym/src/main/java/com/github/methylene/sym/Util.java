@@ -1,4 +1,4 @@
-package sorted.sym;
+package com.github.methylene.sym;
 
 import java.util.Arrays;
 import java.util.Comparator;
