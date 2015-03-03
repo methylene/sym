@@ -53,7 +53,7 @@ class Util {
       if (i < 0 || i >= ints.length)
         throw new IllegalArgumentException("invalid input: " + Arrays.toString(ints));
       if (poscnt[i] != 0)
-        throw new IllegalArgumentException("invalid input: " + Arrays.toString(ints));
+        throw new IllegalArgumentException("invalid input: " + Arrays.toString(ints) + ", duplicate: " + i);
       poscnt[i] = 1;
     }
   }

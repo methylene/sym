@@ -82,6 +82,14 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param targetLength A number that is not smaller than {@code this.length}.
+   * @return A permutation such that, for a non-negative number {@code m < targetLength}
+   * <pre><code>
+   *   this.pad(n).apply(m) = this.apply(m) // if m is smaller than this.length
+   *   this.pad(n).apply(m) // otherwise
+   * </code></pre>
+   */
   public Permutation pad(int targetLength) {
     if (targetLength < length())
       throw new IllegalArgumentException("targetLength can not be shorter than current length");
@@ -137,6 +145,9 @@ public final class Permutation implements Comparable<Permutation> {
     return true;
   }
 
+  /**
+   * @return The length that an array must have so that this permutation can be applied to it.
+   */
   public int length() {
     return posmap.length;
   }
@@ -310,6 +321,15 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param distinct
+   * @return The permutation that sorts {@code distinct}.
+   * If {@code sorted} is the result of sorting {@code distinct}, the following holds for all non-negative integers
+   * {@code i < distinct.length}:
+   * <pre><code>
+   *   distinct[i] = sorted[Permutation.sort(distinct).apply(i)]
+   * </code></pre>
+   */
   static public Permutation sort(int[] distinct) {
     int[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);

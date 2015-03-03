@@ -11,8 +11,12 @@ import static sorted.sym.Permutation.perm1;
 import static sorted.sym.Permutation.prod;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 public class PermutationTest {
@@ -67,6 +71,19 @@ public class PermutationTest {
     perm1(-1, 0, 1);
   }
 
+  /* test defining property of pad */
+  @Test
+  public void testPad() {
+    Permutation p = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
+    Permutation padded = p.pad(100);
+    for (int i = 0; i < 100; i += 1) {
+      if (i < p.length())
+        assertEquals(p.apply(i), padded.apply(i));
+      else
+        assertEquals(i, padded.apply(i));
+    }
+  }
+
   @Test
   public void testCompUneven() throws Exception {
     Permutation p = perm1(2, 3, 1).pad(4);
@@ -104,9 +121,19 @@ public class PermutationTest {
     assertEquals(5, identity(5).length());
   }
 
-  /* Check defining property of inverse */
+  /* test defining property of identity */
   @Test
   public void testIdentity2() {
+    Permutation identity = identity(5);
+    for (int i = 0; i < identity.length(); i += 1) {
+      assertEquals(i, identity.apply(i));
+    }
+  }
+
+
+  /* Check defining property of inverse */
+  @Test
+  public void testInverse2() {
     Permutation p = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
     for (int i = 0; i < p.length(); i += 1) {
       assertEquals(i, p.invert().apply(p.apply(i)));
@@ -132,14 +159,14 @@ public class PermutationTest {
     assertArrayEquals(new String[]{"c", "a", "b"}, prod(cycle1(1, 2).pad(3), cycle1(2, 3)).apply());
     assertArrayEquals(new String[]{"c", "a", "b"}, cycle1(1, 2, 3).apply());
     assertArrayEquals(new String[]{"a", "c", "b"}, prod(cycle1(1, 2).pad(3),
-            prod(cycle1(1, 2).pad(3), cycle1(2, 3))).apply());
+        prod(cycle1(1, 2).pad(3), cycle1(2, 3))).apply());
   }
 
   @Test
   public void testCycleEquals() throws Exception {
     assertTrue(prod(cycle1(1, 2), cycle1(2, 1)).isIdentity());
     assertEquals(cycle1(2, 3), prod(cycle1(1, 2).pad(3),
-            prod(cycle1(1, 2).pad(3), cycle1(2, 3))));
+        prod(cycle1(1, 2).pad(3), cycle1(2, 3))));
   }
 
   @Test
@@ -150,7 +177,7 @@ public class PermutationTest {
 
   @Test
   public void testSort() throws Exception {
-    int[] x = new int[]{ 4, 6, 10, -5, 195, 33, 2 };
+    int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
     Permutation p = Permutation.sort(x);
@@ -162,6 +189,7 @@ public class PermutationTest {
 
   static class MyInt {
     final int n;
+
     MyInt(int n) {
       this.n = n;
     }
@@ -184,13 +212,40 @@ public class PermutationTest {
   /* check example from README */
   @Test
   public void testSortInvert() {
-    int[] x = new int[]{ 4, 6, 10, -5, 195, 33, 2 };
+    int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
     Permutation unsort = Permutation.sort(x).invert();
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
     for (int k = 0; k < y.length; k += 1) {
       assertEquals(x[indexOf(x, y[k])], y[k]);
       assertEquals(indexOf(x, y[k]), unsort.apply(k));
+    }
+  }
+
+  private int[] distinctInts(int size) {
+    int[] test = new int[size * 10];
+    int[] result = new int[size];
+    for (int i = 0; i < size; i += 1) {
+      Integer candidate = (int) (size * 10 * Math.random());
+      while (test[candidate] != 0) {
+        candidate += 1;
+      }
+      test[candidate] = 1;
+      result[i] = candidate;
+    }
+    return result;
+  }
+
+  /* check defining property of sort */
+  @Test
+  public void testSortRandom() {
+    int size = (int) (100 * Math.random());
+    int[] distinct = distinctInts(size);
+    int[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted);
+    Permutation p = Permutation.sort(distinct);
+    for (int i = 0; i < sorted.length; i += 1) {
+      distinct[i] = sorted[p.apply(i)];
     }
   }
 
