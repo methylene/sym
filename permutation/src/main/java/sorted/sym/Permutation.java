@@ -8,7 +8,8 @@ public final class Permutation implements Comparable<Permutation> {
   private final int[] posmap;
 
   /**
-   * @param posmap A list of indexes.
+   * @param posmap A list of numbers that specifies the permutation in zero-based
+   *               <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
    *               For example, {@code posmap = new int[]{1, 2, 0}} creates the permutation
    *               that sends {@code new char[]{'a', 'b', 'c'}} to {@code new char[]{'c', 'a', 'b'}}.
    */
@@ -17,10 +18,19 @@ public final class Permutation implements Comparable<Permutation> {
     this.posmap = posmap;
   }
 
+  /**
+   * @param posmap1based Permutation definition in 1-based one-line notation.
+   * @return The permutation defined by {@code posmap1based}.
+   */
   static public Permutation perm1(int... posmap1based) {
     return new Permutation(Util.add(posmap1based, -1));
   }
 
+  /**
+   * @param cycle1based A list of numbers that defines a permutation in 1-based
+   *                    <a href="http://en.wikipedia.org/wiki/Permutation#Cycle_notation">cycle notation</a>
+   * @return The permutation defined by {@code cycle1based}.
+   */
   static public Permutation cycle1(int... cycle1based) {
     int maxPos = 0;
     int[] cycle = new int[cycle1based.length];
@@ -43,6 +53,10 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param length
+   * @return The identity permutation that can be applied to an array of length {@code length}.
+   */
   static public Permutation identity(int length) {
     int[] posmap = new int[length];
     for (int i = 0; i < length; i += 1)
@@ -50,16 +64,36 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(posmap);
   }
 
+  /**
+   * @param other A permutation of the same length as {@code this}.
+   * @return The composition of {@code this} and {@code other}. If
+   * {@code i} is an int such that {@code 0 < i < this.length()},
+   * the following identity holds:
+   * {@code this.apply(other.apply(i)) == this.comp(other).apply(i)}
+   */
   public Permutation comp(Permutation other) {
-    int targetLength = Math.max(posmap.length, other.posmap.length);
-    int[] lhs = Util.pad(posmap, targetLength);
-    int[] rhs = Util.pad(other.posmap, targetLength);
-    int[] result = new int[targetLength];
-    for (int i = 0; i < targetLength; i += 1)
+    if (this.length() != other.length())
+      throw new IllegalArgumentException("can only compose permutations of the same length");
+    int[] lhs = posmap;
+    int[] rhs = other.posmap;
+    int[] result = new int[lhs.length];
+    for (int i = 0; i < lhs.length; i += 1)
       result[i] = lhs[rhs[i]];
     return new Permutation(result);
   }
 
+  public Permutation pad(int targetLength) {
+    if (targetLength < length())
+      throw new IllegalArgumentException("targetLength can not be shorter than current length");
+    if (targetLength == length())
+      return this;
+    return new Permutation(Util.pad(posmap, targetLength));
+  }
+
+  /**
+   * @param permutations A list of permutations, all of which have the same length.
+   * @return The product (composition) of {@code permutations}.
+   */
   public static Permutation prod(Permutation... permutations) {
     if (permutations.length == 0) return identity(0);
     Permutation result = permutations[0];
@@ -68,15 +102,25 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
-  public Permutation pow(int power) {
-    if (power == 0) return identity(length());
-    Permutation seed = power < 0 ? invert() : this;
+  /**
+   * @param n any integer
+   * @return If {@code n} is positive, the product {@code this.comp(this)[...]comp(this)} ({@code n} times).
+   * If {@code n} is negative, the product {@code this.comp(this.invert)[...]comp(this.invert)} ({@code -n} times).
+   * Otherwise, the identity permutation of length {@code this.length}.
+   */
+  public Permutation pow(int n) {
+    if (n == 0) return identity(length());
+    Permutation seed = n < 0 ? invert() : this;
     Permutation result = seed;
-    for (int i = 1; i < Math.abs(power); i += 1)
+    for (int i = 1; i < Math.abs(n); i += 1)
       result = result.comp(seed);
     return result;
   }
 
+  /**
+   * @return A permutation that satisfies {@code this.invert().apply(this.apply(i)) == i} for any int {@code i}
+   * such that {@code 0 < i < this.length()}.
+   */
   public Permutation invert() {
     int[][] posmapWithIndex = Util.withIndex(posmap);
     Arrays.sort(posmapWithIndex, Util.COMPARE_2ND);
@@ -123,11 +167,11 @@ public final class Permutation implements Comparable<Permutation> {
     return other.posmap.length - this.posmap.length;
   }
 
+  /* overloaded versions of apply */
+
   public int apply(int pos) {
     return posmap[pos];
   }
-
-  /* overloaded versions of apply */
 
   public Object[] apply(Object[] input) {
     if (input.length < posmap.length)

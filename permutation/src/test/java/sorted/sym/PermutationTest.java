@@ -17,6 +17,7 @@ import java.util.Comparator;
 
 public class PermutationTest {
 
+  /* Check example from constructor javadoc */
   @Test
   public void testAbc() {
     Permutation p = new Permutation(new int[]{1, 2, 0});
@@ -31,14 +32,44 @@ public class PermutationTest {
     assertArrayEquals(new String[]{"b", "c", "a"}, p.pow(2).apply());
   }
 
+  /* check defining property of composition */
+  @Test
+  public void testComp2() throws Exception {
+    Permutation p = perm1(2, 3, 1);
+    Permutation p2 = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
+    p = p.pad(p2.length());
+    for (int i = 0; i < p.length(); i += 1) {
+      assertEquals(p2.apply(p.apply(i)), p2.comp(p).apply(i));
+    }
+  }
+
+  /* no gaps are allowed in one-line notation */
   @Test(expected = IllegalArgumentException.class)
   public void testInvalidGap() throws Exception {
-    perm1(2, 3, 1, 5);
+    new Permutation(new int[]{1, 2, 0, 5});
+  }
+
+  /* constructor is 0-based */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidMissingZero() throws Exception {
+    new Permutation(new int[]{1, 2, 3});
+  }
+
+  /* no duplicates are allowed in one-line notation */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidDuplicate() throws Exception {
+    new Permutation(new int[]{1, 2, 0, 2, 3});
+  }
+
+  /* no negative numbers allowed in one-line notation */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidNegative() throws Exception {
+    perm1(-1, 0, 1);
   }
 
   @Test
   public void testCompUneven() throws Exception {
-    Permutation p = perm1(2, 3, 1);
+    Permutation p = perm1(2, 3, 1).pad(4);
     Permutation p2 = perm1(2, 3, 1, 4);
     assertArrayEquals(new String[]{"b", "c", "a", "d"}, p.comp(p2).apply());
     assertArrayEquals(new String[]{"b", "c", "a", "d"}, p2.comp(p).apply());
@@ -69,8 +100,17 @@ public class PermutationTest {
     assertTrue(identity(5).isIdentity());
     assertTrue(identity(5).invert().isIdentity());
     assertTrue(identity(0).invert().isIdentity());
-    assertTrue(prod(prod(), identity(2)).isIdentity());
+    assertTrue(prod(prod().pad(2), identity(2)).isIdentity());
     assertEquals(5, identity(5).length());
+  }
+
+  /* Check defining property of inverse */
+  @Test
+  public void testIdentity2() {
+    Permutation p = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
+    for (int i = 0; i < p.length(); i += 1) {
+      assertEquals(i, p.invert().apply(p.apply(i)));
+    }
   }
 
   @Test
@@ -89,22 +129,23 @@ public class PermutationTest {
 
   @Test
   public void testCycleApply() throws Exception {
-    assertArrayEquals(new String[]{"c", "a", "b"}, prod(cycle1(1, 2), cycle1(2, 3)).apply());
+    assertArrayEquals(new String[]{"c", "a", "b"}, prod(cycle1(1, 2).pad(3), cycle1(2, 3)).apply());
     assertArrayEquals(new String[]{"c", "a", "b"}, cycle1(1, 2, 3).apply());
-    assertArrayEquals(new String[]{"a", "c", "b"}, prod(cycle1(1, 2),
-            prod(cycle1(1, 2), cycle1(2, 3))).apply());
+    assertArrayEquals(new String[]{"a", "c", "b"}, prod(cycle1(1, 2).pad(3),
+            prod(cycle1(1, 2).pad(3), cycle1(2, 3))).apply());
   }
 
   @Test
   public void testCycleEquals() throws Exception {
     assertTrue(prod(cycle1(1, 2), cycle1(2, 1)).isIdentity());
-    assertEquals(cycle1(2, 3), prod(cycle1(1, 2),
-            prod(cycle1(1, 2), cycle1(2, 3))));
+    assertEquals(cycle1(2, 3), prod(cycle1(1, 2).pad(3),
+            prod(cycle1(1, 2).pad(3), cycle1(2, 3))));
   }
 
   @Test
   public void testCycleLaw() throws Exception {
-    assertEquals(prod(cycle1(2, 4), cycle1(4, 1, 11, 3)), cycle1(2, 4, 1, 11, 3));
+    Permutation longest = cycle1(2, 4, 1, 11, 3);
+    assertEquals(prod(cycle1(2, 4).pad(longest.length()), cycle1(4, 1, 11, 3).pad(longest.length())), longest);
   }
 
   @Test
@@ -140,6 +181,7 @@ public class PermutationTest {
     throw new IllegalArgumentException("not in x: " + el);
   }
 
+  /* check example from README */
   @Test
   public void testSortInvert() {
     int[] x = new int[]{ 4, 6, 10, -5, 195, 33, 2 };
@@ -160,7 +202,7 @@ public class PermutationTest {
         return a.n - b.n;
       }
     };
-    MyInt[] x = new MyInt[]{ new MyInt(4), new MyInt(6), new MyInt(10), new MyInt(-5), new MyInt(195), new MyInt(33), new MyInt(2) };
+    MyInt[] x = new MyInt[]{new MyInt(4), new MyInt(6), new MyInt(10), new MyInt(-5), new MyInt(195), new MyInt(33), new MyInt(2)};
     Permutation unsort = Permutation.sort(x, comparator).invert();
     MyInt[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y, comparator);
