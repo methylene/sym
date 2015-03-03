@@ -8,10 +8,11 @@ Suppose you have the following
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
 
-x is an array of mutually distinct ints. y is a sorted copy of x.
-Consider the following problem.
+x is an array of distinct comparable objects.
+y is a sorted copy of x.
+Consider the following problem:
 Given a position k in y, we want to find the original position of y[k].
-An exhaustive search will solve this:
+An exhaustive search will solve it:
 
     int indexOf(int[] x, int el) {
       for (int i = 0; i < x.length; i += 1) {
@@ -36,9 +37,8 @@ You can use the Permutation class to find the inverse of P like this:
 
     Permutation unsort = Permutation.sort(x).invert();
 
-This solves the problem, as shown by the following test:
+This is equivalent to the exhaustive search, as shown by the following test:
 
     for (int k = 0; k < y.length; k += 1) {
       assertEquals(indexOf(x, y[k]), unsort.apply(k));
     }
-
