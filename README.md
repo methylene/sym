@@ -25,7 +25,7 @@ An exhaustive search will solve it:
 
 
 The method indexOf solves the problem, but its runtime grows with the length of `x`.
-We can do better!
+There is a faster way.
 Let `P` be the permutation that sorts `x`, i.e. `x[i] == y[P(i)]` for all indexes `i`.
 Then
 
@@ -33,7 +33,7 @@ Then
     i = P^-1 k
 
 So we can find `i` by applying the inverse of `P`, which is a constant time operation.
-You can use the Permutation class to find the inverse of `P` like this:
+We can use the Permutation class to find the inverse of `P` like this:
 
     Permutation unsort = Permutation.sort(x).invert();
 
