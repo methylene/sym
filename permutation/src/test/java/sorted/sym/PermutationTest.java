@@ -11,14 +11,24 @@ import static sorted.sym.Permutation.perm1;
 import static sorted.sym.Permutation.prod;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 
 public class PermutationTest {
 
   @Test
+  public void testAbc() {
+    Permutation p = new Permutation(new int[]{1, 2, 0});
+    assertArrayEquals(new char[]{'c', 'a', 'b'}, p.apply(new char[]{'a', 'b', 'c'}));
+  }
+
+  @Test
   public void testComp() throws Exception {
     Permutation p = perm1(2, 3, 1);
-    assertArrayEquals(new Object[]{"c", "a", "b"}, p.apply());
-    assertArrayEquals(new Object[]{"b", "c", "a"}, p.pow(2).apply());
+    assertEquals(new Permutation(new int[]{1, 2, 0}), p);
+    assertArrayEquals(new String[]{"c", "a", "b"}, p.apply());
+    assertArrayEquals(new String[]{"b", "c", "a"}, p.pow(2).apply());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -30,8 +40,8 @@ public class PermutationTest {
   public void testCompUneven() throws Exception {
     Permutation p = perm1(2, 3, 1);
     Permutation p2 = perm1(2, 3, 1, 4);
-    assertArrayEquals(new Object[]{"b", "c", "a", "d"}, p.comp(p2).apply());
-    assertArrayEquals(new Object[]{"b", "c", "a", "d"}, p2.comp(p).apply());
+    assertArrayEquals(new String[]{"b", "c", "a", "d"}, p.comp(p2).apply());
+    assertArrayEquals(new String[]{"b", "c", "a", "d"}, p2.comp(p).apply());
   }
 
   @Test
@@ -51,7 +61,7 @@ public class PermutationTest {
     assertEquals(p.pow(-1), prod(p, p));
     assertEquals(p.pow(-1), p.invert());
     assertEquals(p.pow(2), p.comp(p));
-    assertArrayEquals(new Object[]{"a", "b", "c"}, prod(p, p.invert()).apply());
+    assertArrayEquals(new String[]{"a", "b", "c"}, prod(p, p.invert()).apply());
   }
 
   @Test
@@ -72,9 +82,9 @@ public class PermutationTest {
 
   @Test
   public void cycleApply() {
-    assertArrayEquals(new Object[]{"b", "c", "e", "d", "a"}, cycle1(1, 5, 3, 2).apply());
-    assertArrayEquals(new Object[]{"c", "b", "e", "d", "a"}, cycle1(1, 5, 3).apply());
-    assertArrayEquals(new Object[]{"c", "a", "b"}, cycle1(1, 2, 3).apply());
+    assertArrayEquals(new String[]{"b", "c", "e", "d", "a"}, cycle1(1, 5, 3, 2).apply());
+    assertArrayEquals(new String[]{"c", "b", "e", "d", "a"}, cycle1(1, 5, 3).apply());
+    assertArrayEquals(new String[]{"c", "a", "b"}, cycle1(1, 2, 3).apply());
   }
 
   @Test
@@ -95,6 +105,69 @@ public class PermutationTest {
   @Test
   public void testCycleLaw() throws Exception {
     assertEquals(prod(cycle1(2, 4), cycle1(4, 1, 11, 3)), cycle1(2, 4, 1, 11, 3));
+  }
+
+  @Test
+  public void testSort() throws Exception {
+    int[] x = new int[]{ 4, 6, 10, -5, 195, 33, 2 };
+    int[] y = Arrays.copyOf(x, x.length);
+    Arrays.sort(y);
+    Permutation p = Permutation.sort(x);
+    for (int i = 0; i < x.length; i += 1) {
+      assertEquals(x[i], y[p.apply(i)]);
+    }
+    assertArrayEquals(y, p.apply(x));
+  }
+
+  static class MyInt {
+    final int n;
+    MyInt(int n) {
+      this.n = n;
+    }
+  }
+
+  int indexOf(int[] x, int el) {
+    for (int i = 0; i < x.length; i += 1) {
+      if (x[i] == el) return i;
+    }
+    throw new IllegalArgumentException("not in x: " + el);
+  }
+
+  int indexOf(MyInt[] x, MyInt el) {
+    for (int i = 0; i < x.length; i += 1) {
+      if (x[i].n == el.n) return i;
+    }
+    throw new IllegalArgumentException("not in x: " + el);
+  }
+
+  @Test
+  public void testSortInvert() {
+    int[] x = new int[]{ 4, 6, 10, -5, 195, 33, 2 };
+    Permutation unsort = Permutation.sort(x).invert();
+    int[] y = Arrays.copyOf(x, x.length);
+    Arrays.sort(y);
+    for (int k = 0; k < y.length; k += 1) {
+      assertEquals(x[indexOf(x, y[k])], y[k]);
+      assertEquals(indexOf(x, y[k]), unsort.apply(k));
+    }
+  }
+
+  @Test
+  public void testSortInvertComparator() {
+    Comparator<MyInt> comparator = new Comparator<MyInt>() {
+      @Override
+      public int compare(MyInt a, MyInt b) {
+        return a.n - b.n;
+      }
+    };
+    MyInt[] x = new MyInt[]{ new MyInt(4), new MyInt(6), new MyInt(10), new MyInt(-5), new MyInt(195), new MyInt(33), new MyInt(2) };
+    Permutation unsort = Permutation.sort(x, comparator).invert();
+    MyInt[] y = Arrays.copyOf(x, x.length);
+    Arrays.sort(y, comparator);
+    for (int k = 0; k < y.length; k += 1) {
+      assertEquals(x[indexOf(x, y[k])], y[k]);
+      assertEquals(indexOf(x, y[k]), unsort.apply(k));
+    }
   }
 
 }

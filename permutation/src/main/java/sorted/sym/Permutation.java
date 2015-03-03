@@ -1,12 +1,18 @@
 package sorted.sym;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 public final class Permutation implements Comparable<Permutation> {
 
   private final int[] posmap;
 
-  private Permutation(int[] posmap) {
+  /**
+   * @param posmap A list of indexes.
+   *               For example, {@code posmap = new int[]{1, 2, 0}} creates the permutation
+   *               that sends {@code new char[]{'a', 'b', 'c'}} to {@code new char[]{'c', 'a', 'b'}}.
+   */
+  public Permutation(int[] posmap) {
     Util.validate(posmap);
     this.posmap = posmap;
   }
@@ -42,21 +48,6 @@ public final class Permutation implements Comparable<Permutation> {
     for (int i = 0; i < length; i += 1)
       posmap[i] = i;
     return new Permutation(posmap);
-  }
-
-  public Object[] apply(Object[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
-    Object[] result = new Object[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
-    return result;
-  }
-
-  public Object[] apply() {
-    return apply(Util.symbols(posmap.length));
   }
 
   public Permutation comp(Permutation other) {
@@ -130,6 +121,219 @@ public final class Permutation implements Comparable<Permutation> {
       if (this.posmap[i] != other.posmap[i])
         return this.posmap[i] - other.posmap[i];
     return other.posmap.length - this.posmap.length;
+  }
+
+  public int apply(int pos) {
+    return posmap[pos];
+  }
+
+  /* overloaded versions of apply */
+
+  public Object[] apply(Object[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    Object[] result = new Object[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+  public String[] apply(String[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    String[] result = new String[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+  public byte[] apply(byte[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    byte[] result = new byte[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+  public short[] apply(short[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    short[] result = new short[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+  public int[] apply(int[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    int[] result = new int[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+  public long[] apply(long[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    long[] result = new long[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+  public float[] apply(float[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    float[] result = new float[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+  public double[] apply(double[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    double[] result = new double[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+
+  public boolean[] apply(boolean[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    boolean[] result = new boolean[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+  public char[] apply(char[] input) {
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("too short: " + input.length);
+    char[] result = new char[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    return result;
+  }
+
+  public String[] apply() {
+    return apply(Util.symbols(posmap.length));
+  }
+
+  /* overloaded versions of sort */
+
+  static public Permutation sort(byte[] distinct) {
+    byte[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted);
+    int[] result = new int[distinct.length];
+    for (int i = 0; i < distinct.length; i += 1) {
+      result[i] = Arrays.binarySearch(sorted, distinct[i]);
+    }
+    return new Permutation(result);
+  }
+
+  static public Permutation sort(short[] distinct) {
+    short[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted);
+    int[] result = new int[distinct.length];
+    for (int i = 0; i < distinct.length; i += 1) {
+      result[i] = Arrays.binarySearch(sorted, distinct[i]);
+    }
+    return new Permutation(result);
+  }
+
+  static public Permutation sort(int[] distinct) {
+    int[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted);
+    int[] result = new int[distinct.length];
+    for (int i = 0; i < distinct.length; i += 1) {
+      result[i] = Arrays.binarySearch(sorted, distinct[i]);
+    }
+    return new Permutation(result);
+  }
+
+  static public Permutation sort(long[] distinct) {
+    long[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted);
+    int[] result = new int[distinct.length];
+    for (int i = 0; i < distinct.length; i += 1) {
+      result[i] = Arrays.binarySearch(sorted, distinct[i]);
+    }
+    return new Permutation(result);
+  }
+
+  static public Permutation sort(float[] distinct) {
+    float[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted);
+    int[] result = new int[distinct.length];
+    for (int i = 0; i < distinct.length; i += 1) {
+      result[i] = Arrays.binarySearch(sorted, distinct[i]);
+    }
+    return new Permutation(result);
+  }
+
+  static public Permutation sort(double[] distinct) {
+    double[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted);
+    int[] result = new int[distinct.length];
+    for (int i = 0; i < distinct.length; i += 1) {
+      result[i] = Arrays.binarySearch(sorted, distinct[i]);
+    }
+    return new Permutation(result);
+  }
+
+  static public Permutation sort(char[] distinct) {
+    char[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted);
+    int[] result = new int[distinct.length];
+    for (int i = 0; i < distinct.length; i += 1) {
+      result[i] = Arrays.binarySearch(sorted, distinct[i]);
+    }
+    return new Permutation(result);
+  }
+
+  static public Permutation sort(Comparable[] distinct) {
+    Comparable[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted);
+    int[] result = new int[distinct.length];
+    for (int i = 0; i < distinct.length; i += 1) {
+      result[i] = Arrays.binarySearch(sorted, distinct[i]);
+    }
+    return new Permutation(result);
+  }
+
+  static public Permutation sort(Object[] distinct, Comparator comparator) {
+    Object[] sorted = Arrays.copyOf(distinct, distinct.length);
+    Arrays.sort(sorted, comparator);
+    int[] result = new int[distinct.length];
+    for (int i = 0; i < distinct.length; i += 1) {
+      result[i] = Arrays.binarySearch(sorted, distinct[i], comparator);
+    }
+    return new Permutation(result);
   }
 
 }
