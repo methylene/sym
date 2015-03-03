@@ -8,10 +8,10 @@ Suppose you have the following
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
 
-x is an array of distinct comparable objects.
-y is a sorted copy of x.
+`x` is an array of distinct comparable objects.
+`y` is a sorted copy of `x`.
 Consider the following problem:
-Given a position k in y, we want to find the original position of y[k].
+Given an index `k` in `y`, we want to find the original position in `x` of `y[k]`.
 An exhaustive search will solve it:
 
     int indexOf(int[] x, int el) {
@@ -24,16 +24,16 @@ An exhaustive search will solve it:
     assertEquals(x[indexOf(x, y[k])], y[k]);
 
 
-The method indexOf solves the problem, but its runtime grows with the length of x.
+The method indexOf solves the problem, but its runtime grows with the length of `x`.
 We can do better!
-Let P be the permutation that sorts x, i.e. x[i] = y[P i] for all indexes i.
+Let `P` be the permutation that sorts `x`, i.e. `x[i] == y[P(i)]` for all indexes `i`.
 Then
 
     P i = k
     i = P^-1 k
 
-So we can find i by applying the inverse of P, which is a constant time operation.
-You can use the Permutation class to find the inverse of P like this:
+So we can find `i` by applying the inverse of `P`, which is a constant time operation.
+You can use the Permutation class to find the inverse of `P` like this:
 
     Permutation unsort = Permutation.sort(x).invert();
 
