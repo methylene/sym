@@ -262,4 +262,19 @@ public class PermutationTest {
     }
   }
 
+  @Test(expected = ArrayIndexOutOfBoundsException.class)
+  public void testApplyInvalid() {
+    Permutation.identity(3).apply(-1);
+  }
+
+  @Test(expected = ArrayIndexOutOfBoundsException.class)
+  public void testApplyInvalid2() {
+    Permutation.identity(3).apply(3);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testApplyInvalid3() {
+    Permutation.identity(3).apply(new int[]{1, 2});
+  }
+
 }

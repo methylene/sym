@@ -180,10 +180,21 @@ public final class Permutation implements Comparable<Permutation> {
 
   /* overloaded versions of apply */
 
+  /**
+   * @param pos A non negative number which is smaller than {@code this.length()}
+   * @return The index that an element {@code a[pos]} an array {@code a} will have,
+   * after this permutation has been applied to {@code a}.
+   * @throws java.lang.ArrayIndexOutOfBoundsException If {@code pos < 0} or {@code pos >= this.length}.
+   */
   public int apply(int pos) {
     return posmap[pos];
   }
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public Object[] apply(Object[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -195,6 +206,11 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public String[] apply(String[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -206,6 +222,11 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public byte[] apply(byte[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -217,6 +238,11 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public short[] apply(short[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -228,6 +254,11 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public int[] apply(int[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -239,6 +270,11 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public long[] apply(long[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -250,6 +286,11 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public float[] apply(float[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -261,6 +302,11 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public double[] apply(double[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -273,6 +319,11 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public boolean[] apply(boolean[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -284,6 +335,11 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
+  /**
+   * @param input An array of length {@code this.length()}.
+   * @return The result of applying this permutation to {@code input}.
+   * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
+   */
   public char[] apply(char[] input) {
     if (input.length < posmap.length)
       throw new IllegalArgumentException("too short: " + input.length);
@@ -295,12 +351,23 @@ public final class Permutation implements Comparable<Permutation> {
     return result;
   }
 
+  /**
+   * @return The result of applying this permutation to the incrementing array of distinct strings
+   * of length {@code this.length()} that starts with {@code "a", "b", "c"...} and so on.
+   * @see com.github.methylene.sym.Permutation#apply(String[])
+   */
   public String[] apply() {
     return apply(Util.symbols(posmap.length));
   }
 
   /* overloaded versions of sort */
 
+  /**
+   * @param distinct An array of distinct bytes
+   * @return The permutation that sorts {@code distinct}
+   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
+   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
+   */
   static public Permutation sort(byte[] distinct) {
     byte[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
@@ -311,6 +378,12 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param distinct An array of distinct shorts
+   * @return The permutation that sorts {@code distinct}
+   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
+   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
+   */
   static public Permutation sort(short[] distinct) {
     short[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
@@ -322,13 +395,10 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * @param distinct
-   * @return The permutation that sorts {@code distinct}.
-   * If {@code sorted} is the result of sorting {@code distinct}, the following holds for all non-negative integers
-   * {@code i < distinct.length}:
-   * <pre><code>
-   *   distinct[i] = sorted[Permutation.sort(distinct).apply(i)]
-   * </code></pre>
+   * @param distinct An array of distinct integers
+   * @return The permutation that sorts {@code distinct}
+   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
+   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    */
   static public Permutation sort(int[] distinct) {
     int[] sorted = Arrays.copyOf(distinct, distinct.length);
@@ -340,6 +410,12 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param distinct An array of distinct longs
+   * @return The permutation that sorts {@code distinct}
+   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
+   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
+   */
   static public Permutation sort(long[] distinct) {
     long[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
@@ -350,6 +426,12 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param distinct An array of distinct floats
+   * @return The permutation that sorts {@code distinct}
+   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
+   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
+   */
   static public Permutation sort(float[] distinct) {
     float[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
@@ -360,6 +442,12 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param distinct An array of distinct doubles
+   * @return The permutation that sorts {@code distinct}
+   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
+   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
+   */
   static public Permutation sort(double[] distinct) {
     double[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
@@ -370,6 +458,12 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param distinct An array of distinct characters
+   * @return The permutation that sorts {@code distinct}
+   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
+   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
+   */
   static public Permutation sort(char[] distinct) {
     char[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
@@ -380,6 +474,12 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param distinct An array of distinct comparables
+   * @return The permutation that sorts {@code distinct}
+   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
+   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
+   */
   static public Permutation sort(Comparable[] distinct) {
     Comparable[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
@@ -390,6 +490,16 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
+  /**
+   * @param distinct An array of distinct objects
+   * @return The permutation that sorts {@code distinct}.
+   * If {@code sorted} is the result of sorting {@code distinct}, the following holds for all non-negative integers
+   * {@code i < distinct.length}:
+   * <pre><code>
+   *   distinct[i] = sorted[Permutation.sort(distinct).apply(i)]
+   * </code></pre>
+   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
+   */
   static public Permutation sort(Object[] distinct, Comparator comparator) {
     Object[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted, comparator);
