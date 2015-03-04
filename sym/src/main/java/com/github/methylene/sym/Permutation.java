@@ -3,6 +3,9 @@ package com.github.methylene.sym;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * An instance of this class represents a permutation of at most {@link Integer#MAX_VALUE} values.
+ */
 public final class Permutation implements Comparable<Permutation> {
 
   private final int[] posmap;
