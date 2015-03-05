@@ -1,6 +1,14 @@
 # sym
 
-Useful tools for working with sorted data.
+Permutation util
+
+### Shuffling an array
+
+    String[] sentence = new String[]{"Check", "out", "this", "great", "library"};
+    Permutation.random(sentence.length).apply(sentence);
+    => [great, library, Check, this, out]
+
+### Unsorting
 
 Suppose you have the following
 
@@ -11,7 +19,7 @@ Suppose you have the following
 `x` is an array of distinct comparable objects.
 `y` is a sorted copy of `x`.
 Consider the following problem:
-Given an index `k` in `y`, we want to find the original position in `x` of `y[k]`.
+Given an element `y[k]`, we want to find its original position in `x`.
 An exhaustive search will solve it:
 
     int indexOf(int[] x, int el) {
@@ -42,3 +50,23 @@ This is equivalent to the exhaustive search, as shown by the following test:
     for (int k = 0; k < y.length; k += 1) {
       assertEquals(indexOf(x, y[k]), unsort.apply(k));
     }
+
+### CSV data
+
+Suppose you have headered CSV data like this:
+
+    String[] header = new String[]{"country", "area_km2", "population_density_km2", "gdp_per_capita_usd"};
+    Object[] row1 = new Object[]{"UK", 243610, 255.6, 38309};
+    Object[] row2 = new Object[]{"Lithuania", 65300, 45, 28245};
+
+For some reason, you want to change the column order to "country", "population_density_km2", "gdp_per_capita_usd", "area_km2".
+It can be done like this:
+
+    String[] newHeader = new String[]{"country", "population_density_km2", "gdp_per_capita_usd", "area_km2"};
+    Permutation reorder = Permutation.from(header, newHeader);
+    reorder.apply(row1);
+    => [UK, 255.6, 38309, 243610]
+    reorder.apply(row2);
+    => [Lithuania, 45, 28245, 65300]
+
+Notice how the `Permutation.from(Comparable[], Comparable[])` method is implemented using the unsorting trick. This allows it to run in `O(n log(n))` time.

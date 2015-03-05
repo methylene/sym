@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.TreeSet;
 
@@ -19,14 +20,22 @@ class Util {
   static int[][] withIndex(int[] a) {
     int[][] result = new int[a.length][];
     for (int i = 0; i < a.length; i += 1)
-      result[i] = new int[]{i, a[i]};
+      result[i] = new int[] { i, a[i] };
     return result;
+  }
+
+  static int indexOf(Object[] a, Object k) {
+    for (int i = 0; i < a.length; i += 1)
+      if (Objects.equals(a[i], k))
+        return i;
+    throw new IllegalArgumentException("could not find " + k + " in input");
   }
 
   static int indexOf(int[] ints, int k) {
     for (int i = 0; i < ints.length; i += 1)
-      if (ints[i] == k) return i;
-    throw new IllegalStateException();
+      if (ints[i] == k)
+        return i;
+    throw new IllegalArgumentException("could not find " + k + " in input");
   }
 
   static int[] add(int[] a, int k) {
@@ -58,6 +67,25 @@ class Util {
     }
   }
 
+  /**
+   * @param size      How many random integers we want
+   * @param maxFactor Controls the size of random numbers that are produced
+   * @return Random array of {@code size} distinct integers between {@code 0} and {@code size * maxFactor}
+   */
+  static int[] distinctInts(int size, int maxFactor) {
+    boolean[] test = new boolean[size * maxFactor];
+    int[] result = new int[size];
+    for (int i = 0; i < size; i += 1) {
+      Integer candidate = (int) (size * maxFactor * Math.random());
+      int direction = Math.random() >= 0.5 ? 1 : -1;
+      while (test[candidate])
+        candidate += direction;
+      test[candidate] = true;
+      result[i] = candidate;
+    }
+    return result;
+  }
+
   static String[] symbols(int n) {
     String[] r = new String[n];
     String s = "a";
@@ -72,8 +100,7 @@ class Util {
     char last = s.charAt(s.length() - 1);
     if (last == 'z') {
       int nflip = 1;
-      while (s.length() > nflip
-              && s.charAt(s.length() - 1 - nflip) == 'z')
+      while (s.length() > nflip && s.charAt(s.length() - 1 - nflip) == 'z')
         nflip += 1;
       if (nflip == s.length()) {
         StringBuilder news = new StringBuilder();
@@ -133,19 +160,16 @@ class Util {
 
   static Iterable<Permutation[]> cartesian(final List<Permutation> a, final List<Permutation> b) {
     return new Iterable<Permutation[]>() {
-      @Override
-      public Iterator<Permutation[]> iterator() {
+      @Override public Iterator<Permutation[]> iterator() {
         return new Iterator<Permutation[]>() {
           int idxa = 0;
           int idxb = 0;
 
-          @Override
-          public boolean hasNext() {
+          @Override public boolean hasNext() {
             return idxa < a.size();
           }
 
-          @Override
-          public Permutation[] next() {
+          @Override public Permutation[] next() {
             Permutation pa = a.get(idxa);
             Permutation pb = b.get(idxb);
             if (b.size() - idxb == 1) {
@@ -154,18 +178,16 @@ class Util {
             } else {
               idxb += 1;
             }
-            return new Permutation[]{pa, pb};
+            return new Permutation[] { pa, pb };
           }
 
-          @Override
-          public void remove() {
+          @Override public void remove() {
             throw new IllegalAccessError();
           }
         };
       }
     };
   }
-
 
   public static List<Permutation> commutator(final List<Permutation> input) {
     List<Permutation> result = new LinkedList<Permutation>();
@@ -176,24 +198,20 @@ class Util {
 
   public static Iterable<Permutation> commutatorIterable(final List<Permutation> input) {
     return new Iterable<Permutation>() {
-      @Override
-      public Iterator<Permutation> iterator() {
+      @Override public Iterator<Permutation> iterator() {
         List<Permutation> inlist = Arrays.asList(input.toArray(new Permutation[input.size()]));
         final Iterator<Permutation[]> cartesian = cartesian(inlist, inlist).iterator();
         return new Iterator<Permutation>() {
-          @Override
-          public boolean hasNext() {
+          @Override public boolean hasNext() {
             return cartesian.hasNext();
           }
 
-          @Override
-          public Permutation next() {
+          @Override public Permutation next() {
             Permutation[] p = cartesian.next();
             return Permutation.prod(p[0].invert(), p[1].invert(), p[0], p[1]);
           }
 
-          @Override
-          public void remove() {
+          @Override public void remove() {
             throw new IllegalAccessError();
           }
         };
@@ -203,15 +221,13 @@ class Util {
 
   public static <E extends Comparable> Iterable<E> distinct(final Iterable<E> input) {
     return new Iterable<E>() {
-      @Override
-      public Iterator<E> iterator() {
+      @Override public Iterator<E> iterator() {
         final TreeSet<E> set = new TreeSet<E>();
         final Iterator<E> it = input.iterator();
         return new Iterator<E>() {
           E current = null;
 
-          @Override
-          public boolean hasNext() {
+          @Override public boolean hasNext() {
             while (it.hasNext()) {
               E candidate = it.next();
               if (set.add(candidate)) {
@@ -222,13 +238,11 @@ class Util {
             return false;
           }
 
-          @Override
-          public E next() {
+          @Override public E next() {
             return current;
           }
 
-          @Override
-          public void remove() {
+          @Override public void remove() {
             throw new IllegalAccessError();
           }
         };
@@ -241,7 +255,8 @@ class Util {
     outer:
     for (Permutation a : input) {
       for (Permutation b : input)
-        if (!a.comp(b).equals(b.comp(a))) continue outer;
+        if (!a.comp(b).equals(b.comp(a)))
+          continue outer;
       result.add(a);
     }
     return result;
