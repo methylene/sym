@@ -9,6 +9,12 @@
 
   <name>sym</name>
 
+  <description>
+    Permutation tools for java
+  </description>
+
+  <url>https://github.com/methylene/sym</url>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -24,6 +30,15 @@
   <scm>
     <url>https://github.com/methylene/sym.git</url>
   </scm>
+
+  <developers>
+    <developer>
+      <name>Lars Bohl</name>
+      <email>larsbohl@gmail.com</email>
+      <organization>github</organization>
+      <organizationUrl>https://github.com</organizationUrl>
+    </developer>
+  </developers>
 
   <dependencies>
 
