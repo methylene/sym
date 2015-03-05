@@ -1,6 +1,12 @@
 # sym
 
-Permutation util
+Permutation util, enjoy!
+
+    <dependency>
+      <groupId>com.github.methylene</groupId>
+      <artifactId>sym</artifactId>
+      <version>1.0</version>
+    </dependency>
 
 ### Shuffling an array
 
