@@ -217,11 +217,15 @@ public class PermutationTest {
     }
   }
 
-  private int[] distinctInts(int size) {
-    int[] test = new int[size * 10];
+  /**@param size How many random integers we want
+   * @param maxFactor Controls the size of random numbers that are produced
+   * @return Random array of {@code size} distinct integers between {@code 0} and {@code size * maxFactor}
+   */
+  private int[] distinctInts(int size, int maxFactor) {
+    int[] test = new int[size * maxFactor];
     int[] result = new int[size];
     for (int i = 0; i < size; i += 1) {
-      Integer candidate = (int) (size * 10 * Math.random());
+      Integer candidate = (int) (size * maxFactor * Math.random());
       while (test[candidate] != 0) {
         candidate += 1;
       }
@@ -235,7 +239,7 @@ public class PermutationTest {
   @Test
   public void testSortRandom() {
     int size = (int) (100 * Math.random());
-    int[] distinct = distinctInts(size);
+    int[] distinct = distinctInts(size, 8);
     int[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
     Permutation p = Permutation.sort(distinct);
@@ -275,6 +279,22 @@ public class PermutationTest {
   @Test(expected = IllegalArgumentException.class)
   public void testApplyInvalid3() {
     Permutation.identity(3).apply(new int[]{1, 2});
+  }
+
+  /**@param a Any array of integers
+   * @return A sorted copy of {@code a}
+   */
+  private int[] classicSort(int[] a) {
+    int[] result = Arrays.copyOf(a, a.length);
+    Arrays.sort(result);
+    return result;
+  }
+
+  /* Another way of checking that Permutation.sort(a).apply(a) sorts a, for distinct array a */
+  @Test
+  public void testSort1024() {
+    int[] a = distinctInts(1024, 8);
+    assertArrayEquals(classicSort(a), Permutation.sort(a).apply(a));
   }
 
 }
