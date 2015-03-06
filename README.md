@@ -14,6 +14,23 @@ Permutation util, enjoy!
     Permutation.random(sentence.length).apply(sentence);
     => [great, library, Check, this, out]
 
+### Changing colum order
+
+Suppose you have a bunch of CSV rows and a header:
+
+    String[] header = new String[]{"country", "area", "pop", "gdp"};
+    Object[] row1 = new Object[]{"UK", 243610, 255.6, 38309};
+    Object[] row2 = new Object[]{"Lithuania", 65300, 45, 28245};
+
+The columns are easily rearranged:
+
+    String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
+    Permutation reorder = Permutation.from(header, newHeader);
+    reorder.apply(row1);
+    => [UK, 255.6, 38309, 243610]
+    reorder.apply(row2);
+    => [Lithuania, 45, 28245, 65300]
+
 ### Unsorting
 
 Suppose you have the following
@@ -33,7 +50,7 @@ An exhaustive search will solve it:
       for (int i = 0; i < x.length; i += 1) {
         if (x[i] == y[k]) return i;
       }
-      throw new IllegalArgumentException("not in x: " + el);
+      throw new IllegalArgumentException("not in x: " + y[k]);
     }
 
 
@@ -55,23 +72,6 @@ Then the following constant time method is equivalent:
     int originalIndex(int k) {
       unsortX.apply(k);
     }
-
-### Changing colum order
-
-Suppose you have a bunch of CSV rows and a header:
-
-    String[] header = new String[]{"country", "area", "pop", "gdp"};
-    Object[] row1 = new Object[]{"UK", 243610, 255.6, 38309};
-    Object[] row2 = new Object[]{"Lithuania", 65300, 45, 28245};
-
-The columns are easily rearranged:
-
-    String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
-    Permutation reorder = Permutation.from(header, newHeader);
-    reorder.apply(row1);
-    => [UK, 255.6, 38309, 243610]
-    reorder.apply(row2);
-    => [Lithuania, 45, 28245, 65300]
 
 ### Searching in an array
 
