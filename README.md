@@ -16,13 +16,14 @@ Permutations for Java
 
 ### Changing column order
 
-Suppose you have a bunch of CSV and a header:
+Assuming we have a bunch of CSV and a header
 
     String[] header = new String[]{"country", "area", "pop", "gdp"};
     Object[] row1 = new Object[]{"UK", 243610, 255.6, 38309};
     Object[] row2 = new Object[]{"Lithuania", 65300, 45, 28245};
 
-The columns are easily rearranged:
+Given a rearrangement of the header fields, 
+it's easy to do the same reordering in the data rows using `Permutation.from`:
 
     String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
     Permutation reorder = Permutation.from(header, newHeader);
@@ -30,6 +31,9 @@ The columns are easily rearranged:
     => [UK, 255.6, 38309, 243610]
     reorder.apply(row2);
     => [Lithuania, 45, 28245, 65300]
+
+`Permutation.from(a, b)` will throw an IllegalArgumentException if the elements of `a` 
+are not _distinct_, or if `b` can not be obtained by rearranging `a`.
 
 ### Searching in an array
 
@@ -43,17 +47,17 @@ If the elements of `a` are `Comparable` and _distinct_,
 the HashMap is not needed.
 
 We make a sorted copy of `a`, along with the `unsortA` permutation,
-which maps indexes in `sortedA` back to their original position in `a`:
+which maps indexes in `sortedA` back to their original position in `a`.
 
     String[] a = new String[]{"x", "f", "v", "c", "n"};
     Permutation sortA = Permutation.sort(a);
     Permutation unsortA = sortA.invert();
     String[] sortedA = sortA.apply(a);
 
-`sortedA` is just what we'd get by doing `Arrays.sort(a)`, 
-except `apply` always returns a copy and leaves `a` unchanged.
+`sortedA` is equal to what `Arrays.sort(a)` would produce.
+However `sortA.apply(a)` returns a copy and leaves `a` unchanged.
 
-Now we can find the index of `e` in `a` like this:
+Now we can find the index of a String `e` in `a` more quickly:
 
     public int indexOf(String e) {
       int i = Arrays.binarySearch(sortedA, e);
