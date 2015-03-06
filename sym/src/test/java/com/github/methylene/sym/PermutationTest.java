@@ -5,6 +5,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -281,8 +282,31 @@ public class PermutationTest {
     assertArrayEquals(new String[] { "c", "b", "a" }, p.apply());
   }
 
+  /**
+   * @param size      How many MyInt objects we want
+   * @param maxFactor Controls the size of random numbers that are produced
+   * @return Random array of {@code size} distinct integers between {@code 0} and {@code size * maxFactor}
+   */
+  static MyInt[] distinctMyInts(int size, int maxFactor) {
+    int[] ints = distinctInts(size, maxFactor);
+    MyInt[] result = new MyInt[size];
+    for (int i = 0; i < size; i += 1) {
+      result[i] = new MyInt(ints[i]);
+    }
+    return result;
+  }
+
+  private void testFromSlowly3() {
+    int size = 2048;
+    Object[] a = distinctMyInts(size, 8);
+    if (Math.random() < 0.5)
+      a[(int) (size * Math.random())] = null;
+    Object[] b = Permutation.random(size).apply(a);
+    assertArrayEquals(Permutation.from(a, b).apply(a), b);
+  }
+
   /* check defining property of from */
-  @Test public void testFromQuickly2() {
+  private void testFromQuickly2() {
     int size = 2048;
     int[] a = distinctInts(size, 8);
     Permutation random;
@@ -294,33 +318,14 @@ public class PermutationTest {
     assertArrayEquals(Permutation.from(a, b).apply(a), b);
   }
 
-  /**
-   * @param size      How many MyInt objects we want
-   * @param maxFactor Controls the size of random numbers that are produced
-   * @return Random array of {@code size} distinct integers between {@code 0} and {@code size * maxFactor}
-   */
-  static MyInt[] distinctMyInts(int size, int maxFactor) {
-    boolean[] test = new boolean[size * maxFactor];
-    MyInt[] result = new MyInt[size];
-    for (int i = 0; i < size; i += 1) {
-      Integer candidate = (int) (size * maxFactor * Math.random());
-      while (test[candidate]) {
-        candidate += 1;
-      }
-      test[candidate] = true;
-      result[i] = new MyInt(candidate);
-    }
-    return result;
-  }
 
   /* check defining property of from again, on non comparable objects, possibly with null */
-  @Test public void testFromSlowly3() {
-    int size = 2048;
-    Object[] a = distinctMyInts(size, 8);
-    if (Math.random() < 0.5)
-      a[(int) (size * Math.random())] = null;
-    Object[] b = Permutation.random(size).apply(a);
-    assertArrayEquals(Permutation.from(a, b).apply(a), b);
+  @Test
+  public void testFromALot() {
+    for (int i = 0; i < 100; i += 1) {
+      testFromSlowly3();
+      testFromQuickly2();
+    }
   }
 
 

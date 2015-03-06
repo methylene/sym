@@ -78,8 +78,14 @@ class Util {
     for (int i = 0; i < size; i += 1) {
       Integer candidate = (int) (size * maxFactor * Math.random());
       int direction = Math.random() >= 0.5 ? 1 : -1;
-      while (test[candidate])
+      while (test[candidate]) {
         candidate += direction;
+        if (candidate == test.length) {
+          candidate -= test.length;
+        } else if (candidate < 0) {
+          candidate += test.length;
+        }
+      }
       test[candidate] = true;
       result[i] = candidate;
     }
