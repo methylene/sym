@@ -25,20 +25,19 @@ Suppose you have the following
 `x` is an array of distinct comparable objects.
 `y` is a sorted copy of `x`.
 Consider the following problem:
-Given an element `y[k]`, we want to find its original position in `x`.
+Given an index `k` in `y`, we want to find the original position in `x` of `y[k]`.
+
 An exhaustive search will solve it:
 
-    int indexOf(int[] x, int el) {
+    int originalIndex(int k) {
       for (int i = 0; i < x.length; i += 1) {
-        if (x[i] == el) return i;
+        if (x[i] == y[k]) return i;
       }
       throw new IllegalArgumentException("not in x: " + el);
     }
 
-    assertEquals(x[indexOf(x, y[k])], y[k]);
 
-
-The method indexOf solves the problem, but its runtime grows with the length of `x`.
+This method finds the original index, but its runtime depends on the length of `x`.
 There is a faster way.
 Let `P` be the permutation that sorts `x`, i.e. `x[i] == y[P(i)]` for all indexes `i`.
 Then
@@ -46,36 +45,36 @@ Then
     P i = k
     i = P^-1 k
 
-So we can find `i` by applying the inverse of `P`, which is a constant time operation.
+So we can find `i` by applying the inverse of `P`.
 We can use the Permutation class to find the inverse of `P` like this:
 
-    Permutation unsort = Permutation.sort(x).invert();
+    Permutation unsortX = Permutation.sort(x).invert();
 
-This is equivalent to the exhaustive search, as shown by the following test:
+Then the following constant time method is equivalent:
 
-    for (int k = 0; k < y.length; k += 1) {
-      assertEquals(indexOf(x, y[k]), unsort.apply(k));
+    int originalIndex2(int k) {
+      unsortX.apply(k);
     }
 
-### CSV data
+### Changing colum order
 
 Suppose you have headered CSV data like this:
 
-    String[] header = new String[]{"country", "area_km2", "population_density_km2", "gdp_per_capita_usd"};
+    String[] header = new String[]{"country", "area", "pop", "gdp"};
     Object[] row1 = new Object[]{"UK", 243610, 255.6, 38309};
     Object[] row2 = new Object[]{"Lithuania", 65300, 45, 28245};
 
-For some reason, you want to change the column order to "country", "population_density_km2", "gdp_per_capita_usd", "area_km2".
-It can be done like this:
+The column order can be changed to something else like this:
 
-    String[] newHeader = new String[]{"country", "population_density_km2", "gdp_per_capita_usd", "area_km2"};
+    String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
     Permutation reorder = Permutation.from(header, newHeader);
     reorder.apply(row1);
     => [UK, 255.6, 38309, 243610]
     reorder.apply(row2);
     => [Lithuania, 45, 28245, 65300]
 
-Notice how the `Permutation.from(Comparable[], Comparable[])` method is implemented using the unsorting trick. This allows it to run in `O(n log(n))` time.
+Notice how the `Permutation.from(Comparable[], Comparable[])` method is implemented using the unsorting trick. 
+This allows it to run in `O(n log(n))` time.
 
 
 ### Unsorting and binarySearch
@@ -83,15 +82,17 @@ Notice how the `Permutation.from(Comparable[], Comparable[])` method is implemen
 Unsorting gives an efficient `indexOf` method for arrays.
 
 How to quickly find the index of a given element `e` in an array (of distinct comparables) `a`?
-
-It's worthwhile keeping a sorted copy of `a` around, along with `a`'s unsort Permutation:
+One way is to build a `java.util.Map` that maps each element to its position.
+Boxing all the indexes to use as `Map` values may not be the most elegant solution.
+Fortunately `Permutation` allows another lightweight way of doing this.
+We make a sorted copy of `a`, along with the `unsortA` permutation:
 
     String[] a = new String[]{"x", "f", "v", "c", "n"};
     Permutation sortA = Permutation.sort(a);
     Permutation unsortA = sortA.invert();
     String[] sortedA = sortA.apply(a);
 
-Making `sortedA` and `unsortA` instance variables then allows the following implementation:
+This allows the following implementation
 
     public int indexOf(String e) {
       return unsortA.apply(Arrays.binarySearch(sortedA, e));
