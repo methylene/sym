@@ -14,7 +14,7 @@ Permutations for Java
     Permutation.random(sentence.length).apply(sentence);
     => [great, library, Check, this, out]
 
-### Changing colum order
+### Changing column order
 
 Suppose you have a bunch of CSV and a header:
 
