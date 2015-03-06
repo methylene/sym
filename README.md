@@ -98,3 +98,18 @@ Making `sortedA` and `unsortA` instance variables then allows the following impl
     }
 
 which is roughly as fast as `Arrays.binarySearch`; `unsortA.apply` is just an array lookup.
+
+### Composition
+
+The following static import is assumed:
+
+    import static com.github.methylene.sym.Permutation.*;
+
+Permutations can be composed, as long as they have the same `length`.
+The `pad` method can be used to increase the `length` of a given permutation.
+In mathematics terms, the `pad` method applies the standard embedding of
+`Sym(n)` in `Sym(m)` for `m > n`.
+
+    char[] abc = { 'a', 'b', 'c' };
+    prod(swap(0, 2), swap(0, 1).pad(3)).apply(abc);
+    = > cab
