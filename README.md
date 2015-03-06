@@ -76,3 +76,25 @@ It can be done like this:
     => [Lithuania, 45, 28245, 65300]
 
 Notice how the `Permutation.from(Comparable[], Comparable[])` method is implemented using the unsorting trick. This allows it to run in `O(n log(n))` time.
+
+
+### Unsorting and binarySearch
+
+Unsorting gives an efficient `indexOf` method for arrays.
+
+How to quickly find the index of a given element `e` in an array (of distinct comparables) `a`?
+
+It's worthwhile keeping a sorted copy of `a` around, along with `a`'s unsort Permutation:
+
+    String[] a = new String[]{"x", "f", "v", "c", "n"};
+    Permutation sortA = Permutation.sort(a);
+    Permutation unsortA = sortA.invert();
+    String[] sortedA = sortA.apply(a);
+
+Making `sortedA` and `unsortA` instance variables then allows the following implementation:
+
+    public int indexOf(String e) {
+      return unsortA.apply(Arrays.binarySearch(sortedA, e));
+    }
+
+which is roughly as fast as `Arrays.binarySearch`; `unsortA.apply` is just an array lookup.
