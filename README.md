@@ -31,58 +31,19 @@ The columns are easily rearranged:
     reorder.apply(row2);
     => [Lithuania, 45, 28245, 65300]
 
-### Unsorting
-
-Suppose you have the following
-
-    int[] x = new int[]{ 4, 6, 10, -5, 195, 33, 2 };
-    int[] y = Arrays.copyOf(x, x.length);
-    Arrays.sort(y);
-
-`x` is an array of distinct comparable objects.
-`y` is a sorted copy of `x`.
-Consider the following problem:
-Given an index `k` in `y`, we want to find the original position in `x` of `y[k]`.
-
-An exhaustive search will solve it:
-
-    int originalIndex(int k) {
-      for (int i = 0; i < x.length; i += 1) {
-        if (x[i] == y[k]) return i;
-      }
-      throw new IllegalArgumentException("not in x: " + y[k]);
-    }
-
-
-This method finds the original index, but its runtime depends on the length of `x`.
-There is a faster way.
-Let `P` be the permutation that sorts `x`, i.e. `x[i] == y[P(i)]` for all indexes `i`.
-Then
-
-    P i = k
-    i = P^-1 k
-
-So we can find `i` by applying the inverse of `P`.
-We can use the Permutation class to find the inverse of `P`:
-
-    Permutation unsortX = Permutation.sort(x).invert();
-
-Then the following constant time method is equivalent:
-
-    int originalIndex(int k) {
-      unsortX.apply(k);
-    }
-
 ### Searching in an array
 
-Unsorting gives an efficient `indexOf` method for arrays.
+Finding the index of a given element `e` in an array of _distinct_ objects `a` is a `O(n)` 
+operation at first glance, because we need to do an exhaustive search.
 
-How to quickly find the index of a given element `e` in an array of _distinct_ objects `a`?
-One way is to build a `java.util.Map` that maps each element to its position.
+If we search more than once in the same array, a `java.util.Map` 
+that maps each element to its position can be used to speed this up.
 
 `Permutation` allows another lightweight way of doing this, 
 without having to think about `hashCode` or `capacity`.
-We make a sorted copy of `a`, along with the `unsortA` permutation:
+
+We make a sorted copy of `a`, along with the `unsortA` permutation, 
+which maps indexes in `sortedA` to their original position in `a`:
 
     String[] a = new String[]{"x", "f", "v", "c", "n"};
     Permutation sortA = Permutation.sort(a);
