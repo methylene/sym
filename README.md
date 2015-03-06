@@ -1,6 +1,6 @@
 # sym
 
-Permutation util, enjoy!
+Permutations for Java
 
     <dependency>
       <groupId>com.github.methylene</groupId>
@@ -16,7 +16,7 @@ Permutation util, enjoy!
 
 ### Changing colum order
 
-Suppose you have a bunch of CSV rows and a header:
+Suppose you have a bunch of CSV and a header:
 
     String[] header = new String[]{"country", "area", "pop", "gdp"};
     Object[] row1 = new Object[]{"UK", 243610, 255.6, 38309};
@@ -33,16 +33,16 @@ The columns are easily rearranged:
 
 ### Searching in an array
 
-Finding the index of a given element `e` in an array of distinct objects `a` is a `O(n)` 
+Finding the index of a given element `e` in an array `a` is a `O(n)` 
 operation at first glance, because we need to do an equality test on each element of `a` in sequence.
 
-If we search more than once in the same array, a `java.util.Map` 
+If we search more than once in the same array, a HashMap 
 that maps each element to its position could be used to speed this up.
 
-`Permutation` allows another lightweight way of doing this, 
-without having to think about `hashCode` or `capacity`.
+If the elements of `a` are `Comparable` and _distinct_,
+the HashMap is not needed.
 
-We make a sorted copy of `a`, along with the `unsortA` permutation, 
+We make a sorted copy of `a`, along with the `unsortA` permutation,
 which maps indexes in `sortedA` to their original position in `a`:
 
     String[] a = new String[]{"x", "f", "v", "c", "n"};
@@ -60,11 +60,11 @@ Now we can find the index of `e` in `a` like this:
       return i < 0 ? i : unsortA.apply(i);
     }
 
-where `unsortA.apply(i)` is just an array lookup, 
+Here `unsortA.apply(i)` is just an array lookup, 
 so this takes about as long as the `binarySearch` call.
 
-Notice that `Permutation.sort(a)` requires `a` to be _distinct_. 
-It will throw an `IllegalArgumentException` if `a` contains duplicates.
+Notice that `Permutation.sort(a)` will throw an `IllegalArgumentException` 
+if `a` contains duplicates.
 
 ### Composition
 
@@ -72,12 +72,23 @@ The following static import is assumed:
 
     import static com.github.methylene.sym.Permutation.*;
 
-Permutations can be composed, however they must have the same `length`.
-The `pad` method can be used to get around this.
+Permutations can be composed using `prod`, `comp` or `pow`. 
+`prod` and `comp` will throw an `IllegalArgumentException` if the arguments differ in `length`.
+The `pad` method can be used to get around this restriction.
 
-In mathematics terms, `p.pad(m)` applies the standard embedding of
-`Sym(p.length())` in `Sym(m)`, for `p.length() <= m`.
+    char[] bca = new char[]{ 'b', 'c', 'a' };
+    Permutation srt = Permutation.sort(bca);
+    srt.pow(3).isIdentity();
+    => true
 
-    char[] abc = { 'a', 'b', 'c' };
-    prod(swap(0, 2), swap(0, 1).pad(3)).apply(abc);
-    = > cab
+    Permutation hardWork = prod(swap(0, 2), swap(0, 1).pad(3));
+    hardWork.apply(bca);
+    = > abc
+
+    hardWork.equals(srt);
+    => true
+
+Indexes `i >= p.length(), i < m` are not moved by a padded permutation `p.pad(m)`:
+
+    random(3).pad(4).apply(3)
+    => 3
