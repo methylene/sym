@@ -23,7 +23,7 @@ Assuming we have a bunch of CSV and a header
     Object[] row2 = new Object[]{"Lithuania", 65300, 45, 28245};
 
 Given a rearrangement of the header fields, 
-it's easy to do the same reordering in the data rows using `Permutation.from`:
+it's easy to apply the same reordering to the data rows using `Permutation.from`:
 
     String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
     Permutation reorder = Permutation.from(header, newHeader);
