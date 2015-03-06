@@ -43,7 +43,7 @@ If the elements of `a` are `Comparable` and _distinct_,
 the HashMap is not needed.
 
 We make a sorted copy of `a`, along with the `unsortA` permutation,
-which maps indexes in `sortedA` to their original position in `a`:
+which maps indexes in `sortedA` back to their original position in `a`:
 
     String[] a = new String[]{"x", "f", "v", "c", "n"};
     Permutation sortA = Permutation.sort(a);
