@@ -33,8 +33,8 @@ The columns are easily rearranged:
 
 ### Searching in an array
 
-Finding the index of a given element `e` in an array of _distinct_ objects `a` is a `O(n)` 
-operation at first glance, because we need to do an exhaustive search.
+Finding the index of a given element `e` in an array of distinct objects `a` is a `O(n)` 
+operation at first glance, because we need to do an equality test on each element of `a` in sequence.
 
 If we search more than once in the same array, a `java.util.Map` 
 that maps each element to its position can be used to speed this up.
@@ -50,16 +50,21 @@ which maps indexes in `sortedA` to their original position in `a`:
     Permutation unsortA = sortA.invert();
     String[] sortedA = sortA.apply(a);
 
-This allows the following implementation
+`sortedA` is just what we'd get by doing `Arrays.sort(a)`, 
+except it returns a copy and leaves `a` unchanged.
+
+Now we can find the index of `e` in `a` like this:
 
     public int indexOf(String e) {
       int i = Arrays.binarySearch(sortedA, e);
       return i < 0 ? i : unsortA.apply(i);
     }
 
-which is roughly as fast as `Arrays.binarySearch`; `unsortA.apply(i)` is just an array lookup.
-Notice that `Permutation.sort(a)` will currently throw an `IllegalArgumentException`
-if `a` contains duplicates.
+where `unsortA.apply(i)` is just an array lookup, 
+so this takes about as long as the `binarySearch` call.
+
+Notice that `Permutation.sort(a)` requires `a` to be _distinct_. 
+It will throw an `IllegalArgumentException` if `a` contains duplicates.
 
 ### Composition
 
@@ -69,6 +74,7 @@ The following static import is assumed:
 
 Permutations can be composed, however they must have the same `length`.
 The `pad` method can be used to get around this.
+
 In mathematics terms, `p.pad(m)` applies the standard embedding of
 `Sym(p.length())` in `Sym(m)`, for `p.length() <= m`.
 
