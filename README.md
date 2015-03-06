@@ -81,10 +81,11 @@ This allows it to run in `O(n log(n))` time.
 
 Unsorting gives an efficient `indexOf` method for arrays.
 
-How to quickly find the index of a given element `e` in an array (of distinct comparables) `a`?
+How to quickly find the index of a given element `e` in an array of _distinct_ objects `a`?
 One way is to build a `java.util.Map` that maps each element to its position.
-Boxing all the indexes to use as `Map` values may not be the most elegant solution.
-Fortunately `Permutation` allows another lightweight way of doing this.
+
+`Permutation` allows another lightweight way of doing this, 
+without having to think about `hashCode` or `capacity`.
 We make a sorted copy of `a`, along with the `unsortA` permutation:
 
     String[] a = new String[]{"x", "f", "v", "c", "n"};
@@ -100,6 +101,8 @@ This allows the following implementation
     }
 
 which is roughly as fast as `Arrays.binarySearch`; `unsortA.apply(i)` is just an array lookup.
+Notice that `Permutation.sort(a)` will currently throw an `IllegalArgumentException`
+if `a` contains duplicates.
 
 ### Composition
 
@@ -107,9 +110,9 @@ The following static import is assumed:
 
     import static com.github.methylene.sym.Permutation.*;
 
-Permutations can be composed, as long as they have the same `length`.
-The `pad` method can be used to increase the `length` of a given permutation.
-In mathematics terms, the `pad` method applies the standard embedding of
+Permutations can be composed, however they must have the same `length`.
+The `pad` method can be used to get around this.
+In mathematics terms, `pad` applies the standard embedding of
 `Sym(n)` in `Sym(m)` for `m >= n`.
 
     char[] abc = { 'a', 'b', 'c' };
