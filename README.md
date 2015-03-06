@@ -52,7 +52,7 @@ We can use the Permutation class to find the inverse of `P` like this:
 
 Then the following constant time method is equivalent:
 
-    int originalIndex2(int k) {
+    int originalIndex(int k) {
       unsortX.apply(k);
     }
 
