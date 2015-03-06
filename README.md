@@ -58,13 +58,13 @@ Then the following constant time method is equivalent:
 
 ### Changing colum order
 
-Suppose you have headered CSV data like this:
+Suppose you have a bunch of CSV rows and a header:
 
     String[] header = new String[]{"country", "area", "pop", "gdp"};
     Object[] row1 = new Object[]{"UK", 243610, 255.6, 38309};
     Object[] row2 = new Object[]{"Lithuania", 65300, 45, 28245};
 
-The column order can be changed to something else like this:
+The columns are easily rearranged:
 
     String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
     Permutation reorder = Permutation.from(header, newHeader);
