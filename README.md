@@ -77,7 +77,7 @@ Notice how the `Permutation.from(Comparable[], Comparable[])` method is implemen
 This allows it to run in `O(n log(n))` time.
 
 
-### Unsorting and binarySearch
+### Searching in an array
 
 Unsorting gives an efficient `indexOf` method for arrays.
 
