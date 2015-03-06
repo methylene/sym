@@ -95,10 +95,11 @@ We make a sorted copy of `a`, along with the `unsortA` permutation:
 This allows the following implementation
 
     public int indexOf(String e) {
-      return unsortA.apply(Arrays.binarySearch(sortedA, e));
+      int i = Arrays.binarySearch(sortedA, e);
+      return i < 0 ? i : unsortA.apply(i);
     }
 
-which is roughly as fast as `Arrays.binarySearch`; `unsortA.apply` is just an array lookup.
+which is roughly as fast as `Arrays.binarySearch`; `unsortA.apply(i)` is just an array lookup.
 
 ### Composition
 
