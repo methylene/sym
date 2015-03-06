@@ -46,7 +46,7 @@ Then
     i = P^-1 k
 
 So we can find `i` by applying the inverse of `P`.
-We can use the Permutation class to find the inverse of `P` like this:
+We can use the Permutation class to find the inverse of `P`:
 
     Permutation unsortX = Permutation.sort(x).invert();
 
@@ -72,10 +72,6 @@ The columns are easily rearranged:
     => [UK, 255.6, 38309, 243610]
     reorder.apply(row2);
     => [Lithuania, 45, 28245, 65300]
-
-Notice how the `Permutation.from(Comparable[], Comparable[])` method is implemented using the unsorting trick. 
-This allows it to run in `O(n log(n))` time.
-
 
 ### Searching in an array
 
@@ -112,8 +108,8 @@ The following static import is assumed:
 
 Permutations can be composed, however they must have the same `length`.
 The `pad` method can be used to get around this.
-In mathematics terms, `pad` applies the standard embedding of
-`Sym(n)` in `Sym(m)` for `m >= n`.
+In mathematics terms, `p.pad(m)` applies the standard embedding of
+`Sym(p.length())` in `Sym(m)`, for `p.length() <= m`.
 
     char[] abc = { 'a', 'b', 'c' };
     prod(swap(0, 2), swap(0, 1).pad(3)).apply(abc);
