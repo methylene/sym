@@ -5,7 +5,7 @@ Permutation util, enjoy!
     <dependency>
       <groupId>com.github.methylene</groupId>
       <artifactId>sym</artifactId>
-      <version>1.1</version>
+      <version>1.2</version>
     </dependency>
 
 ### Shuffling an array
@@ -37,7 +37,7 @@ Finding the index of a given element `e` in an array of distinct objects `a` is 
 operation at first glance, because we need to do an equality test on each element of `a` in sequence.
 
 If we search more than once in the same array, a `java.util.Map` 
-that maps each element to its position can be used to speed this up.
+that maps each element to its position could be used to speed this up.
 
 `Permutation` allows another lightweight way of doing this, 
 without having to think about `hashCode` or `capacity`.
@@ -51,7 +51,7 @@ which maps indexes in `sortedA` to their original position in `a`:
     String[] sortedA = sortA.apply(a);
 
 `sortedA` is just what we'd get by doing `Arrays.sort(a)`, 
-except it returns a copy and leaves `a` unchanged.
+except `apply` always returns a copy and leaves `a` unchanged.
 
 Now we can find the index of `e` in `a` like this:
 

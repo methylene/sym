@@ -303,13 +303,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public Object[] apply(Object[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     Object[] result = new Object[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -319,13 +317,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public Comparable[] apply(Comparable[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     Comparable[] result = new Comparable[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -335,13 +331,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public String[] apply(String[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     String[] result = new String[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -351,13 +345,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public byte[] apply(byte[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     byte[] result = new byte[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -367,13 +359,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public short[] apply(short[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     short[] result = new short[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -383,13 +373,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public int[] apply(int[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     int[] result = new int[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -399,13 +387,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public long[] apply(long[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     long[] result = new long[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -415,13 +401,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public float[] apply(float[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     float[] result = new float[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -431,13 +415,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public double[] apply(double[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     double[] result = new double[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -447,13 +429,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public boolean[] apply(boolean[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     boolean[] result = new boolean[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -463,13 +443,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code input.length != this.length()}.
    */
   public char[] apply(char[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("too short: " + input.length);
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
     char[] result = new char[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
