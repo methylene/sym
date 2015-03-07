@@ -68,7 +68,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @param i a positive integer
    * @param j a positive integer
    * @return The permutation of length {@code Math.max(i, j)} that swaps the elements at indexes {@code i}
-   * and {@code j} (0-based).
+   * and {@code j} (0-based). This permutation is called the <i>transposition</i> of {@code i} and {@code j}.
    */
   static public Permutation swap(int i, int j) {
     return cycle(i, j);
@@ -429,6 +429,7 @@ public final class Permutation implements Comparable<Permutation> {
 
   /**
    * @return {@code 1} if this permutation can be written as an even number of transpositions, {@code -1} otherwise.
+   * @see Permutation#swap
    */
   public int signum() {
     return toTranspositions().size() % 2 == 0 ? 1 : -1;
@@ -821,8 +822,8 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * @param distinct An array of distinct comparables. Null is not allowed.
-   * @return The permutation that sorts {@code distinct}
+   * @param distinct an array of distinct comparables. Null is not allowed.
+   * @return the permutation that sorts {@code distinct}
    * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
@@ -837,10 +838,10 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * @param distinct   An array of objects that are distinct according to the {@code comparator}. Null is not allowed.
-   * @param comparator A comparator which satisfies {@code comparator.compare(distinct[i], distinct[j]) != 0} for all
+   * @param distinct   an array of objects that are distinct according to the {@code comparator}. Null is not allowed.
+   * @param comparator a comparator which satisfies {@code comparator.compare(distinct[i], distinct[j]) != 0} for all
    *                   non-negative numbers i, j such that {@code i != j}, {@code i < distinct.length} and {@code j < distinct.length}.
-   * @return The permutation that sorts {@code distinct}.
+   * @return the permutation that sorts {@code distinct}.
    * If {@code sorted} is the result of sorting {@code distinct}, the following holds for all non-negative integers
    * {@code i < distinct.length}:
    * <pre><code>

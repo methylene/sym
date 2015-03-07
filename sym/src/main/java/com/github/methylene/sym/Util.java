@@ -294,4 +294,16 @@ class Util {
     return true;
   }
 
+  static char[] sortedCopy(char[] chars) {
+    char[] sorted = Arrays.copyOf(chars, chars.length);
+    Arrays.sort(sorted);
+    return sorted;
+  }
+
+  static int[] sortedCopy(int[] ints) {
+    int[] sorted = Arrays.copyOf(ints, ints.length);
+    Arrays.sort(sorted);
+    return sorted;
+  }
+
 }

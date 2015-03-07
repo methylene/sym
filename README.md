@@ -70,6 +70,9 @@ so this takes about as long as the `binarySearch` call.
 Notice that `Permutation.sort(a)` will throw an `IllegalArgumentException` 
 if `a` contains duplicates.
 
+Planned in 1.5: `PermutationFactory.sort(a)` can be used to find a permutation that sorts
+a non distinct array.
+
 ### Composition
 
 The following static import is assumed:
