@@ -1,6 +1,6 @@
 # sym
 
-Permutations for Java
+Permutations for Java. See also the [javadoc](http://methylene.github.io/sym)
 
     <dependency>
       <groupId>com.github.methylene</groupId>
