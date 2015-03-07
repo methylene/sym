@@ -142,11 +142,11 @@ class Util {
     }
     Stack<State> stack = new Stack<State>();
     stack.push(new State(new int[0], start));
-    List<Permutation> result = new LinkedList<Permutation>();
+    LinkedList<Permutation> result = new LinkedList<Permutation>();
     while (!stack.isEmpty()) {
       State state = stack.pop();
       if (state.suffix.length == 0) {
-        result.add(Permutation.perm1(state.prefix));
+        result.push(Permutation.perm1(state.prefix));
       } else {
         for (int i = 0; i < state.suffix.length; i += 1) {
           int[] newPrefix = new int[state.prefix.length + 1];
@@ -195,14 +195,14 @@ class Util {
     };
   }
 
-  public static List<Permutation> commutator(final List<Permutation> input) {
-    List<Permutation> result = new LinkedList<Permutation>();
+  static List<Permutation> commutator(final List<Permutation> input) {
+    LinkedList<Permutation> result = new LinkedList<Permutation>();
     for (Permutation p : distinct(commutatorIterable(input)))
-      result.add(p);
+      result.push(p);
     return result;
   }
 
-  public static Iterable<Permutation> commutatorIterable(final List<Permutation> input) {
+  static Iterable<Permutation> commutatorIterable(final List<Permutation> input) {
     return new Iterable<Permutation>() {
       @Override public Iterator<Permutation> iterator() {
         List<Permutation> inlist = Arrays.asList(input.toArray(new Permutation[input.size()]));
@@ -225,7 +225,7 @@ class Util {
     };
   }
 
-  public static <E extends Comparable> Iterable<E> distinct(final Iterable<E> input) {
+  static <E extends Comparable> Iterable<E> distinct(final Iterable<E> input) {
     return new Iterable<E>() {
       @Override public Iterator<E> iterator() {
         final TreeSet<E> set = new TreeSet<E>();
@@ -256,24 +256,40 @@ class Util {
     };
   }
 
-  public static List<Permutation> center(final List<Permutation> input) {
+  static List<Permutation> center(final List<Permutation> input) {
     LinkedList<Permutation> result = new LinkedList<Permutation>();
     outer:
     for (Permutation a : input) {
       for (Permutation b : input)
         if (!a.comp(b).equals(b.comp(a)))
           continue outer;
-      result.add(a);
+      result.push(a);
     }
     return result;
   }
 
-  public static boolean isClosed(final List<Permutation> permutations) {
+  static boolean isClosed(final List<Permutation> permutations) {
     TreeSet<Permutation> set = new TreeSet<Permutation>();
     for (Permutation p : permutations)
       set.add(p);
     for (Permutation[] p : cartesian(permutations, permutations))
       if (!set.contains(p[0].comp(p[1])) || !set.contains(p[1].comp(p[0])))
+        return false;
+    return true;
+  }
+
+  /**
+   * @param maxValue maximum value of all numbers in a and b
+   * @param a        an array of non negative integers
+   * @param b        an array of non negative integers
+   * @return true iff a and b have no common element
+   */
+  static boolean disjoint(int maxValue, int[] a, int[] b) {
+    boolean[] test = new boolean[maxValue];
+    for (int i : a)
+      test[i] = true;
+    for (int i : b)
+      if (test[i])
         return false;
     return true;
   }

@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class PermutationTest {
 
@@ -236,11 +237,11 @@ public class PermutationTest {
     }
   }
 
-  @Test(expected = ArrayIndexOutOfBoundsException.class) public void testApplyInvalid() {
+  @Test(expected = IllegalArgumentException.class) public void testApplyInvalid() {
     Permutation.identity(3).apply(-1);
   }
 
-  @Test(expected = ArrayIndexOutOfBoundsException.class) public void testApplyInvalid2() {
+  @Test(expected = IllegalArgumentException.class) public void testApplyInvalid2() {
     Permutation.identity(3).apply(3);
   }
 
@@ -328,5 +329,33 @@ public class PermutationTest {
     }
   }
 
+  @Test
+  public void testInsert() {
+    assertEquals("23145", Permutation.insert(0, 2).pad(5).apply("12345"));
+    assertEquals("14235", Permutation.insert(3, 1).pad(5).apply("12345"));
+  }
+
+  @Test
+  public void testOrder() {
+    for (Permutation p: Util.permutations(5)) {
+      int order = p.order();
+      List<Permutation> cycles = p.toCycles();
+      assertEquals(p, Permutation.prod(cycles).pad(5));
+      if (order > 5) {
+        assertEquals(6, order);
+        assertEquals(2, cycles.size());
+      } else if (order == 5) {
+        assertEquals(1, cycles.size());
+      } else if (order == 4) {
+        assertEquals(1, cycles.size());
+      } else if (order == 3) {
+        assertEquals(1, cycles.size());
+      } else if (order == 2) {
+        assertTrue(cycles.size() <= 2);
+      } else {
+        assertTrue(p.isIdentity());
+      }
+    }
+  }
 
 }

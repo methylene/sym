@@ -2,14 +2,18 @@ package com.github.methylene.sym;
 
 import static com.github.methylene.sym.Util.distinctInts;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * An instance of this class represents a permutation of at most {@link Integer#MAX_VALUE} values.
  */
 public final class Permutation implements Comparable<Permutation> {
 
+  /* never modified */
   private final int[] posmap;
 
   /**
@@ -38,7 +42,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   static public Permutation cycle(int... cycle) {
     int maxIndex = 0;
-    for (int index: cycle) {
+    for (int index : cycle) {
       if (index < 0)
         throw new IllegalArgumentException("negative index: " + index);
       maxIndex = Math.max(maxIndex, index);
@@ -86,9 +90,9 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * @param a An array of distinct objects. {@code null} is not allowed.
-   * @param b An array of distinct objects that contains, for each element {@code a[i]},
-   *          exactly one element {@code b[j]} such that {@code comparator.compare(a[i], b[j]) == 0}.
+   * @param a          An array of distinct objects. {@code null} is not allowed.
+   * @param b          An array of distinct objects that contains, for each element {@code a[i]},
+   *                   exactly one element {@code b[j]} such that {@code comparator.compare(a[i], b[j]) == 0}.
    * @param comparator A comparator that compares objects in {@code a} and {@code b} so that they are distinct.
    * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
    */
@@ -202,8 +206,10 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * @param permutations A list of permutations, all of which have the same length.
-   * @return The product (composition) of {@code permutations}.
+   * @param permutations An array of permutations, all of which have the same length.
+   * @return The product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
+   * is empty.
+   * @throws java.lang.IllegalArgumentException If not all permutations have the same length.
    */
   public static Permutation prod(Permutation... permutations) {
     if (permutations.length == 0)
@@ -212,6 +218,20 @@ public final class Permutation implements Comparable<Permutation> {
     for (int i = 1; i < permutations.length; i += 1)
       result = result.comp(permutations[i]);
     return result;
+  }
+
+  /**
+   * @param permutations A list of permutations, all of which must have the same length.
+   * @return The product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
+   * is empty.
+   * @throws java.lang.IllegalArgumentException If not all permutations have the same length.
+   */
+  public static Permutation prod(Iterable<Permutation> permutations) {
+    Permutation result = null;
+    for (Permutation permutation: permutations) {
+      result = result == null ? permutation : result.comp(permutation);
+    }
+    return result == null ? identity(0) : result;
   }
 
   /**
@@ -244,7 +264,175 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * @return true if {@code Arrays.equals(a, a)} is true for all arrays {@code a} of length {@code this.length}.
+   * @param i A non-negative integer
+   * @param j A non-negative integer
+   * @return A permutation of length {@code Math.max(i, j)} that moves the element at index {@code i} to index {@code j}
+   * and shifts the elements at indexes between {@code i} and {@code j} as necessary. Examples:
+   * <pre><code>
+   *   Permutation.insert(0, 2).pad(5).apply("12345");
+   *   => 23145
+   *   </code></pre>
+   * <pre><code>
+   *   Permutation.insert(3, 1).pad(5).apply("12345");
+   *   => 14235
+   * </code></pre>
+   */
+  public static Permutation insert(int i, int j) {
+    if (i == j) {
+      return identity(i);
+    } else {
+      int shift = i < j ? -1 : 1;
+      int[] c = new int[Math.abs(i - j) + 1];
+      c[0] = i;
+      for (int k = 1; k < c.length; k += 1) {
+        c[k] = j + shift * (k - 1);
+      }
+      return cycle(c);
+    }
+  }
+
+  /**
+   * @param pos A non negative number which is smaller than {@code this.length()}
+   * @return The minimum number of times that {@code apply} must be written in an expression of the form
+   * {@code apply(...(apply(pos))...)} so that it returns {@code pos}.
+   * @throws java.lang.IllegalArgumentException If {@code pos < 0} or {@code pos >= this.length}.
+   */
+  public int orbitLength(int pos) {
+    if (pos < 0 || pos >= posmap.length)
+      throw new IllegalArgumentException("wrong pos: " + pos);
+    int length = 1;
+    int j = pos;
+    while ((j = apply(j)) != pos) {
+      length += 1;
+    }
+    return length;
+  }
+
+  private int[] orbit(int pos, int orbitLength) {
+    if (pos < 0 || pos >= posmap.length)
+      throw new IllegalArgumentException("wrong pos: " + pos);
+    int[] result = new int[orbitLength];
+    result[0] = pos;
+    int j = pos;
+    for (int k = 1; k < result.length; k += 1) {
+      j = apply(j);
+      result[k] = j;
+    }
+    return result;
+  }
+
+  /**
+   * @param pos A non negative number which is smaller than {@code this.length()}
+   * @return The minimum number of times that {@code apply} must be written in an expression of the form
+   * {@code apply(...(apply(pos))...)} so that it returns {@code pos}.
+   * @throws java.lang.IllegalArgumentException If {@code pos < 0} or {@code pos >= this.length}.
+   */
+  public int[] orbit(int pos) {
+    return orbit(pos, orbitLength(pos));
+  }
+
+  /**
+   * @return The minimum number of times that {@code comp} must be written in an expression of the form
+   * {@code this.comp(this)...comp(this)} so that it returns the identity.
+   * @throws java.lang.IllegalArgumentException If {@code pos < 0} or {@code pos >= this.length}.
+   * @see Permutation#isIdentity
+   */
+  public int order() {
+    int i = 1;
+    Permutation p = this;
+    while (!p.isIdentity()) {
+      i += 1;
+      p = p.comp(this);
+    }
+    return i;
+  }
+
+  /**
+   * @return true if there are numbers {@code n_0 ... n_k} so that {@code this.equals(cycle(n_0, ..., n_k))}.
+   */
+  public boolean isCycle() {
+    int[] candidate = null;
+    for (int i = 0; i < posmap.length; i += 1) {
+      int orbitLength = orbitLength(i);
+      if (orbitLength > 1) {
+        if (candidate == null) {
+          candidate = orbit(i, orbitLength);
+        } else {
+          if (orbitLength != candidate.length) {
+            return false;
+          } else {
+            if (Util.disjoint(posmap.length, candidate, orbit(i, orbitLength))) {
+              return false;
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  /**
+   * @return A list of Permutations so that {@code p.isCycle()} is true for each element {@code p} in that list
+   * and {@code this.equals(prod(this.toCycles()))}.
+   */
+  public List<Permutation> toCycles() {
+    LinkedList<int[]> orbits = new LinkedList<int[]>();
+    boolean[] done = new boolean[posmap.length];
+    for (int i = 0; i < posmap.length; i += 1) {
+      if (!done[i]) {
+        int orbitLength = orbitLength(i);
+        if (orbitLength > 1) {
+          int[] candidate = orbit(i, orbitLength);
+          for (int k: candidate)
+            done[k] = true;
+          boolean newOrbit = true;
+          for (int[] orbit: orbits) {
+            if (!Util.disjoint(posmap.length, orbit, candidate)) {
+              newOrbit = false;
+              break;
+            }
+          }
+          if (newOrbit)
+            orbits.push(candidate);
+        }
+      }
+    }
+    ArrayList<Permutation> result = new ArrayList<Permutation>(orbits.size());
+    for (int[] orbit: orbits) {
+      result.add(cycle(orbit).pad(posmap.length));
+    }
+    return result;
+  }
+
+  /**
+   * @param length A non negative number
+   * @return A permutation of length {@code length} that reverses its input. Example:
+   * <pre><code>
+   *   Permutation.reverse(5).apply("12345");
+   *   => 54321
+   * </code></pre>
+   */
+  public static Permutation reverse(int length) {
+    int[] result = new int[length];
+    for (int i = 0; i < length; i += 1) {
+      result[i] = length - i - 1;
+    }
+    return new Permutation(result);
+  }
+
+  /**
+   * @return true if this permutation reverses or "flips" its input.
+   * @see Permutation#reverse
+   */
+  public boolean isReverse() {
+    for (int i = 0; i < posmap.length; i += 1)
+      if (posmap[i] != posmap.length - i - 1)
+        return false;
+    return true;
+  }
+
+  /**
+   * @return true if {@code this.apply(pos) == pos} for all integers {@code pos >= 0, pos < this.length()}.
    */
   public boolean isIdentity() {
     for (int i = 0; i < posmap.length; i += 1)
@@ -260,10 +448,18 @@ public final class Permutation implements Comparable<Permutation> {
     return posmap.length;
   }
 
+  /**
+   * @return a String representation of this permutation. This representation may change in the future.
+   */
   @Override public String toString() {
-    return Arrays.toString(Util.add(posmap, 1));
+    return Arrays.toString(posmap);
   }
 
+  /**
+   * @param other another object
+   * @return true if the other object is a Permutation and has the exact same posmap.
+   * In particular this returns false if {@code this.length() != other.length()}.
+   */
   @Override public boolean equals(Object other) {
     if (this == other)
       return true;
@@ -276,6 +472,11 @@ public final class Permutation implements Comparable<Permutation> {
     return Arrays.hashCode(posmap);
   }
 
+  /**
+   * @param other A permutation, not necessarily of the same length
+   * @return The result of lexicographic comparison of {@code this.posmap} and {@code other.posmap}.
+   * This is compatible with equals
+   */
   @Override public int compareTo(Permutation other) {
     if (this == other)
       return 0;
@@ -291,9 +492,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @param pos A non negative number which is smaller than {@code this.length()}
    * @return The index that an element {@code a[pos]} an array {@code a} will have,
    * after this permutation has been applied to {@code a}.
-   * @throws java.lang.ArrayIndexOutOfBoundsException If {@code pos < 0} or {@code pos >= this.length}.
+   * @throws java.lang.IllegalArgumentException If {@code pos < 0} or {@code pos >= this.length}.
    */
   public int apply(int pos) {
+    if (pos < 0 || pos >= posmap.length)
+      throw new IllegalArgumentException("wrong pos: " + pos);
     return posmap[pos];
   }
 
@@ -452,6 +655,19 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
+   * @param input A String of length {@code this.length()}
+   * @return The result of applying this permutation to the characters of {@code input}.
+   * @throws java.lang.IllegalArgumentException if {@code input} has the wrong length
+   */
+  public String apply(String input) {
+    if (input.length() != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length());
+    char[] dst = new char[input.length()];
+    input.getChars(0, input.length(), dst, 0);
+    return new String(apply(dst));
+  }
+
+  /**
    * @return The result of applying this permutation to the incrementing array of distinct strings
    * of length {@code this.length()} that starts with {@code "a", "b", "c"...} and so on.
    * @see com.github.methylene.sym.Permutation#apply(String[])
@@ -591,9 +807,9 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * @param distinct An array of objects that are distinct according to the {@code comparator}. Null is not allowed.
+   * @param distinct   An array of objects that are distinct according to the {@code comparator}. Null is not allowed.
    * @param comparator A comparator which satisfies {@code comparator.compare(distinct[i], distinct[j]) != 0} for all
-   * non-negative numbers i, j such that {@code i != j}, {@code i < distinct.length} and {@code j < distinct.length}.
+   *                   non-negative numbers i, j such that {@code i != j}, {@code i < distinct.length} and {@code j < distinct.length}.
    * @return The permutation that sorts {@code distinct}.
    * If {@code sorted} is the result of sorting {@code distinct}, the following holds for all non-negative integers
    * {@code i < distinct.length}:
@@ -610,6 +826,13 @@ public final class Permutation implements Comparable<Permutation> {
       result[i] = Arrays.binarySearch(sorted, distinct[i], comparator);
     }
     return new Permutation(result);
+  }
+
+  /**
+   * @return A copy of the index map that represents this permutation.
+   */
+  public int[] getPosmap() {
+    return Arrays.copyOf(posmap, posmap.length);
   }
 
 }

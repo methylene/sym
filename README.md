@@ -5,7 +5,7 @@ Permutations for Java
     <dependency>
       <groupId>com.github.methylene</groupId>
       <artifactId>sym</artifactId>
-      <version>1.2</version>
+      <version>1.3</version>
     </dependency>
 
 ### Shuffling an array
