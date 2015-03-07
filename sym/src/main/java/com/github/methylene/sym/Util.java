@@ -358,4 +358,20 @@ class Util {
     return new int[0];
   }
 
+  static int[] duplicateIndexes(long[] input) {
+    int max = 0;
+    for (long i : input)
+      max = (int) Math.max(max, i);
+    int[] test = new int[max + 1];
+    Arrays.fill(test, -1);
+    for (int i = 0; i < input.length; i += 1) {
+      if (test[(int) input[i]] == -1) {
+        test[(int) input[i]] = i;
+      } else {
+        return new int[] { test[(int) input[i]], i };
+      }
+    }
+    return new int[0];
+  }
+
 }

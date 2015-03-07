@@ -164,22 +164,6 @@ public class PermutationTest {
     assertArrayEquals(y, p.apply(x));
   }
 
-  static class MyInt {
-    final int n;
-
-    MyInt(int n) {
-      this.n = n;
-    }
-
-    @Override public boolean equals(Object o) {
-      return (this == o) || (o != null && (o.getClass() == getClass()) && ((MyInt) o).n == n);
-    }
-
-    @Override public int hashCode() {
-      return n;
-    }
-  }
-
   int indexOf(int[] x, int el) {
     for (int i = 0; i < x.length; i += 1) {
       if (x[i] == el)
