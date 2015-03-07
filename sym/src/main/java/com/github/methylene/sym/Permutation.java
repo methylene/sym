@@ -16,6 +16,12 @@ public final class Permutation implements Comparable<Permutation> {
   /* never modified */
   private final int[] posmap;
 
+  Permutation(int[] posmap, boolean validate) {
+    if (validate)
+      Util.validate(posmap);
+    this.posmap = posmap;
+  }
+
   /**
    * @param posmap A list of numbers that specifies the permutation in zero-based
    *               <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
@@ -23,8 +29,7 @@ public final class Permutation implements Comparable<Permutation> {
    *               that sends {@code new char[]{'a', 'b', 'c'}} to {@code new char[]{'c', 'a', 'b'}}.
    */
   public Permutation(int[] posmap) {
-    Util.validate(posmap);
-    this.posmap = posmap;
+    this(posmap, true);
   }
 
   /**
@@ -75,21 +80,7 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * @param a An array of distinct objects. {@code null} is allowed to appear once.
-   * @param b An array that contains, for each element {@code a[i]}, exactly one element {@code b[j]} such that
-   *          {@code Objects.equals(a[i], b[j])} is true.
-   * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
-   */
-  static public Permutation from(Object[] a, Object[] b) {
-    if (a.length != b.length)
-      throw new IllegalArgumentException("arguments must have equal length");
-    int[] result = new int[a.length];
-    for (int i = 0; i < a.length; i += 1)
-      result[i] = Util.indexOf(b, a[i]);
-    return new Permutation(result);
-  }
-
-  /**
+   * @deprecated use {@link com.github.methylene.sym.PermutationFactory#from} instead
    * @param a          An array of distinct objects. {@code null} is not allowed.
    * @param b          An array of distinct objects that contains, for each element {@code a[i]},
    *                   exactly one element {@code b[j]} such that {@code comparator.compare(a[i], b[j]) == 0}.
@@ -97,57 +88,29 @@ public final class Permutation implements Comparable<Permutation> {
    * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
    */
   static public Permutation from(Object[] a, Object[] b, Comparator comparator) {
-    if (a.length != b.length)
-      throw new IllegalArgumentException("arguments must have equal length");
-    Permutation sortB = Permutation.sort(b, comparator);
-    Object[] sortedB = sortB.apply(b);
-    Permutation unsortB = sortB.invert();
-    int[] result = new int[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      int k = Arrays.binarySearch(sortedB, a[i], comparator);
-      result[i] = unsortB.apply(k);
-    }
-    return new Permutation(result);
+    return PermutationFactory.from(a, b, comparator);
   }
 
   /**
+   * @deprecated use {@link com.github.methylene.sym.PermutationFactory#from} instead
    * @param a An array of distinct objects. {@code null} is not allowed.
    * @param b An array that contains, for each element {@code a[i]}, exactly one element {@code b[j]} such that
    *          {@code a[i].compareTo(b[j]) == 0}.
    * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
    */
   static public Permutation from(Comparable[] a, Comparable[] b) {
-    if (a.length != b.length)
-      throw new IllegalArgumentException("arguments must have equal length");
-    Permutation sortB = Permutation.sort(b);
-    Comparable[] sortedB = sortB.apply(b);
-    Permutation unsortB = sortB.invert();
-    int[] result = new int[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      int k = Arrays.binarySearch(sortedB, a[i]);
-      result[i] = unsortB.apply(k);
-    }
-    return new Permutation(result);
+    return PermutationFactory.from(a, b);
   }
 
   /**
+   * @deprecated use {@link com.github.methylene.sym.PermutationFactory#from} instead
    * @param a An array of distinct numbers.
    * @param b An array that contains, for each number {@code a[i]}, exactly one number {@code b[j]} such that
    *          {@code a[i] == b[j]}
    * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
    */
   static public Permutation from(int[] a, int[] b) {
-    if (a.length != b.length)
-      throw new IllegalArgumentException("arguments must have equal length");
-    Permutation sortB = Permutation.sort(b);
-    int[] sortedB = sortB.apply(b);
-    Permutation unsortB = sortB.invert();
-    int[] result = new int[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      int k = Arrays.binarySearch(sortedB, a[i]);
-      result[i] = unsortB.apply(k);
-    }
-    return new Permutation(result);
+    return PermutationFactory.from(a, b);
   }
 
   /**
@@ -710,134 +673,84 @@ public final class Permutation implements Comparable<Permutation> {
   /* overloaded versions of sort */
 
   /**
-   * @param distinct An array of distinct bytes
-   * @return The permutation that sorts {@code distinct}
-   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
+   * @deprecated use {@link PermutationFactory#sort} instead
+   * @param distinct an array of distinct bytes
+   * @return the permutation that sorts {@code distinct}
+   * @throws java.lang.IllegalArgumentException if {@code distinct} contains duplicate values.
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(byte[] distinct) {
-    byte[] sorted = Arrays.copyOf(distinct, distinct.length);
-    Arrays.sort(sorted);
-    int[] result = new int[distinct.length];
-    for (int i = 0; i < distinct.length; i += 1) {
-      result[i] = Arrays.binarySearch(sorted, distinct[i]);
-    }
-    return new Permutation(result);
+    return PermutationFactory.sort(distinct, true);
   }
 
   /**
-   * @param distinct An array of distinct shorts
-   * @return The permutation that sorts {@code distinct}
-   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
-   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
-   */
-  static public Permutation sort(short[] distinct) {
-    short[] sorted = Arrays.copyOf(distinct, distinct.length);
-    Arrays.sort(sorted);
-    int[] result = new int[distinct.length];
-    for (int i = 0; i < distinct.length; i += 1) {
-      result[i] = Arrays.binarySearch(sorted, distinct[i]);
-    }
-    return new Permutation(result);
-  }
-
-  /**
+   * @deprecated use {@link PermutationFactory#sort} instead
    * @param distinct An array of distinct integers.
    * @return The permutation that sorts {@code distinct}
    * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(int[] distinct) {
-    int[] sorted = Arrays.copyOf(distinct, distinct.length);
-    Arrays.sort(sorted);
-    int[] result = new int[distinct.length];
-    for (int i = 0; i < distinct.length; i += 1) {
-      result[i] = Arrays.binarySearch(sorted, distinct[i]);
-    }
-    return new Permutation(result);
+    return PermutationFactory.sort(distinct, true);
   }
 
   /**
+   * @deprecated use {@link PermutationFactory#sort} instead
    * @param distinct An array of distinct longs
    * @return The permutation that sorts {@code distinct}
    * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(long[] distinct) {
-    long[] sorted = Arrays.copyOf(distinct, distinct.length);
-    Arrays.sort(sorted);
-    int[] result = new int[distinct.length];
-    for (int i = 0; i < distinct.length; i += 1) {
-      result[i] = Arrays.binarySearch(sorted, distinct[i]);
-    }
-    return new Permutation(result);
+    return PermutationFactory.sort(distinct, true);
   }
 
   /**
+   * @deprecated use {@link PermutationFactory#sort} instead
    * @param distinct An array of distinct floats.
    * @return The permutation that sorts {@code distinct}
    * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(float[] distinct) {
-    float[] sorted = Arrays.copyOf(distinct, distinct.length);
-    Arrays.sort(sorted);
-    int[] result = new int[distinct.length];
-    for (int i = 0; i < distinct.length; i += 1) {
-      result[i] = Arrays.binarySearch(sorted, distinct[i]);
-    }
-    return new Permutation(result);
+    return PermutationFactory.sort(distinct, true);
   }
 
   /**
+   * @deprecated use {@link PermutationFactory#sort} instead
    * @param distinct An array of distinct doubles
    * @return The permutation that sorts {@code distinct}
    * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(double[] distinct) {
-    double[] sorted = Arrays.copyOf(distinct, distinct.length);
-    Arrays.sort(sorted);
-    int[] result = new int[distinct.length];
-    for (int i = 0; i < distinct.length; i += 1) {
-      result[i] = Arrays.binarySearch(sorted, distinct[i]);
-    }
-    return new Permutation(result);
+    return PermutationFactory.sort(distinct, true);
   }
 
   /**
+   * @deprecated use {@link PermutationFactory#sort} instead
    * @param distinct An array of distinct characters.
    * @return The permutation that sorts {@code distinct}
    * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(char[] distinct) {
-    char[] sorted = Arrays.copyOf(distinct, distinct.length);
-    Arrays.sort(sorted);
-    int[] result = new int[distinct.length];
-    for (int i = 0; i < distinct.length; i += 1) {
-      result[i] = Arrays.binarySearch(sorted, distinct[i]);
-    }
-    return new Permutation(result);
+    return PermutationFactory.sort(distinct, true);
   }
 
   /**
+   * @deprecated use {@link PermutationFactory#sort} instead
    * @param distinct an array of distinct comparables. Null is not allowed.
    * @return the permutation that sorts {@code distinct}
    * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(Comparable[] distinct) {
-    Comparable[] sorted = Arrays.copyOf(distinct, distinct.length);
-    Arrays.sort(sorted);
-    int[] result = new int[distinct.length];
-    for (int i = 0; i < distinct.length; i += 1) {
-      result[i] = Arrays.binarySearch(sorted, distinct[i]);
-    }
-    return new Permutation(result);
+    return PermutationFactory.sort(distinct, true);
   }
 
   /**
+   * @deprecated use {@link PermutationFactory#sort} instead
    * @param distinct   an array of objects that are distinct according to the {@code comparator}. Null is not allowed.
    * @param comparator a comparator which satisfies {@code comparator.compare(distinct[i], distinct[j]) != 0} for all
    *                   non-negative numbers i, j such that {@code i != j}, {@code i < distinct.length} and {@code j < distinct.length}.
@@ -850,13 +763,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    */
   static public Permutation sort(Object[] distinct, Comparator comparator) {
-    Object[] sorted = Arrays.copyOf(distinct, distinct.length);
-    Arrays.sort(sorted, comparator);
-    int[] result = new int[distinct.length];
-    for (int i = 0; i < distinct.length; i += 1) {
-      result[i] = Arrays.binarySearch(sorted, distinct[i], comparator);
-    }
-    return new Permutation(result);
+    return PermutationFactory.sort(distinct, comparator, true);
   }
 
   /**
@@ -864,6 +771,15 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public int[] getPosmap() {
     return Arrays.copyOf(posmap, posmap.length);
+  }
+
+  /**
+   * QA method for internal use
+   * @return this
+   */
+  Permutation validate() {
+    Util.validate(posmap);
+    return this;
   }
 
 }

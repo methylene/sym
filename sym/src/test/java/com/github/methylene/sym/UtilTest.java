@@ -1,5 +1,6 @@
 package com.github.methylene.sym;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -86,6 +87,11 @@ public class UtilTest {
     assertTrue(Util.isClosed(Util.commutator(Util.commutator(Util.permutations(4)))));
     Assert.assertEquals(1, Util.commutator(Util.commutator(Util.commutator(Util.permutations(4)))).size());
     assertTrue(Util.isClosed(Util.commutator(Util.commutator(Util.commutator(Util.permutations(4))))));
+  }
+
+  @Test public void testDuplicateIndexes() {
+    int[] ints = Util.duplicateIndexes(new int[] { 1, 2, 1 });
+    assertArrayEquals(new int[]{0, 2}, ints);
   }
 
 }

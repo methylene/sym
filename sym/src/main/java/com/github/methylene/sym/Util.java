@@ -300,10 +300,62 @@ class Util {
     return sorted;
   }
 
+  static double[] sortedCopy(double[] chars) {
+    double[] sorted = Arrays.copyOf(chars, chars.length);
+    Arrays.sort(sorted);
+    return sorted;
+  }
+
+  static float[] sortedCopy(float[] chars) {
+    float[] sorted = Arrays.copyOf(chars, chars.length);
+    Arrays.sort(sorted);
+    return sorted;
+  }
+
+  static long[] sortedCopy(long[] chars) {
+    long[] sorted = Arrays.copyOf(chars, chars.length);
+    Arrays.sort(sorted);
+    return sorted;
+  }
+
+  static byte[] sortedCopy(byte[] chars) {
+    byte[] sorted = Arrays.copyOf(chars, chars.length);
+    Arrays.sort(sorted);
+    return sorted;
+  }
+
+  static Comparable[] sortedCopy(Comparable[] input) {
+    Comparable[] sorted = Arrays.copyOf(input, input.length);
+    Arrays.sort(sorted);
+    return sorted;
+  }
+
+  static Object[] sortedCopy(Object[] input, Comparator comp) {
+    Object[] sorted = Arrays.copyOf(input, input.length);
+    Arrays.sort(sorted, comp);
+    return sorted;
+  }
+
   static int[] sortedCopy(int[] ints) {
     int[] sorted = Arrays.copyOf(ints, ints.length);
     Arrays.sort(sorted);
     return sorted;
+  }
+
+  static int[] duplicateIndexes(int[] input) {
+    int max = 0;
+    for (int i : input)
+      max = Math.max(max, i);
+    int[] test = new int[max + 1];
+    Arrays.fill(test, -1);
+    for (int i = 0; i < input.length; i += 1) {
+      if (test[input[i]] == -1) {
+        test[input[i]] = i;
+      } else {
+        return new int[] { test[input[i]], i };
+      }
+    }
+    return new int[0];
   }
 
 }

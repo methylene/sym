@@ -275,14 +275,6 @@ public class PermutationTest {
     assertArrayEquals(new String[] { "b", "c", "a" }, p.apply());
   }
 
-  @Test public void testFromSlowly() {
-    MyInt eins = new MyInt(1);
-    MyInt zwei = new MyInt(2);
-    MyInt drei = new MyInt(3);
-    Permutation p = Permutation.from(new Object[] { eins, zwei, drei }, new Object[] { drei, zwei, eins });
-    assertArrayEquals(new String[] { "c", "b", "a" }, p.apply());
-  }
-
   /**
    * @param size      How many MyInt objects we want
    * @param maxFactor Controls the size of random numbers that are produced
@@ -295,15 +287,6 @@ public class PermutationTest {
       result[i] = new MyInt(ints[i]);
     }
     return result;
-  }
-
-  private void testFromSlowly3() {
-    int size = 2048;
-    Object[] a = distinctMyInts(size, 8);
-    if (Math.random() < 0.5)
-      a[(int) (size * Math.random())] = null;
-    Object[] b = Permutation.random(size).apply(a);
-    assertArrayEquals(Permutation.from(a, b).apply(a), b);
   }
 
   /* check defining property of from */
@@ -322,7 +305,6 @@ public class PermutationTest {
   /* check defining property of from again, on non comparable objects, possibly with null */
   @Test public void testFromALot() {
     for (int i = 0; i < 100; i += 1) {
-      testFromSlowly3();
       testFromQuickly2();
     }
   }
