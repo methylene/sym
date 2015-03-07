@@ -60,8 +60,8 @@ public final class Permutation implements Comparable<Permutation> {
     return new Permutation(result);
   }
 
-  static public Permutation cycle1(int... cycle0based) {
-    return cycle(Util.add(cycle0based, -1));
+  static public Permutation cycle1(int... cycle1based) {
+    return cycle(Util.add(cycle1based, -1));
   }
 
   /**
@@ -228,7 +228,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public static Permutation prod(Iterable<Permutation> permutations) {
     Permutation result = null;
-    for (Permutation permutation: permutations) {
+    for (Permutation permutation : permutations) {
       result = result == null ? permutation : result.comp(permutation);
     }
     return result == null ? identity(0) : result;
@@ -373,7 +373,8 @@ public final class Permutation implements Comparable<Permutation> {
 
   /**
    * @return A list of Permutations so that {@code p.isCycle()} is true for each element {@code p} in that list
-   * and {@code this.equals(prod(this.toCycles()))}.
+   * and {@code this.equals(prod(this.toCycles()))}. An identity permutation will not be contained in the return value.
+   * @see Permutation#isIdentity
    */
   public List<Permutation> toCycles() {
     LinkedList<int[]> orbits = new LinkedList<int[]>();
@@ -383,10 +384,10 @@ public final class Permutation implements Comparable<Permutation> {
         int orbitLength = orbitLength(i);
         if (orbitLength > 1) {
           int[] candidate = orbit(i, orbitLength);
-          for (int k: candidate)
+          for (int k : candidate)
             done[k] = true;
           boolean newOrbit = true;
-          for (int[] orbit: orbits) {
+          for (int[] orbit : orbits) {
             if (!Util.disjoint(posmap.length, orbit, candidate)) {
               newOrbit = false;
               break;
@@ -398,10 +399,39 @@ public final class Permutation implements Comparable<Permutation> {
       }
     }
     ArrayList<Permutation> result = new ArrayList<Permutation>(orbits.size());
-    for (int[] orbit: orbits) {
+    for (int[] orbit : orbits) {
       result.add(cycle(orbit).pad(posmap.length));
     }
     return result;
+  }
+
+  /**
+   * @return A list of permutations, each of which is if the form {@code swap(i, j)} for some {@code i != j},
+   * so that {@code this.equals(prod(this.toTranspositions()))}.
+   * @see Permutation#prod
+   * @see Permutation#swap
+   */
+  public List<Permutation> toTranspositions() {
+    List<Permutation> result = new ArrayList<Permutation>();
+    for (Permutation cycle : toCycles()) {
+      int[] orbit = null;
+      for (int i = 0; i < cycle.posmap.length; i += 1) {
+        int orbitLength = cycle.orbitLength(i);
+        if (orbitLength > 1)
+          orbit = cycle.orbit(cycle.posmap[i], orbitLength);
+      }
+      assert orbit != null;
+      for (int i = 0; i < orbit.length - 1; i += 1)
+        result.add(swap(orbit[i], orbit[i + 1]).pad(posmap.length));
+    }
+    return result;
+  }
+
+  /**
+   * @return {@code 1} if this permutation can be written as an even number of transpositions, {@code -1} otherwise.
+   */
+  public int signum() {
+    return toTranspositions().size() % 2 == 0 ? 1 : -1;
   }
 
   /**

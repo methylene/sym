@@ -319,28 +319,32 @@ public class PermutationTest {
     assertArrayEquals(Permutation.from(a, b).apply(a), b);
   }
 
-
   /* check defining property of from again, on non comparable objects, possibly with null */
-  @Test
-  public void testFromALot() {
+  @Test public void testFromALot() {
     for (int i = 0; i < 100; i += 1) {
       testFromSlowly3();
       testFromQuickly2();
     }
   }
 
-  @Test
-  public void testInsert() {
+  @Test public void testInsert() {
     assertEquals("23145", Permutation.insert(0, 2).pad(5).apply("12345"));
     assertEquals("14235", Permutation.insert(3, 1).pad(5).apply("12345"));
   }
 
-  @Test
-  public void testOrder() {
-    for (Permutation p: Util.permutations(5)) {
+  /* various assertions about Sym(5) */
+  @Test public void testCyclesAndTranspositions() {
+    int sign = 0;
+    for (Permutation p : Util.permutations(5)) {
       int order = p.order();
+      sign += p.signum();
       List<Permutation> cycles = p.toCycles();
       assertEquals(p, Permutation.prod(cycles).pad(5));
+      assertEquals(p, Permutation.prod(p.toTranspositions()).pad(5));
+      if (p.isReverse()) {
+        assertEquals(2, order);
+        assertEquals(1, p.signum());
+      }
       if (order > 5) {
         assertEquals(6, order);
         assertEquals(2, cycles.size());
@@ -356,6 +360,7 @@ public class PermutationTest {
         assertTrue(p.isIdentity());
       }
     }
+    assertEquals(0, sign);
   }
 
 }
