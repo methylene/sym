@@ -6,7 +6,7 @@ import java.util.Comparator;
 /**
  * <p>This class contains the {@code sort} and {@code from} factory methods.</p>
  *
- * <p>{@code sort} delegates to {@link java.util.Arrays#sort},
+ * <p>{@code sort} delegates to {@code java.util.Arrays.sort},
  * however it doesn't actually sort the input but
  * only returns a permutation that will sort the input when applied to it.</p>
  *
@@ -325,9 +325,9 @@ public final class PermutationFactory {
   /* ================= from ================= */
 
   /**
-   * Returns a permutation that leads from a to b.
+   * Returns a permutation that rearranges {@code a} into {@code b}.
    * @param a an array
-   * @param b an array that can be obtained by reordering the element of {@code a}
+   * @param b an array that can be obtained by changing the order of the elements of {@code a}
    * @return a permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true
    * @throws java.lang.IllegalArgumentException if {@code strict} is true and {@code a} or {@code b} contain duplicates,
    * or if {@code b} can not be obtained by rearranging {@code a}.
@@ -369,8 +369,9 @@ public final class PermutationFactory {
   }
 
   /**
-   * Returns a permutation that leads from a to b.
-   * @see com.github.methylene.sym.PermutationFactory#from(int[], int[])
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * See the documentation of
+   * {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])} for details.
    */
   public Permutation from(Comparable[] a, Comparable[] b) {
     if (a.length != b.length)
@@ -409,8 +410,9 @@ public final class PermutationFactory {
   }
 
   /**
-   * Returns a permutation that leads from a to b.
-   * @see com.github.methylene.sym.PermutationFactory#from(int[], int[])
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * See the documentation of
+   * {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])} for details.
    */
   public Permutation from(byte[] a, byte[] b) {
     if (a.length != b.length)
@@ -449,8 +451,9 @@ public final class PermutationFactory {
   }
 
   /**
-   * Returns a permutation that leads from a to b.
-   * @see com.github.methylene.sym.PermutationFactory#from(int[], int[])
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * See the documentation of
+   * {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])} for details.
    */
   public Permutation from(long[] a, long[] b) {
     if (a.length != b.length)
@@ -489,8 +492,9 @@ public final class PermutationFactory {
   }
 
   /**
-   * Returns a permutation that leads from a to b.
-   * @see com.github.methylene.sym.PermutationFactory#from(int[], int[])
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * See the documentation of
+   * {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])} for details.
    */
   public Permutation from(float[] a, float[] b) {
     if (a.length != b.length)
@@ -529,8 +533,9 @@ public final class PermutationFactory {
   }
 
   /**
-   * Returns a permutation that leads from a to b.
-   * @see com.github.methylene.sym.PermutationFactory#from(int[], int[])
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * See the documentation of
+   * {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])} for details.
    */
   public Permutation from(double[] a, double[] b) {
     if (a.length != b.length)
@@ -569,8 +574,11 @@ public final class PermutationFactory {
   }
 
   /**
-   * Returns a permutation that leads from a to b.
-   * @see com.github.methylene.sym.PermutationFactory#from(int[], int[])
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * The comparator {@code comp} must be able to compare all elements in {@code a} and {@code b}
+   * It is needed for efficient lookups in {@code b}.
+   * See the documentation of
+   * {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])} for details.
    */
   public Permutation from(Object[] a, Object[] b, Comparator comp) {
     if (a.length != b.length)
