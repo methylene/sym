@@ -74,15 +74,13 @@ public final class Permutation implements Comparable<Permutation> {
   /**
    * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycle</a>.
    * A single number {@code n} creates the identity of length {@code n + 1}.
+   * An emtpy input produces the permutation of length {@code 0}.
    * @param cycle a non-empty list of numbers that defines a permutation in 0-based cycle notation
    * @return the cyclic permutation defined by {@code cycle}
-   * @throws java.lang.IllegalArgumentException if {@code cycle} is empty
    * @see com.github.methylene.sym.Permutation#identity
    */
   static public Permutation cycle(int... cycle) {
-    if (cycle.length == 0)
-      throw new IllegalArgumentException("can't create cycle from nothing");
-    int maxIndex = 0;
+    int maxIndex = -1;
     for (int index : cycle) {
       if (index < 0)
         throw new IllegalArgumentException("negative index: " + index);

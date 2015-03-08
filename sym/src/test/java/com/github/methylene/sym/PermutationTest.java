@@ -350,6 +350,7 @@ public class PermutationTest {
   public void testZero() {
     Permutation p = identity(0);
     assertEquals(new Permutation(new int[0]), p);
+    assertEquals(p , cycle());
     assertEquals(0, p.length());
     assertArrayEquals(new int[0], p.apply(new int[0]));
     assertEquals(0, p.toCycles().size());
