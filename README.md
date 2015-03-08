@@ -39,14 +39,12 @@ operation at first glance, because we need to do an equality test on each elemen
 
 If we search more than once in the same array, a HashMap 
 that maps each element to its position could be used to speed this up.
-
-If the elements of `a` are `Comparable` and _distinct_,
-the HashMap is not needed.
+Here's another way of doing it.
 
 We make a sorted copy of `a`, along with the `unsortA` permutation,
 which maps indexes in `sortedA` back to their original position in `a`.
 
-    String[] a = new String[]{"x", "f", "v", "c", "n"};
+    String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
     Permutation sortA = Permutation.factory().sort(a);
     Permutation unsortA = sortA.invert();
     String[] sortedA = sortA.apply(a);
@@ -54,15 +52,11 @@ which maps indexes in `sortedA` back to their original position in `a`.
 `sortedA` is equal to what `Arrays.sort(a)` would produce.
 However `sortA.apply(a)` returns a copy and leaves `a` unchanged.
 
-Now we can find the index of a String `e` in `a` more quickly:
+Now we can locate a given string in `a` as follows
 
-    public int indexOf(String e) {
-      int i = Arrays.binarySearch(sortedA, e);
-      return i < 0 ? i : unsortA.apply(i);
-    }
-
-Here `unsortA.apply(i)` is just an array lookup, 
-so this takes about as long as the `binarySearch` call.
+    int i = Arrays.binarySearch(sortedA, "x");
+    unsortA.apply(i);
+    => 3
 
 ### Composition
 
@@ -86,7 +80,7 @@ The `pad` method can be used to get around this restriction.
     hardWork.equals(srt);
     => true
 
-Indexes `i >= p.length(), i < m` are not moved by a padded permutation `p.pad(m)`:
+Indexes `i >= p.length(), i < m` are not moved by a padded permutation:
 
     random(3).pad(4).apply(3)
     => 3
