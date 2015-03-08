@@ -1,20 +1,13 @@
 package com.github.methylene.sym;
 
 import static org.junit.Assert.assertArrayEquals;
+import static com.github.methylene.sym.TestUtil.randomNumbers;
 import org.junit.Test;
 
 public class PermutationFactoryTest {
 
   private final PermutationFactory nonstrict = PermutationFactory.builder().setValidate(true).build();
   private final PermutationFactory strict = PermutationFactory.builder().setStrict(true).setValidate(true).build();
-
-  static int[] randomNumbers(int maxNumber, int length) {
-    int[] result = new int[length];
-    for (int i = 0; i < length; i += 1) {
-      result[i] = (int) (maxNumber * Math.random());
-    }
-    return result;
-  }
 
   @Test
   public void testSortRandom() {

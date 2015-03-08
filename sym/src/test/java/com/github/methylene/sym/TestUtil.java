@@ -218,6 +218,15 @@ public class TestUtil {
     return new int[0];
   }
 
+  static int[] randomNumbers(int maxNumber, int length) {
+    int[] result = new int[length];
+    for (int i = 0; i < length; i += 1) {
+      result[i] = (int) (maxNumber * Math.random());
+    }
+    return result;
+  }
+
+
   @Test public void testDuplicateIndexes() {
     int[] ints = duplicateIndexes(new int[]{1, 2, 1});
     assertArrayEquals(new int[]{0, 2}, ints);

@@ -42,6 +42,14 @@ public class PermutationTest {
     }
   }
 
+  @Test public void testApply() {
+    int[] a = TestUtil.randomNumbers(100, 200);
+    Permutation p = Permutation.random(a.length);
+    for (int i = 0; i < a.length; i += 1) {
+      assertEquals(p.apply(a)[p.apply(i)], a[i]);
+    }
+  }
+
   /* no gaps are allowed in one-line notation */
   @Test(expected = IllegalArgumentException.class) public void testInvalidGap() throws Exception {
     new Permutation(new int[] { 1, 2, 0, 5 });
@@ -297,8 +305,8 @@ public class PermutationTest {
   }
 
   @Test public void testInsert() {
-    assertEquals("23145", Permutation.insert(0, 2).pad(5).apply("12345"));
-    assertEquals("14235", Permutation.insert(3, 1).pad(5).apply("12345"));
+    assertEquals("23145", Permutation.delins(0, 2).pad(5).apply("12345"));
+    assertEquals("14235", Permutation.delins(3, 1).pad(5).apply("12345"));
   }
 
   /* various assertions about Sym(5) */

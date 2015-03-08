@@ -5,7 +5,7 @@ Permutations for Java. Get Maven:
     <dependency>
       <groupId>com.github.methylene</groupId>
       <artifactId>sym</artifactId>
-      <version>1.7</version>
+      <version>1.8</version>
     </dependency>
 
 # Shuffling an array
@@ -26,41 +26,41 @@ Given a rearrangement of the header fields,
 it's easy to apply the same reordering to the data rows using `Permutation.from`:
 
     String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
-    Permutation reorder = Permutation.factory().from(header, newHeader);
-    reorder.apply(row1);
+    Permutation rearrange = Permutation.factory().from(header, newHeader);
+    rearrange.apply(row1);
     => [UK, 255.6, 38309, 243610]
-    reorder.apply(row2);
+    rearrange.apply(row2);
     => [Lithuania, 45, 28245, 65300]
 
 # Searching an array
 
-Finding the index of a given element `e` in an array `a` is a `O(n)` 
-operation at first glance, because we need to do an equality test on each element of `a` in sequence.
+Finding the index of a given element `e` in an array `a` is an `O(n)` 
+operation at first glance, because we need to check equality on each element of `a` in sequence.
 
 If we search more than once in the same array, a HashMap 
-that maps each element to its position could be used to speed this up.
+that maps each element to its index could be used to speed this up.
 Here's another way of doing it.
 
-We make a sorted copy of `a`, along with the `unsortA` permutation,
-which maps indexes in `sortedA` back to their original position in `a`.
+We make a sorted copy of `a`, along with the `unsort` permutation,
+which maps indexes in `sorted` back to their original position in `a`.
 
     String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
-    Permutation sortA = Permutation.factory().sort(a);
-    Permutation unsortA = sortA.invert();
-    String[] sortedA = sortA.apply(a);
+    Permutation sort = Permutation.factory().sort(a);
+    Permutation unsort = sortA.invert();
+    String[] sorted = sort.apply(a);
 
-`sortedA` is equal to what `Arrays.sort(a)` would produce.
-However `sortA.apply(a)` returns a copy and leaves `a` unchanged.
+`sorted` is equal to what `Arrays.sort(a)` would produce.
+However `sort.apply(a)` returns a copy and leaves `a` unchanged.
 
-Now we can locate a given string in `a` as follows
+Now we can get the index of a given string in `a` as follows:
 
-    int i = Arrays.binarySearch(sortedA, "x");
-    unsortA.apply(i);
+    int i = Arrays.binarySearch(sorted, "x");
+    unsort.apply(i);
     => 3
 
 # Composition
 
-The following static import is assumed:
+The following static import is assumed.
 
     import static com.github.methylene.sym.Permutation.*;
 

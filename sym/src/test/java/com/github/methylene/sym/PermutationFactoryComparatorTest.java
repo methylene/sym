@@ -1,6 +1,7 @@
 package com.github.methylene.sym;
 
 import static org.junit.Assert.assertArrayEquals;
+import static com.github.methylene.sym.TestUtil.randomNumbers;
 import org.junit.Test;
 
 /* like PermutationFactoryTest, but use the Comparator versions of sort and from */
@@ -12,7 +13,7 @@ public class PermutationFactoryComparatorTest {
   static final int REPEAT = 1000;
 
   static MyInt[] randomMyInts(int maxNumber, int length) {
-    return box(PermutationFactoryTest.randomNumbers(maxNumber, length));
+    return box(randomNumbers(maxNumber, length));
   }
 
   static MyInt[] box(int[] a) {
@@ -27,11 +28,11 @@ public class PermutationFactoryComparatorTest {
   public void testSortRandom() {
     MyInt[] a = null;
     for (int i = 0; i < REPEAT; i += 1) {
-      a = box(PermutationFactoryTest.randomNumbers(100, 200));
+      a = box(randomNumbers(100, 200));
       assertArrayEquals(Util.sortedCopy(a, MyInt.COMP), nonstrict.sort(a, MyInt.COMP).apply(a));
     }
     for (int i = 0; i < REPEAT; i += 1) {
-      a = box(PermutationFactoryTest.randomNumbers(100, 200));
+      a = box(randomNumbers(100, 200));
       assertArrayEquals(Util.sortedCopy(a, MyInt.COMP), nonstrict.sort(a, MyInt.COMP).apply(a));
     }
   }
@@ -53,7 +54,7 @@ public class PermutationFactoryComparatorTest {
   @Test
   public void testFromRandom() {
     for (int i = 0; i < REPEAT; i += 1) {
-      int[] a = PermutationFactoryTest.randomNumbers(100, 200);
+      int[] a = randomNumbers(100, 200);
       Object[] b = Permutation.random(a.length).apply(box(a));
       assertArrayEquals(b, nonstrict.from(box(a), b, MyInt.COMP).apply(box(a)));
     }

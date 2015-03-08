@@ -91,10 +91,4 @@ public class UtilTest {
     assertTrue(isClosed(commutator(commutator(commutator(permutations(4))))));
   }
 
-  @Test
-  public void testDisjoint() {
-    assertTrue(Util.disjoint(10, new int[]{2,3,2}, new int[]{0,8,1}));
-    assertFalse(Util.disjoint(10, new int[]{2,3,4}, new int[]{0,4,10}));
-  }
-
 }
