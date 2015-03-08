@@ -75,8 +75,9 @@ public final class Permutation implements Comparable<Permutation> {
    * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycle</a>.
    * A single number {@code n} creates the identity of length {@code n + 1}.
    * An emtpy input produces the permutation of length {@code 0}.
-   * @param cycle a non-empty list of numbers that defines a permutation in 0-based cycle notation
+   * @param cycle a list of distinct, non-negative numbers
    * @return the cyclic permutation defined by {@code cycle}
+   * @throws java.lang.IllegalArgumentException if {@code cycle} contains negative numbers or duplicates
    * @see com.github.methylene.sym.Permutation#identity
    */
   static public Permutation cycle(int... cycle) {
