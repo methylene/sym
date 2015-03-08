@@ -5,7 +5,7 @@ Permutations for Java. See also the [javadoc](http://methylene.github.io/sym)
     <dependency>
       <groupId>com.github.methylene</groupId>
       <artifactId>sym</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
     </dependency>
 
 ### Shuffling an array
@@ -26,14 +26,11 @@ Given a rearrangement of the header fields,
 it's easy to apply the same reordering to the data rows using `Permutation.from`:
 
     String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
-    Permutation reorder = Permutation.from(header, newHeader);
+    Permutation reorder = Permutation.factory().from(header, newHeader);
     reorder.apply(row1);
     => [UK, 255.6, 38309, 243610]
     reorder.apply(row2);
     => [Lithuania, 45, 28245, 65300]
-
-`Permutation.from(a, b)` will throw an IllegalArgumentException if the elements of `a` 
-are not _distinct_, or if `b` can not be obtained by rearranging `a`.
 
 ### Searching in an array
 
@@ -50,7 +47,7 @@ We make a sorted copy of `a`, along with the `unsortA` permutation,
 which maps indexes in `sortedA` back to their original position in `a`.
 
     String[] a = new String[]{"x", "f", "v", "c", "n"};
-    Permutation sortA = Permutation.sort(a);
+    Permutation sortA = Permutation.factory().sort(a);
     Permutation unsortA = sortA.invert();
     String[] sortedA = sortA.apply(a);
 
@@ -67,12 +64,6 @@ Now we can find the index of a String `e` in `a` more quickly:
 Here `unsortA.apply(i)` is just an array lookup, 
 so this takes about as long as the `binarySearch` call.
 
-Notice that `Permutation.sort(a)` will throw an `IllegalArgumentException` 
-if `a` contains duplicates.
-
-Planned in 1.5: `PermutationFactory.sort(a)` can be used to find a permutation that sorts
-a non distinct array.
-
 ### Composition
 
 The following static import is assumed:
@@ -84,7 +75,7 @@ Permutations can be composed using `prod`, `comp` or `pow`.
 The `pad` method can be used to get around this restriction.
 
     char[] bca = new char[]{ 'b', 'c', 'a' };
-    Permutation srt = Permutation.sort(bca);
+    Permutation srt = Permutation.factory().sort(bca);
     srt.pow(3).isIdentity();
     => true
 

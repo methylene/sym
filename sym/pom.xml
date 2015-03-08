@@ -4,13 +4,13 @@
 
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5</version>
   <packaging>jar</packaging>
 
   <name>sym</name>
 
   <description>
-    Permutation tools for java
+    Permutations for Java
   </description>
 
   <url>https://github.com/methylene/sym</url>
