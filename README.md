@@ -8,13 +8,13 @@ Permutations for Java. Get Maven:
       <version>1.7</version>
     </dependency>
 
-### Shuffling an array
+# Shuffling an array
 
     String[] sentence = new String[]{"Check", "out", "this", "great", "library"};
     Permutation.random(sentence.length).apply(sentence);
     => [great, library, Check, this, out]
 
-### Changing column order
+# Changing column order
 
 Assuming we have a bunch of CSV and a header
 
@@ -32,7 +32,7 @@ it's easy to apply the same reordering to the data rows using `Permutation.from`
     reorder.apply(row2);
     => [Lithuania, 45, 28245, 65300]
 
-### Searching in an array
+# Searching an array
 
 Finding the index of a given element `e` in an array `a` is a `O(n)` 
 operation at first glance, because we need to do an equality test on each element of `a` in sequence.
@@ -58,7 +58,7 @@ Now we can locate a given string in `a` as follows
     unsortA.apply(i);
     => 3
 
-### Composition
+# Composition
 
 The following static import is assumed:
 
