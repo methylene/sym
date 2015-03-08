@@ -94,4 +94,41 @@ Finding the [signature](http://en.wikipedia.org/wiki/Parity_of_a_permutation) is
 
 # Cycle decomposition, orbits etc
 
+Consider the following
+
+````java
+static int[] getCycle(Permutation p) {
+  for (int i = 0; i < p.length(); i += 1)
+    if (p.orbit(i).length > 1)
+      return p.orbit(i);
+  return null;
+}
+
+public static void main(String[] args) {
+  Permutation s = Permutation.factory().sort("Hello world!");
+  for (Permutation p: s.toCycles()) {
+    System.out.println(Arrays.toString(getCycle(p)));
+  }
+}
+````
+
+This prints the cycle decomposition of a permutation (there are several) that sorts the string `"Hello world!"`:
+
+    => [7, 9]
+       [1, 4, 8, 10, 3, 6, 11]
+       [0, 2, 5]
+
+That this is actually true can be seen by the following code:
+
+````java
+String hello = "Hello world!";
+String elllo = Permutation.factory().sort(hello).apply(hello);
+// => " !Hdellloorw"
+Permutation c = prod(cycle(7, 9).pad(12), 
+                     cycle(1, 4, 8, 10, 3, 6, 11), 
+                     cycle(0, 2, 5).pad(12));
+System.out.println(c.invert().apply(elllo));
+// => "Hello world!"
+````
+
 For more ideas, see the [javadoc](http://methylene.github.io/sym/)
