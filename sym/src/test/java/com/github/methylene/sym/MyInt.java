@@ -14,6 +14,14 @@ public class MyInt {
 
   public static final java.util.Comparator<MyInt> COMP = new MyComparator();
 
+  static MyInt[] box(int[] a) {
+    MyInt[] result = new MyInt[a.length];
+    for (int i = 0; i < result.length; i += 1) {
+      result[i] = new MyInt(a[i]);
+    }
+    return result;
+  }
+
   public final int n;
 
   public MyInt(int n) {

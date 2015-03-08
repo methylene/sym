@@ -73,10 +73,15 @@ public final class Permutation implements Comparable<Permutation> {
 
   /**
    * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycle</a>.
-   * @param cycle a list of numbers that defines a permutation in 0-based cycle notation
+   * A single number {@code n} creates the identity of length {@code n + 1}.
+   * @param cycle a non-empty list of numbers that defines a permutation in 0-based cycle notation
    * @return the cyclic permutation defined by {@code cycle}
+   * @throws java.lang.IllegalArgumentException if {@code cycle} is empty
+   * @see com.github.methylene.sym.Permutation#identity
    */
   static public Permutation cycle(int... cycle) {
+    if (cycle.length == 0)
+      throw new IllegalArgumentException("can't create cycle from nothing");
     int maxIndex = 0;
     for (int index : cycle) {
       if (index < 0)
@@ -279,18 +284,18 @@ public final class Permutation implements Comparable<Permutation> {
   /**
    * Calculate the number of times this must be applied to given index until
    * it is in its original position again, also know as the orbit length of the index.
-   * @param i A non negative number which is less than {@code this.length()}
-   * @return the orbit length {@code i}
-   * @throws java.lang.IllegalArgumentException If {@code i < 0} or {@code i >= this.length}.
+   * @param i a non negative number which is less than {@code this.length()}
+   * @return the length of the orbit of {@code i}
+   * @throws java.lang.IllegalArgumentException if {@code i < 0} or {@code i >= this.length}
+   * @see com.github.methylene.sym.Permutation#orbit
    */
   public int orbitLength(int i) {
     if (i < 0 || i >= posmap.length)
-      throw new IllegalArgumentException("wrong i: " + i);
+      throw new IllegalArgumentException("bad index: " + i);
     int length = 1;
     int j = i;
-    while ((j = apply(j)) != i) {
+    while ((j = apply(j)) != i)
       length += 1;
-    }
     return length;
   }
 

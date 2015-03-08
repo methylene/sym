@@ -1,5 +1,8 @@
 package com.github.methylene.sym;
 
+import static com.github.methylene.sym.MyInt.box;
+import static com.github.methylene.sym.Permutation.cycle;
+import static com.github.methylene.sym.Permutation.identity;
 import static com.github.methylene.sym.Permutation.strictFactory;
 import static com.github.methylene.sym.Util.distinctInts;
 import static org.junit.Assert.assertArrayEquals;
@@ -10,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -21,15 +23,15 @@ public class PermutationTest {
 
   /* Check example from constructor javadoc */
   @Test public void testAbc() {
-    Permutation p = new Permutation(new int[] { 1, 2, 0 });
-    assertArrayEquals(new char[] { 'c', 'a', 'b' }, p.apply(new char[] { 'a', 'b', 'c' }));
+    Permutation p = new Permutation(new int[]{1, 2, 0});
+    assertArrayEquals(new char[]{'c', 'a', 'b'}, p.apply(new char[]{'a', 'b', 'c'}));
   }
 
   @Test public void testComp() throws Exception {
     Permutation p = Permutation.perm1(2, 3, 1);
-    assertEquals(new Permutation(new int[] { 1, 2, 0 }), p);
-    assertArrayEquals(new String[] { "c", "a", "b" }, p.apply());
-    assertArrayEquals(new String[] { "b", "c", "a" }, p.pow(2).apply());
+    assertEquals(new Permutation(new int[]{1, 2, 0}), p);
+    assertArrayEquals(new String[]{"c", "a", "b"}, p.apply());
+    assertArrayEquals(new String[]{"b", "c", "a"}, p.pow(2).apply());
   }
 
   /* check defining property of composition */
@@ -52,17 +54,17 @@ public class PermutationTest {
 
   /* no gaps are allowed in one-line notation */
   @Test(expected = IllegalArgumentException.class) public void testInvalidGap() throws Exception {
-    new Permutation(new int[] { 1, 2, 0, 5 });
+    new Permutation(new int[]{1, 2, 0, 5});
   }
 
   /* constructor is 0-based */
   @Test(expected = IllegalArgumentException.class) public void testInvalidMissingZero() throws Exception {
-    new Permutation(new int[] { 1, 2, 3 });
+    new Permutation(new int[]{1, 2, 3});
   }
 
   /* no duplicates are allowed in one-line notation */
   @Test(expected = IllegalArgumentException.class) public void testInvalidDuplicate() throws Exception {
-    new Permutation(new int[] { 1, 2, 0, 2, 3 });
+    new Permutation(new int[]{1, 2, 0, 2, 3});
   }
 
   /* no negative numbers allowed in one-line notation */
@@ -85,8 +87,8 @@ public class PermutationTest {
   @Test public void testCompUneven() throws Exception {
     Permutation p = Permutation.perm1(2, 3, 1).pad(4);
     Permutation p2 = Permutation.perm1(2, 3, 1, 4);
-    assertArrayEquals(new String[] { "b", "c", "a", "d" }, p.comp(p2).apply());
-    assertArrayEquals(new String[] { "b", "c", "a", "d" }, p2.comp(p).apply());
+    assertArrayEquals(new String[]{"b", "c", "a", "d"}, p.comp(p2).apply());
+    assertArrayEquals(new String[]{"b", "c", "a", "d"}, p2.comp(p).apply());
   }
 
   @Test public void testInvert() throws Exception {
@@ -105,7 +107,7 @@ public class PermutationTest {
     Assert.assertEquals(p.pow(-1), Permutation.prod(p, p));
     assertEquals(p.pow(-1), p.invert());
     assertEquals(p.pow(2), p.comp(p));
-    Assert.assertArrayEquals(new String[] { "a", "b", "c" }, Permutation.prod(p, p.invert()).apply());
+    Assert.assertArrayEquals(new String[]{"a", "b", "c"}, Permutation.prod(p, p.invert()).apply());
   }
 
   @Test public void testIdentity() {
@@ -139,16 +141,16 @@ public class PermutationTest {
   }
 
   @Test public void cycleApply() {
-    Assert.assertArrayEquals(new String[] { "b", "c", "e", "d", "a" }, Permutation.cycle1(1, 5, 3, 2).apply());
-    Assert.assertArrayEquals(new String[] { "c", "b", "e", "d", "a" }, Permutation.cycle1(1, 5, 3).apply());
-    Assert.assertArrayEquals(new String[] { "c", "a", "b" }, Permutation.cycle1(1, 2, 3).apply());
+    Assert.assertArrayEquals(new String[]{"b", "c", "e", "d", "a"}, Permutation.cycle1(1, 5, 3, 2).apply());
+    Assert.assertArrayEquals(new String[]{"c", "b", "e", "d", "a"}, Permutation.cycle1(1, 5, 3).apply());
+    Assert.assertArrayEquals(new String[]{"c", "a", "b"}, Permutation.cycle1(1, 2, 3).apply());
   }
 
   @Test public void testCycleApply() throws Exception {
-    Assert.assertArrayEquals(new String[] { "c", "a", "b" },
+    Assert.assertArrayEquals(new String[]{"c", "a", "b"},
         Permutation.prod(Permutation.cycle1(1, 2).pad(3), Permutation.cycle1(2, 3)).apply());
-    Assert.assertArrayEquals(new String[] { "c", "a", "b" }, Permutation.cycle1(1, 2, 3).apply());
-    Assert.assertArrayEquals(new String[] { "a", "c", "b" }, Permutation.prod(Permutation.cycle1(1, 2).pad(3),
+    Assert.assertArrayEquals(new String[]{"c", "a", "b"}, Permutation.cycle1(1, 2, 3).apply());
+    Assert.assertArrayEquals(new String[]{"a", "c", "b"}, Permutation.prod(Permutation.cycle1(1, 2).pad(3),
         Permutation.prod(Permutation.cycle1(1, 2).pad(3), Permutation.cycle1(2, 3))).apply());
   }
 
@@ -165,7 +167,7 @@ public class PermutationTest {
   }
 
   @Test public void testSort() throws Exception {
-    int[] x = new int[] { 4, 6, 10, -5, 195, 33, 2 };
+    int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
     Permutation p = strictFactory().sort(x);
@@ -193,7 +195,7 @@ public class PermutationTest {
 
   /* check example from README */
   @Test public void testSortInvert() {
-    int[] x = new int[] { 4, 6, 10, -5, 195, 33, 2 };
+    int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
     Permutation unsort = strictFactory().sort(x).invert();
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
@@ -215,33 +217,31 @@ public class PermutationTest {
     }
   }
 
-  @Test public void testSortInvertComparator() {
-    Comparator<MyInt> comparator = new Comparator<MyInt>() {
-      @Override public int compare(MyInt a, MyInt b) {
-        return a.n - b.n;
-      }
-    };
-    MyInt[] x = new MyInt[] { new MyInt(4), new MyInt(6), new MyInt(10), new MyInt(-5), new MyInt(195), new MyInt(33),
-        new MyInt(2) };
-    Permutation unsort = strictFactory().sort(x, comparator).invert();
+  @Test
+  public void testSortInvertComparator() {
+    MyInt[] x = box(new int[]{4, 6, 10, -5, 195, 33, 2});
+    Permutation unsort = strictFactory().sort(x, MyInt.COMP).invert();
     MyInt[] y = Arrays.copyOf(x, x.length);
-    Arrays.sort(y, comparator);
+    Arrays.sort(y, MyInt.COMP);
     for (int k = 0; k < y.length; k += 1) {
       assertEquals(x[indexOf(x, y[k])], y[k]);
       assertEquals(indexOf(x, y[k]), unsort.apply(k));
     }
   }
 
-  @Test(expected = IllegalArgumentException.class) public void testApplyInvalid() {
+  @Test(expected = IllegalArgumentException.class)
+  public void testApplyInvalid() {
     Permutation.identity(3).apply(-1);
   }
 
-  @Test(expected = IllegalArgumentException.class) public void testApplyInvalid2() {
+  @Test(expected = IllegalArgumentException.class)
+  public void testApplyInvalid2() {
     Permutation.identity(3).apply(3);
   }
 
-  @Test(expected = IllegalArgumentException.class) public void testApplyInvalid3() {
-    Permutation.identity(3).apply(new int[] { 1, 2 });
+  @Test(expected = IllegalArgumentException.class)
+  public void testApplyInvalid3() {
+    Permutation.identity(3).apply(new int[]{1, 2});
   }
 
   /**
@@ -260,14 +260,16 @@ public class PermutationTest {
     assertArrayEquals(classicSort(a), strictFactory().sort(a).apply(a));
   }
 
-  @Test public void testCycleLength() {
+  @Test
+  public void testCycleLength() {
     Permutation swap01 = Permutation.swap(0, 1);
     assertEquals(2, swap01.length());
   }
 
-  @Test public void testFromQuickly() {
+  @Test
+  public void testFromQuickly() {
     Permutation p = strictFactory().from(new Comparable[]{1, 2, 3}, new Comparable[]{2, 3, 1});
-    assertArrayEquals(new String[] { "b", "c", "a" }, p.apply());
+    assertArrayEquals(new String[]{"b", "c", "a"}, p.apply());
   }
 
   /**
@@ -298,19 +300,22 @@ public class PermutationTest {
   }
 
   /* check defining property of from again, on non comparable objects, possibly with null */
-  @Test public void testFromALot() {
+  @Test
+  public void testFromALot() {
     for (int i = 0; i < 100; i += 1) {
       testFromQuickly2();
     }
   }
 
-  @Test public void testInsert() {
+  @Test
+  public void testInsert() {
     assertEquals("23145", Permutation.delins(0, 2).pad(5).apply("12345"));
     assertEquals("14235", Permutation.delins(3, 1).pad(5).apply("12345"));
   }
 
   /* various assertions about Sym(5) */
-  @Test public void testCyclesAndTranspositions() {
+  @Test
+  public void testCyclesAndTranspositions() {
     int sign = 0;
     for (Permutation p : TestUtil.permutations(5)) {
       int order = p.order();
@@ -338,6 +343,19 @@ public class PermutationTest {
       }
     }
     assertEquals(0, sign);
+  }
+
+  /* check edge cases */
+  @Test
+  public void testZero() {
+    Permutation p = identity(0);
+    assertEquals(new Permutation(new int[0]), p);
+    assertEquals(0, p.length());
+    assertArrayEquals(new int[0], p.apply(new int[0]));
+    assertEquals(0, p.toCycles().size());
+    assertEquals(identity(1), cycle(0));
+    assertEquals(identity(2), cycle(1));
+    assertEquals(identity(3), cycle(2));
   }
 
 }

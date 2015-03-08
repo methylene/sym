@@ -2,6 +2,7 @@ package com.github.methylene.sym;
 
 import static org.junit.Assert.assertArrayEquals;
 import static com.github.methylene.sym.TestUtil.randomNumbers;
+import static com.github.methylene.sym.MyInt.box;
 import org.junit.Test;
 
 /* like PermutationFactoryTest, but use the Comparator versions of sort and from */
@@ -14,14 +15,6 @@ public class PermutationFactoryComparatorTest {
 
   static MyInt[] randomMyInts(int maxNumber, int length) {
     return box(randomNumbers(maxNumber, length));
-  }
-
-  static MyInt[] box(int[] a) {
-    MyInt[] result = new MyInt[a.length];
-    for (int i = 0; i < result.length; i += 1) {
-      result[i] = new MyInt(a[i]);
-    }
-    return result;
   }
 
   @Test
