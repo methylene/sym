@@ -3,6 +3,16 @@ package com.github.methylene.sym;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * <p>This class contains the {@code sort} and {@code from} factory methods.</p>
+ *
+ * <p>{@code sort} delegates to {@link java.util.Arrays#sort},
+ * however it doesn't actually sort the input but
+ * only returns a permutation that will sort the input when applied to it.</p>
+ *
+ * <p>The {@code from} factory method allows permutation definition
+ * &quot;by example&quot;.</p>
+ */
 public final class PermutationFactory {
 
   private final boolean strict;
@@ -15,7 +25,7 @@ public final class PermutationFactory {
 
   /**
    * @see com.github.methylene.sym.PermutationFactory.Builder#setStrict
-   * @return the strictness flag of this factory
+   * @return the strictness setting of this factory
    */
   public boolean isStrict() {
     return strict;
@@ -23,12 +33,19 @@ public final class PermutationFactory {
 
   /**
    * @see com.github.methylene.sym.PermutationFactory.Builder#setStrict
-   * @return the validate flag of this factory
+   * @return the validate setting of this factory
    */
   public boolean isValidate() {
     return validate;
   }
 
+  /**
+   * A builder that can be used to create instances of PermutationFactory.
+   * Builder instances can be obtained via {@link com.github.methylene.sym.PermutationFactory#builder}.
+   * This may not be necessary as there are already PermutationFactory instances available
+   * via {@link com.github.methylene.sym.Permutation#factory} and
+   * {@link com.github.methylene.sym.Permutation#factory}.
+   */
   public static class Builder {
     private Builder() {}
 
@@ -86,6 +103,7 @@ public final class PermutationFactory {
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
+          assert direction != -1;
           offset = -1;
           direction = -1;
         }
@@ -112,6 +130,7 @@ public final class PermutationFactory {
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
+          assert direction != -1;
           offset = -1;
           direction = -1;
         }
@@ -138,6 +157,7 @@ public final class PermutationFactory {
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
+          assert direction != -1;
           offset = -1;
           direction = -1;
         }
@@ -164,6 +184,7 @@ public final class PermutationFactory {
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
+          assert direction != -1;
           offset = -1;
           direction = -1;
         }
@@ -195,6 +216,7 @@ public final class PermutationFactory {
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
+          assert direction != -1;
           offset = -1;
           direction = -1;
         }
@@ -221,8 +243,7 @@ public final class PermutationFactory {
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || !sorted[idx + offset].equals(input[i])) {
-          if (direction != 1)
-            throw new IllegalStateException("avoid infinite loop");
+          assert direction != -1;
           offset = -1;
           direction = -1;
         }
@@ -247,8 +268,7 @@ public final class PermutationFactory {
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || !sorted[idx + offset].equals(input[i])) {
-          if (direction != 1)
-            throw new IllegalStateException("avoid infinite loop");
+          assert direction != -1;
           offset = -1;
           direction = -1;
         }
@@ -280,6 +300,7 @@ public final class PermutationFactory {
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
+          assert direction != -1;
           offset = -1;
           direction = -1;
         }

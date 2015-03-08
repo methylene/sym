@@ -1,6 +1,6 @@
 # sym
 
-Permutations for Java. See also the [javadoc](http://methylene.github.io/sym)
+Permutations for Java. Get Maven:
 
     <dependency>
       <groupId>com.github.methylene</groupId>
@@ -84,3 +84,14 @@ Indexes `i >= p.length(), i < m` are not moved by a padded permutation:
 
     random(3).pad(4).apply(3)
     => 3
+
+# Signature
+
+Finding the [signature](http://en.wikipedia.org/wiki/Parity_of_a_permutation) is easy:
+
+    Permutation.random(5).signature();
+    => -1
+
+# Cycle decomposition, orbits etc
+
+For more ideas, see the [javadoc](http://methylene.github.io/sym/)

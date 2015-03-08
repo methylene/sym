@@ -9,11 +9,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * An instance of this class represents a permutation of at most {@link Integer#MAX_VALUE} values.
+ * <p>A permutation that can be used to rearrange arrays.</p>
  */
 public final class Permutation implements Comparable<Permutation> {
 
-  /* never modified */
+  /* index - > index; this array is never modified */
   private final int[] posmap;
 
   private static final PermutationFactory FACTORY = PermutationFactory.builder().build();
@@ -28,15 +28,24 @@ public final class Permutation implements Comparable<Permutation> {
   /**
    * This returns the default non-strict factory.
    * @return the default factory
+   * @see com.github.methylene.sym.PermutationFactory#isStrict
    */
   public static PermutationFactory factory() { return FACTORY; };
 
   /**
-   * This constructor should not be used outside this project.
-   * @param posmap posmap
-   * @param validate expert setting: if false, skip a certain sanity check, to save time
+   * Returns the strict factory.
+   * @return the strict factory
+   * @see com.github.methylene.sym.PermutationFactory#isStrict
    */
-  Permutation(int[] posmap, boolean validate) {
+  public static PermutationFactory strictFactory() { return STRICT_FACTORY; };
+
+  /**
+   * This constructor is for expert use only.
+   * @param posmap posmap
+   * @param validate expert setting: if false, skip a certain constructor sanity check, to save time
+   *                 if we're already sure that the input is valid
+   */
+  public Permutation(int[] posmap, boolean validate) {
     if (validate)
       Util.validate(posmap);
     this.posmap = posmap;
@@ -97,40 +106,6 @@ public final class Permutation implements Comparable<Permutation> {
    */
   static public Permutation swap(int i, int j) {
     return cycle(i, j);
-  }
-
-  /**
-   * @deprecated use {@link com.github.methylene.sym.PermutationFactory#from} instead
-   * @param a          An array of distinct objects. {@code null} is not allowed.
-   * @param b          An array of distinct objects that contains, for each element {@code a[i]},
-   *                   exactly one element {@code b[j]} such that {@code comparator.compare(a[i], b[j]) == 0}.
-   * @param comparator A comparator that compares objects in {@code a} and {@code b} so that they are distinct.
-   * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
-   */
-  static public Permutation from(Object[] a, Object[] b, Comparator comparator) {
-    return STRICT_FACTORY.from(a, b, comparator);
-  }
-
-  /**
-   * @deprecated use {@link com.github.methylene.sym.PermutationFactory#from} instead
-   * @param a An array of distinct objects. {@code null} is not allowed.
-   * @param b An array that contains, for each element {@code a[i]}, exactly one element {@code b[j]} such that
-   *          {@code a[i].compareTo(b[j]) == 0}.
-   * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
-   */
-  static public Permutation from(Comparable[] a, Comparable[] b) {
-    return STRICT_FACTORY.from(a, b);
-  }
-
-  /**
-   * @deprecated use {@link com.github.methylene.sym.PermutationFactory#from} instead
-   * @param a An array of distinct numbers.
-   * @param b An array that contains, for each number {@code a[i]}, exactly one number {@code b[j]} such that
-   *          {@code a[i] == b[j]}
-   * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
-   */
-  static public Permutation from(int[] a, int[] b) {
-    return STRICT_FACTORY.from(a, b);
   }
 
   /**
@@ -411,10 +386,11 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * @return {@code 1} if this permutation can be written as an even number of transpositions, {@code -1} otherwise.
+   * Calculate the <a href="http://en.wikipedia.org/wiki/Parity_of_a_permutation">signature</a> of this permutation.
+   * @return {@code 1} if this permutation can be written as an even number of transpositions, {@code -1} otherwise
    * @see Permutation#swap
    */
-  public int signum() {
+  public int signature() {
     return toTranspositions().size() % 2 == 0 ? 1 : -1;
   }
 
@@ -500,7 +476,16 @@ public final class Permutation implements Comparable<Permutation> {
     return other.posmap.length - this.posmap.length;
   }
 
-  /* overloaded versions of apply */
+  /**
+   * Get a copy of the internal representation of this permutation.
+   * @return A copy of the index map that represents this permutation.
+   */
+  public int[] getPosmap() {
+    return Arrays.copyOf(posmap, posmap.length);
+  }
+
+
+  /* ============== overloaded versions of apply ============== */
 
   /**
    * @param pos A non negative number which is smaller than {@code this.length()}
@@ -688,109 +673,6 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public String[] apply() {
     return apply(Util.symbols(posmap.length));
-  }
-
-  /* overloaded versions of sort */
-
-  /**
-   * @deprecated use {@link PermutationFactory#sort} instead
-   * @param distinct an array of distinct bytes
-   * @return the permutation that sorts {@code distinct}
-   * @throws java.lang.IllegalArgumentException if {@code distinct} contains duplicate values.
-   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
-   */
-  static public Permutation sort(byte[] distinct) {
-    return STRICT_FACTORY.sort(distinct);
-  }
-
-  /**
-   * @deprecated use {@link PermutationFactory#sort} instead
-   * @param distinct An array of distinct integers.
-   * @return The permutation that sorts {@code distinct}
-   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
-   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
-   */
-  static public Permutation sort(int[] distinct) {
-    return STRICT_FACTORY.sort(distinct);
-  }
-
-  /**
-   * @deprecated use {@link PermutationFactory#sort} instead
-   * @param distinct An array of distinct longs
-   * @return The permutation that sorts {@code distinct}
-   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
-   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
-   */
-  static public Permutation sort(long[] distinct) {
-    return STRICT_FACTORY.sort(distinct);
-  }
-
-  /**
-   * @deprecated use {@link PermutationFactory#sort} instead
-   * @param distinct An array of distinct floats.
-   * @return The permutation that sorts {@code distinct}
-   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
-   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
-   */
-  static public Permutation sort(float[] distinct) {
-    return STRICT_FACTORY.sort(distinct);
-  }
-
-  /**
-   * @deprecated use {@link PermutationFactory#sort} instead
-   * @param distinct An array of distinct doubles
-   * @return The permutation that sorts {@code distinct}
-   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
-   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
-   */
-  static public Permutation sort(double[] distinct) {
-    return STRICT_FACTORY.sort(distinct);
-  }
-
-  /**
-   * @deprecated use {@link PermutationFactory#sort} instead
-   * @param distinct An array of distinct characters.
-   * @return The permutation that sorts {@code distinct}
-   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
-   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
-   */
-  static public Permutation sort(char[] distinct) {
-    return STRICT_FACTORY.sort(distinct);
-  }
-
-  /**
-   * @deprecated use {@link PermutationFactory#sort} instead
-   * @param distinct an array of distinct comparables. Null is not allowed.
-   * @return the permutation that sorts {@code distinct}
-   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
-   * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
-   */
-  static public Permutation sort(Comparable[] distinct) {
-    return STRICT_FACTORY.sort(distinct);
-  }
-
-  /**
-   * @deprecated use {@link PermutationFactory#sort} instead
-   * @param distinct   an array of objects that are distinct according to the {@code comparator}. Null is not allowed.
-   * @param comparator a comparator which satisfies {@code comparator.compare(distinct[i], distinct[j]) != 0} for all
-   *                   non-negative numbers i, j such that {@code i != j}, {@code i < distinct.length} and {@code j < distinct.length}.
-   * @return the permutation that sorts {@code distinct}.
-   * If {@code sorted} is the result of sorting {@code distinct}, the following holds for all non-negative integers
-   * {@code i < distinct.length}:
-   * <pre><code>
-   *   distinct[i] = sorted[Permutation.sort(distinct).apply(i)]
-   * </code></pre>
-   * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
-   */
-  static public Permutation sort(Object[] distinct, Comparator comparator) {
-    return STRICT_FACTORY.sort(distinct, comparator);
-  }
-
-  /**
-   * @return A copy of the index map that represents this permutation.
-   */
-  public int[] getPosmap() {
-    return Arrays.copyOf(posmap, posmap.length);
   }
 
 }
