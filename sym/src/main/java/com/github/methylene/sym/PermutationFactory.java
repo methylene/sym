@@ -44,7 +44,7 @@ public final class PermutationFactory {
    * Builder instances can be obtained via {@link com.github.methylene.sym.PermutationFactory#builder}.
    * This may not be necessary as there are already PermutationFactory instances available
    * via {@link com.github.methylene.sym.Permutation#factory} and
-   * {@link com.github.methylene.sym.Permutation#factory}.
+   * {@link com.github.methylene.sym.Permutation#strictFactory}.
    */
   public static class Builder {
     private Builder() {}
@@ -54,9 +54,9 @@ public final class PermutationFactory {
 
     /**
      * When strict is set, the resulting Factory does not allow duplicate elements in input arrays,
-     * in the {@link com.github.methylene.sym.PermutationFactory#from}
-     * or {@link com.github.methylene.sym.PermutationFactory#sort} methods, and will throw an
-     * IllegalArgumentException instead.
+     * in the {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])}
+     * or {@link com.github.methylene.sym.PermutationFactory#sort(char[])} methods and their various overloads,
+     * and will throw an IllegalArgumentException instead.
      * @return the current instance
      */
     public Builder setStrict(boolean strict) {
@@ -65,10 +65,10 @@ public final class PermutationFactory {
     }
 
     /**
-     * When validate is set, run extra assertion on each Permitation returned by the
-     * from {@link com.github.methylene.sym.PermutationFactory#from}
-     * and {@link com.github.methylene.sym.PermutationFactory#sort} methods.
-     * This should only be necessary in a unit test.
+     * When validate is set, run an extra assertion on each Permitation returned by the
+     * from {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])}
+     * and {@link com.github.methylene.sym.PermutationFactory#sort(char[])} methods and their various overloads.
+     * This should only be necessary in a unit test of this class.
      * @return the current instance
      */
     public Builder setValidate(boolean validate) {
