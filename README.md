@@ -148,4 +148,4 @@ System.out.println(c.invert().apply(elllo));
 // => "Hello world!"
 ````
 
-For more ideas, see the [javadoc](http://methylene.github.io/sym/)
+For more ideas, see the [javadoc](http://methylene.github.io/sym/v1.8/com/github/methylene/sym/package-summary.html)
