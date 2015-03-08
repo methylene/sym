@@ -109,7 +109,7 @@ Finding the [signature](http://en.wikipedia.org/wiki/Parity_of_a_permutation) is
 
 ````java
 Permutation.random(5).signature();
-=> -1
+// => -1
 ````
 
 # Cycle decomposition, orbits etc
