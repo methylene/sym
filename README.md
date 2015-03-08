@@ -72,34 +72,26 @@ unsort.apply(i);
 
 # Composition
 
-The following static import is assumed.
-
-````java
-import static com.github.methylene.sym.Permutation.*;
-````
-
-Permutations can be composed using `prod`, `comp` or `pow`. 
-`prod` and `comp` will throw an `IllegalArgumentException` if the arguments differ in `length`.
+Permutations can be composed using the `comp` method,
+which will throw an `IllegalArgumentException` if the argument has a different `length`.
 The `pad` method can be used to get around this restriction.
 
 ````java
 char[] bca = new char[]{ 'b', 'c', 'a' };
-Permutation srt = Permutation.factory().sort(bca);
-srt.pow(3).isIdentity();
-// => true
-
-Permutation hardWork = prod(swap(0, 2), swap(0, 1).pad(3));
-hardWork.apply(bca);
+Permutation p = swap(0, 2).comp(swap(0, 1).pad(3));
+System.out.println(p.apply(bca));
 // = > abc
-
-hardWork.equals(srt);
-// => true
 ````
 
 Indexes `i >= p.length(), i < m` are not moved by a padded permutation `p.pad(m)`:
 
 ````java
-random(3).pad(10).apply(6)
+Permutation cycle = Permutation.cycle(0, 1, 2, 3);
+System.out.println(cycle.apply(0));
+// => 1
+System.out.println(cycle.apply(3));
+// => 0
+System.out.println(cycle.pad(10).apply(6));
 // => 6
 ````
 
