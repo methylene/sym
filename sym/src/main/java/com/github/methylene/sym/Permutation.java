@@ -106,17 +106,19 @@ public final class Permutation implements Comparable<Permutation> {
    * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycle</a>.
    * @param cycle1based a list of numbers that defines a permutation in 1-based cycle notation
    * @return the cyclic permutation defined by {@code cycle1based}
+   * @see com.github.methylene.sym.Permutation#cycle
    */
   public static Permutation cycle1(int... cycle1based) {
     return cycle(Util.add(cycle1based, -1));
   }
 
   /**
-   * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">transposition</a>
+   * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">transposition</a>.
    * @param i a positive integer
    * @param j a positive integer
    * @return the permutation of length {@code Math.max(i, j)} that swaps the elements at indexes {@code i}
-   * and {@code j} (0-based)
+   * and {@code j}
+   * @see com.github.methylene.sym.Permutation#cycle
    */
   public static Permutation swap(int i, int j) {
     return cycle(i, j);
