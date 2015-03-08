@@ -78,8 +78,13 @@ The `pad` method can be used to get around this restriction.
 
 ````java
 char[] bca = new char[]{ 'b', 'c', 'a' };
-Permutation p = swap(0, 2).comp(swap(0, 1).pad(3));
-System.out.println(p.apply(bca));
+Permutation t02 = Permutation.swap(0, 2);
+System.out.println(t02.length());
+// => 3
+Permutation t01 = Permutation.swap(0, 1);
+System.out.println(t01.length());
+// => 2
+System.out.println(t02.comp(t01.pad(3)).apply(bca));
 // = > abc
 ````
 
