@@ -5,7 +5,7 @@ Permutations for Java. Get Maven:
     <dependency>
       <groupId>com.github.methylene</groupId>
       <artifactId>sym</artifactId>
-      <version>1.5</version>
+      <version>1.6</version>
     </dependency>
 
 ### Shuffling an array
