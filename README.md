@@ -55,7 +55,7 @@ which maps indexes in `sorted` back to their original position in `a`.
 ````java
 String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
 Permutation sort = Permutation.factory().sort(a);
-Permutation unsort = sortA.invert();
+Permutation unsort = sort.invert();
 String[] sorted = sort.apply(a);
 ````
 
