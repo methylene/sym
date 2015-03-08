@@ -117,7 +117,7 @@ Permutation.random(5).signature();
 Consider the following
 
 ````java
-static int[] getCycle(Permutation p) {
+static int[] findCycle(Permutation p) {
   for (int i = 0; i < p.length(); i += 1)
     if (p.orbit(i).length > 1)
       return p.orbit(i);
@@ -127,17 +127,18 @@ static int[] getCycle(Permutation p) {
 public static void main(String[] args) {
   Permutation s = Permutation.factory().sort("Hello world!");
   for (Permutation p: s.toCycles())
-    System.out.println(Arrays.toString(getCycle(p)));
+    System.out.println(Arrays.toString(findCycle(p)));
 }
 ````
 
-This prints the cycle decomposition of a permutation (there are several) that sorts the string `"Hello world!"`:
+This finds a permutation that sorts the string `"Hello world!"` (there are several)
+and then prints its decomposition into <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycles</a>:
 
-    => [7, 9]
-       [1, 4, 8, 10, 3, 6, 11]
-       [0, 2, 5]
+    [7, 9]
+    [1, 4, 8, 10, 3, 6, 11]
+    [0, 2, 5]
 
-That this is actually true can be seen by the following code:
+This can be verified by the following code:
 
 ````java
 String hello = "Hello world!";
