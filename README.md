@@ -80,11 +80,10 @@ The `pad` method can be used to get around this restriction.
     hardWork.equals(srt);
     => true
 
-Indexes `i >= p.length(), i < m` are not moved by a padded permutation:
+Indexes `i >= p.length(), i < m` are not moved by a padded permutation `p.pad(m)`:
 
-    int m = 4;
-    random(3).pad(m).apply(3)
-    => 3
+    random(3).pad(10).apply(6)
+    => 6
 
 # Signature
 
