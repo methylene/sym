@@ -82,7 +82,8 @@ The `pad` method can be used to get around this restriction.
 
 Indexes `i >= p.length(), i < m` are not moved by a padded permutation:
 
-    random(3).pad(4).apply(3)
+    int m = 4;
+    random(3).pad(m).apply(3)
     => 3
 
 # Signature
