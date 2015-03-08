@@ -329,7 +329,8 @@ public final class PermutationFactory {
    * @param a an array
    * @param b an array that can be obtained by reordering the element of {@code a}
    * @return a permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true
-   * @throws java.lang.IllegalArgumentException if {@code strict} is true and {@code a} or {@code b} contain duplicates
+   * @throws java.lang.IllegalArgumentException if {@code strict} is true and {@code a} or {@code b} contain duplicates,
+   * or if {@code b} can not be obtained by rearranging {@code a}.
    */
   public Permutation from(int[] a, int[] b) {
     if (a.length != b.length)
