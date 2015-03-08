@@ -2,11 +2,13 @@
 
 Permutations for Java. Get Maven:
 
-    <dependency>
-      <groupId>com.github.methylene</groupId>
-      <artifactId>sym</artifactId>
-      <version>1.8</version>
-    </dependency>
+````xml
+<dependency>
+  <groupId>com.github.methylene</groupId>
+  <artifactId>sym</artifactId>
+  <version>1.8</version>
+</dependency>
+````
 
 # Shuffling an array
 
@@ -66,7 +68,7 @@ Now we can get the index of a given string in `a` as follows:
 int i = Arrays.binarySearch(sorted, "x");
 unsort.apply(i);
 // => 3
-````java
+````
 
 # Composition
 
