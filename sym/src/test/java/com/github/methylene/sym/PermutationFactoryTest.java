@@ -1,12 +1,12 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.PermutationFactory.from;
-import static com.github.methylene.sym.PermutationFactory.sort;
 import static org.junit.Assert.assertArrayEquals;
-
 import org.junit.Test;
 
 public class PermutationFactoryTest {
+
+  private final PermutationFactory nonstrict = PermutationFactory.builder().setValidate(true).build();
+  private final PermutationFactory strict = PermutationFactory.builder().setStrict(true).setValidate(true).build();
 
   static int[] randomNumbers(int maxNumber, int length) {
     int[] result = new int[length];
@@ -20,11 +20,11 @@ public class PermutationFactoryTest {
   public void testSortRandom() {
     for (int i = 0; i < 100; i += 1) {
       int[] a = randomNumbers(100, 200);
-      assertArrayEquals(Util.sortedCopy(a), sort(a).validate().apply(a));
+      assertArrayEquals(Util.sortedCopy(a), nonstrict.sort(a).apply(a));
     }
     for (int i = 0; i < 100; i += 1) {
       int[] a = randomNumbers(100, 20);
-      assertArrayEquals(Util.sortedCopy(a), sort(a).validate().apply(a));
+      assertArrayEquals(Util.sortedCopy(a), nonstrict.sort(a).apply(a));
     }
   }
 
@@ -33,13 +33,13 @@ public class PermutationFactoryTest {
     for (int i = 0; i < 100; i += 1) {
       String[] a = Util.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(Util.sortedCopy(a), sort(shuffled, true).validate().apply(shuffled));
+      assertArrayEquals(Util.sortedCopy(a), strict.sort(shuffled).apply(shuffled));
     }
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testSortStrictFail() {
-      sort(randomNumbers(100, 200), true);
+      strict.sort(randomNumbers(100, 200));
   }
 
   @Test
@@ -47,12 +47,12 @@ public class PermutationFactoryTest {
     for (int i = 0; i < 100; i += 1) {
       int[] a = randomNumbers(100, 200);
       int[] b = Permutation.random(a.length).apply(a);
-      assertArrayEquals(b, from(a, b).validate().apply(a));
+      assertArrayEquals(b, nonstrict.from(a, b).apply(a));
     }
     for (int i = 0; i < 100; i += 1) {
       int[] a = randomNumbers(100, 20);
       int[] b = Permutation.random(a.length).apply(a);
-      assertArrayEquals(b, from(a, b).validate().apply(a));
+      assertArrayEquals(b, nonstrict.from(a, b).apply(a));
     }
   }
 
@@ -61,7 +61,7 @@ public class PermutationFactoryTest {
     for (int i = 0; i < 100; i += 1) {
       String[] a = Util.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(a, from(shuffled, a, true).validate().apply(shuffled));
+      assertArrayEquals(a, strict.from(shuffled, a).apply(shuffled));
     }
   }
 
@@ -69,7 +69,7 @@ public class PermutationFactoryTest {
   public void testFromFail() {
     int[] a = randomNumbers(100, 200);
     int[] b = Permutation.random(a.length).apply(a);
-    from(a, b, true);
+    strict.from(a, b);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -77,7 +77,7 @@ public class PermutationFactoryTest {
     int[] a = randomNumbers(100, 110);
     int[] b = Permutation.random(a.length).apply(a);
 
-    int[] dupes = Util.duplicateIndexes(b);
+    int[] dupes = TestUtil.duplicateIndexes(b);
 
     // subtly mess things up by changing b,
     // so that all elements in a can still be found in b,
@@ -90,7 +90,7 @@ public class PermutationFactoryTest {
     }
 
     // this should throw an exception
-    from(a, b).apply(a);
+    nonstrict.from(a, b).apply(a);
   }
 
 }

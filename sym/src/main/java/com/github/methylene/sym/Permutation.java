@@ -16,6 +16,26 @@ public final class Permutation implements Comparable<Permutation> {
   /* never modified */
   private final int[] posmap;
 
+  private static final PermutationFactory FACTORY = PermutationFactory.builder().build();
+  private static final PermutationFactory STRICT_FACTORY = PermutationFactory.builder().setStrict(true).build();
+
+  private static final Comparator<int[]> COMPARE_2ND = new Comparator<int[]>() {
+    public int compare(int[] a, int[] b) {
+      return a[1] - b[1];
+    }
+  };
+
+  /**
+   * This returns the default non-strict factory.
+   * @return the default factory
+   */
+  public static PermutationFactory factory() { return FACTORY; };
+
+  /**
+   * This constructor should not be used outside this project.
+   * @param posmap posmap
+   * @param validate expert setting: if false, skip a certain sanity check, to save time
+   */
   Permutation(int[] posmap, boolean validate) {
     if (validate)
       Util.validate(posmap);
@@ -88,7 +108,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
    */
   static public Permutation from(Object[] a, Object[] b, Comparator comparator) {
-    return PermutationFactory.from(a, b, comparator);
+    return STRICT_FACTORY.from(a, b, comparator);
   }
 
   /**
@@ -99,7 +119,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
    */
   static public Permutation from(Comparable[] a, Comparable[] b) {
-    return PermutationFactory.from(a, b);
+    return STRICT_FACTORY.from(a, b);
   }
 
   /**
@@ -110,7 +130,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return A permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true.
    */
   static public Permutation from(int[] a, int[] b) {
-    return PermutationFactory.from(a, b);
+    return STRICT_FACTORY.from(a, b);
   }
 
   /**
@@ -118,7 +138,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return A random permutation that can be applied to an array of length {@code length}.
    */
   static public Permutation random(int length) {
-    return sort(distinctInts(length, 4));
+    return STRICT_FACTORY.sort(distinctInts(length, 4));
   }
 
   /**
@@ -219,7 +239,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public Permutation invert() {
     int[][] posmapWithIndex = Util.withIndex(posmap);
-    Arrays.sort(posmapWithIndex, Util.COMPARE_2ND);
+    Arrays.sort(posmapWithIndex, COMPARE_2ND);
     int[] result = new int[posmap.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[i] = posmapWithIndex[i][0];
@@ -680,7 +700,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(byte[] distinct) {
-    return PermutationFactory.sort(distinct, true);
+    return STRICT_FACTORY.sort(distinct);
   }
 
   /**
@@ -691,7 +711,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(int[] distinct) {
-    return PermutationFactory.sort(distinct, true);
+    return STRICT_FACTORY.sort(distinct);
   }
 
   /**
@@ -702,7 +722,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(long[] distinct) {
-    return PermutationFactory.sort(distinct, true);
+    return STRICT_FACTORY.sort(distinct);
   }
 
   /**
@@ -713,7 +733,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(float[] distinct) {
-    return PermutationFactory.sort(distinct, true);
+    return STRICT_FACTORY.sort(distinct);
   }
 
   /**
@@ -724,7 +744,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(double[] distinct) {
-    return PermutationFactory.sort(distinct, true);
+    return STRICT_FACTORY.sort(distinct);
   }
 
   /**
@@ -735,7 +755,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(char[] distinct) {
-    return PermutationFactory.sort(distinct, true);
+    return STRICT_FACTORY.sort(distinct);
   }
 
   /**
@@ -746,7 +766,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#sort(java.lang.Object[], java.util.Comparator)
    */
   static public Permutation sort(Comparable[] distinct) {
-    return PermutationFactory.sort(distinct, true);
+    return STRICT_FACTORY.sort(distinct);
   }
 
   /**
@@ -763,7 +783,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException If {@code distinct} contains duplicate values.
    */
   static public Permutation sort(Object[] distinct, Comparator comparator) {
-    return PermutationFactory.sort(distinct, comparator, true);
+    return STRICT_FACTORY.sort(distinct, comparator);
   }
 
   /**
@@ -771,15 +791,6 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public int[] getPosmap() {
     return Arrays.copyOf(posmap, posmap.length);
-  }
-
-  /**
-   * QA method for internal use
-   * @return this
-   */
-  Permutation validate() {
-    Util.validate(posmap);
-    return this;
   }
 
 }

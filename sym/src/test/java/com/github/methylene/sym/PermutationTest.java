@@ -301,7 +301,7 @@ public class PermutationTest {
   /* various assertions about Sym(5) */
   @Test public void testCyclesAndTranspositions() {
     int sign = 0;
-    for (Permutation p : Util.permutations(5)) {
+    for (Permutation p : TestUtil.permutations(5)) {
       int order = p.order();
       sign += p.signum();
       List<Permutation> cycles = p.toCycles();
