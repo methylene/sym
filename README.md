@@ -139,9 +139,9 @@ and then prints its decomposition into <a href="http://en.wikipedia.org/wiki/Cyc
 This can be verified by the following code:
 
 ````java
-Permutation c = Permutation.pprod(cycle(9, 7),
-                                  cycle(11, 6, 3, 10, 8, 4, 1),
-                                  cycle(5, 2, 0));
+Permutation c = Permutation.prod(cycle(9, 7),
+                                 cycle(11, 6, 3, 10, 8, 4, 1),
+                                 cycle(5, 2, 0));
 System.out.println(c.apply(" !Hdellloorw"));
 // => Hello world!
 ````
