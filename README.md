@@ -138,15 +138,11 @@ and then prints its decomposition into <a href="http://en.wikipedia.org/wiki/Cyc
 This can be verified by the following code:
 
 ````java
-String hello = "Hello world!";
-String dello = Permutation.factory().sort(hello).apply(hello);
-System.out.println(dello);
-// => " !Hdellloorw"
-Permutation c = Permutation.pprod(cycle(7, 9), 
-                                  cycle(1, 4, 8, 10, 3, 6, 11), 
-                                  cycle(0, 2, 5));
-System.out.println(c.invert().apply(dello));
-// => "Hello world!"
+Permutation c = Permutation.pprod(cycle(9, 7),
+                                  cycle(11, 6, 3, 10, 8, 4, 1),
+                                  cycle(5, 2, 0));
+System.out.println(c.apply(" !Hdellloorw"));
+// => Hello world!
 ````
 
 For more ideas, see the [javadoc](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html)
