@@ -540,8 +540,8 @@ public final class Permutation implements Comparable<Permutation> {
 
 
   /**
-   * Move an index. The following is true for all arrays {@code a} of length {@code a.length == this.length}
-   * and indexes {@code 0 <= i < a.length}:
+   * Move an index. The following is true for arrays {@code a} of any type and of length
+   * {@code a.length == this.length, and all indexes {@code 0 <= i < a.length}:
    * <code><pre>
    *   apply(a)[apply(i)] == a[i];
    * </pre></code>
@@ -558,7 +558,7 @@ public final class Permutation implements Comparable<Permutation> {
     /* ============== apply to arrays ============== */
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. The return value of this method can be safely cast to the type of the argument.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
@@ -568,22 +568,6 @@ public final class Permutation implements Comparable<Permutation> {
     if (input.length != posmap.length)
       throw new IllegalArgumentException("wrong length: " + input.length);
     Object[] result = new Object[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    return result;
-  }
-
-  /**
-   * Rearrange an array.
-   * @param input an array of length {@code this.length()}
-   * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
-   */
-  public Comparable[] apply(Comparable[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
-    Comparable[] result = new Comparable[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
     return result;
