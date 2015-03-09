@@ -212,11 +212,30 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public static Permutation prod(Iterable<Permutation> permutations) {
     Permutation result = null;
-    for (Permutation permutation : permutations) {
+    for (Permutation permutation : permutations)
       result = result == null ? permutation : result.comp(permutation);
-    }
     return result == null ? identity(0) : result;
   }
+
+
+  /**
+   * Padded product. Take the product of the given permutations, pad as necessary.
+   * @param permutations an array of permutations, all of which must have the same length
+   * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
+   * is empty
+   * @throws java.lang.IllegalArgumentException if not all permutations have the same length
+   */
+  public static Permutation pprod(Permutation... permutations) {
+    Permutation[] padded = Arrays.copyOf(permutations, permutations.length);
+    int length = 0;
+    for (Permutation p : permutations)
+      length = Math.max(length, p.length());
+    for (int i = 0 ; i < permutations.length; i += 1)
+      if (permutations[i].length() < length)
+        padded[i] = permutations[i].pad(length);
+    return prod(padded);
+  }
+
 
   /**
    * Raises this permutation to the {@code n}th power.
@@ -762,7 +781,7 @@ public final class Permutation implements Comparable<Permutation> {
     ArrayList<E> result = new ArrayList<E>(posmap.length);
     for (int k = 0; k < posmap.length; k += 1)
       result.add(null);
-    for (E el: input) {
+    for (E el : input) {
       if (i == posmap.length)
         throw new IllegalArgumentException("too many elements in input");
       result.set(apply(i), el);
