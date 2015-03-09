@@ -1,12 +1,12 @@
 # sym
 
-Permutations for Java. Get Maven:
+Permutations for Java. Maven coordinates:
 
 ````xml
 <dependency>
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>1.8.2</version>
+  <version>1.8.3</version>
 </dependency>
 ````
 
@@ -100,6 +100,9 @@ System.out.println(cycle.pad(10).apply(6));
 // => 6
 ````
 
+In version 1.8.3, the `pcomp` (padded composition) convenience method was introduced, 
+which applies the padding automatically before taking the product.
+
 # Signature
 
 Finding the [signature](http://en.wikipedia.org/wiki/Parity_of_a_permutation) is easy:
@@ -145,4 +148,4 @@ System.out.println(c.apply(" !Hdellloorw"));
 // => Hello world!
 ````
 
-For more ideas, see the [javadoc](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html)
+For more ideas, see the [javadoc](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html).

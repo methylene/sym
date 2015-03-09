@@ -156,6 +156,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @param other a permutation of the same length as {@code this}
    * @return the composition of {@code this} and {@code other}
    * @throws java.lang.IllegalArgumentException if {@code this.length() != other.length()}
+   * @see com.github.methylene.sym.Permutation#pcomp
    */
   public Permutation comp(Permutation other) {
     if (this.length() != other.length())
@@ -166,6 +167,17 @@ public final class Permutation implements Comparable<Permutation> {
     for (int i = 0; i < lhs.length; i += 1)
       result[i] = lhs[rhs[i]];
     return new Permutation(result);
+  }
+
+  /**
+   * Padded composition. Take the product with other permutation, pad as necessary.
+   * @param other a permutation
+   * @return the composition of {@code this} and {@code other}
+   * @see com.github.methylene.sym.Permutation#comp
+   */
+  public Permutation pcomp(Permutation other) {
+    int max = Math.max(posmap.length, other.posmap.length);
+    return this.pad(max).comp(other.pad(max));
   }
 
   /**
@@ -225,44 +237,52 @@ public final class Permutation implements Comparable<Permutation> {
 
   /**
    * Padded product. Take the product of the given permutations, pad as necessary.
-   * @param permutations an array of permutations, all of which must have the same length
+   * @param permutations an array of permutations
    * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
    * is empty
+   * @see com.github.methylene.sym.Permutation#prod(Permutation[])
+   * @see com.github.methylene.sym.Permutation#pcomp
    */
   public static Permutation pprod(Permutation... permutations) {
-    Permutation[] padded = Arrays.copyOf(permutations, permutations.length);
-    int length = 0;
-    for (Permutation p : permutations)
-      length = Math.max(length, p.length());
-    for (int i = 0 ; i < permutations.length; i += 1)
-      if (permutations[i].length() < length)
-        padded[i] = permutations[i].pad(length);
-    return prod(padded);
+    if (permutations.length == 0)
+      return identity(0);
+    Permutation result = permutations[0];
+    for (int i = 1; i < permutations.length; i += 1)
+      result = result.pcomp(permutations[i]);
+    return result;
   }
 
   /**
    * Padded product. Take the product of the given permutations, pad as necessary.
-   * @param permutations an array of permutations, all of which must have the same length
+   * @param permutations an array of permutations
    * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
    * is empty
+   * @see com.github.methylene.sym.Permutation#prod(Iterable)
+   * @see com.github.methylene.sym.Permutation#pcomp
    */
   public static Permutation pprod(Iterable<Permutation> permutations) {
-    int length = 0;
-    for (Permutation p : permutations)
-      length = Math.max(length, p.length());
     Permutation result = null;
     for (Permutation permutation : permutations)
-      result = result == null ? permutation.pad(length) : result.comp(permutation.pad(length));
+      result = result == null ? permutation : result.pcomp(permutation);
     return result == null ? identity(0) : result;
   }
 
 
   /**
-   * Raises this permutation to the {@code n}th power.
-   * @param n any integer
-   * @return if {@code n} is positive, the product {@code this.comp(this)[...]comp(this)} ({@code n} times).
-   * If {@code n} is negative, the product {@code this.comp(this.invert)[...]comp(this.invert)} ({@code -n} times).
+   * Raise this permutation to the {@code n}th power.
+   * If {@code n} is positive, the product
+   * <pre><code>
+   *   this.comp(this)[...]comp(this)
+   * </code></pre>
+   * ({@code n} times) is returned.
+   * If {@code n} is negative, the product
+   * <pre><code>
+   *   this.invert().comp(this.invert()) [...] comp(this.invert());
+   * </code></pre>
+   * ({@code -n} times) is returned.
    * If {@code n == 0}, the identity permutation of length {@code this.length} is returned.
+   * @param n any integer
+   * @return the {@code n}th power of this permutation
    */
   public Permutation pow(int n) {
     if (n == 0)
