@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.RandomAccess;
 
 /**
  * <p>A permutation that can be used to rearrange arrays.</p>
@@ -223,7 +224,6 @@ public final class Permutation implements Comparable<Permutation> {
    * @param permutations an array of permutations, all of which must have the same length
    * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
    * is empty
-   * @throws java.lang.IllegalArgumentException if not all permutations have the same length
    */
   public static Permutation pprod(Permutation... permutations) {
     Permutation[] padded = Arrays.copyOf(permutations, permutations.length);
@@ -237,11 +237,10 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Take the product of the given permutations.
-   * @param permutations an iterable permutations, all of which must have the same length
+   * Padded product. Take the product of the given permutations, pad as necessary.
+   * @param permutations an array of permutations, all of which must have the same length
    * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
    * is empty
-   * @throws java.lang.IllegalArgumentException if not all permutations have the same length
    */
   public static Permutation pprod(Iterable<Permutation> permutations) {
     int length = 0;
@@ -798,14 +797,21 @@ public final class Permutation implements Comparable<Permutation> {
     ArrayList<E> result = new ArrayList<E>(posmap.length);
     for (int k = 0; k < posmap.length; k += 1)
       result.add(null);
-    for (E el : input) {
-      if (i == posmap.length)
-        throw new IllegalArgumentException("too many elements in input");
-      result.set(apply(i), el);
-      i += 1;
+    if (input instanceof List && input instanceof RandomAccess) {
+      List<E> inputList = (List<E>) input;
+      if (inputList.size() != posmap.length)
+        throw new IllegalArgumentException("wrong input size: " + inputList.size());
+      for (int k = 0; k < inputList.size(); k += 1)
+        result.set(apply(k), inputList.get(k));
+    } else {
+      for (E el : input) {
+        if (i == posmap.length) {throw new IllegalArgumentException("too many elements in input");}
+        result.set(apply(i), el);
+        i += 1;
+      }
+      if (i < posmap.length)
+        throw new IllegalArgumentException("too few elements in input");
     }
-    if (i < posmap.length)
-      throw new IllegalArgumentException("too few elements in input");
     return result;
   }
 
