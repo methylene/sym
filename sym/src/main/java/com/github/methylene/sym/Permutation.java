@@ -4,6 +4,7 @@ import static com.github.methylene.sym.Util.distinctInts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,11 @@ public final class Permutation implements Comparable<Permutation> {
 
   private static final PermutationFactory FACTORY = PermutationFactory.builder().build();
   private static final PermutationFactory STRICT_FACTORY = PermutationFactory.builder().setStrict(true).build();
+
+  private static final Permutation[] IDENTITIES = new Permutation[]{
+      new Permutation(Util.sequence(0)),
+      new Permutation(Util.sequence(1))
+  };
 
   private static final Comparator<int[]> COMPARE_2ND = new Comparator<int[]>() {
     public int compare(int[] a, int[] b) {
@@ -140,44 +146,32 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#isIdentity
    */
   public static Permutation identity(int length) {
-    int[] posmap = new int[length];
-    for (int i = 0; i < length; i += 1)
-      posmap[i] = i;
-    return new Permutation(posmap);
+    if (length < IDENTITIES.length)
+      return IDENTITIES[length];
+    return new Permutation(Util.sequence(length));
   }
 
   /**
-   * <p>Permutation composition. If
-   * {@code i} is a number such that {@code 0 < i < this.length()},
-   * the following identity holds:</p>
+   * <p>Permutation composition. The following is true for all numbers
+   * {@code 0 <= i}:</p>
    * <pre><code>
    *   this.apply(other.apply(i)) == this.comp(other).apply(i)
    * </code></pre>
-   * @param other a permutation of the same length as {@code this}
-   * @return the composition of {@code this} and {@code other}
-   * @throws java.lang.IllegalArgumentException if {@code this.length() != other.length()}
-   * @see com.github.methylene.sym.Permutation#pcomp
+   * <p>If the other permutation is of a different length, padding will be applied to the shorter of the two
+   * permutations, to make the composition meaningful.</p>
+   * @param other a permutation
+   * @return the product of this instance and {@code other}
+   * @see com.github.methylene.sym.Permutation#pad
+   * @see com.github.methylene.sym.Permutation#prod
    */
   public Permutation comp(Permutation other) {
-    if (this.length() != other.length())
-      throw new IllegalArgumentException("can only compose permutations of the same length");
-    int[] lhs = posmap;
-    int[] rhs = other.posmap;
-    int[] result = new int[lhs.length];
-    for (int i = 0; i < lhs.length; i += 1)
+    int length = Math.max(posmap.length, other.posmap.length);
+    int[] lhs = Util.pad(posmap, length);
+    int[] rhs = Util.pad(other.posmap, length);
+    int[] result = new int[length];
+    for (int i = 0; i < length; i += 1)
       result[i] = lhs[rhs[i]];
     return new Permutation(result);
-  }
-
-  /**
-   * Padded composition. Take the product with other permutation, pad as necessary.
-   * @param other a permutation
-   * @return the composition of {@code this} and {@code other}
-   * @see com.github.methylene.sym.Permutation#comp
-   */
-  public Permutation pcomp(Permutation other) {
-    int max = Math.max(posmap.length, other.posmap.length);
-    return this.pad(max).comp(other.pad(max));
   }
 
   /**
@@ -201,70 +195,29 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Take the product of the given permutations. All permutations in the argument must have the same length, otherwise
-   * an exception is thrown.
-   * @param permutations an array of permutations, all of which must have the same length
-   * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
-   * is empty
-   * @throws java.lang.IllegalArgumentException if not all permutations have the same length
-   * @see com.github.methylene.sym.Permutation#pprod(Permutation[])
+   * Take the product of the given permutations. If the input is empty, a permutation of length {@code 0} is returned.
+   * @param permutations an array of permutations
+   * @return the product of the input
+   * @see com.github.methylene.sym.Permutation#comp
    */
   public static Permutation prod(Permutation... permutations) {
-    if (permutations.length == 0)
-      return identity(0);
-    Permutation result = permutations[0];
-    for (int i = 1; i < permutations.length; i += 1)
-      result = result.comp(permutations[i]);
+    Permutation result = identity(0);
+    for (Permutation permutation : permutations)
+      result = result.comp(permutation);
     return result;
   }
 
   /**
-   * Take the product of the given permutations. All permutations in the argument must have the same length, otherwise
-   * an exception is thrown.
-   * @param permutations an iterable permutations, all of which must have the same length
-   * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
-   * is empty
-   * @throws java.lang.IllegalArgumentException if not all permutations have the same length
-   * @see com.github.methylene.sym.Permutation#pprod(Iterable)
+   * Take the product of the given permutations. If the input is empty, a permutation of length {@code 0} is returned.
+   * @param permutations an iterable of permutations
+   * @return the product of the input
+   * @see com.github.methylene.sym.Permutation#comp
    */
   public static Permutation prod(Iterable<Permutation> permutations) {
-    Permutation result = null;
+    Permutation result = identity(0);
     for (Permutation permutation : permutations)
-      result = result == null ? permutation : result.comp(permutation);
-    return result == null ? identity(0) : result;
-  }
-
-
-  /**
-   * Padded product. Take the product of the given permutations, pad as necessary.
-   * @param permutations an array of permutations
-   * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
-   * is empty
-   * @see com.github.methylene.sym.Permutation#prod(Permutation[])
-   * @see com.github.methylene.sym.Permutation#pcomp
-   */
-  public static Permutation pprod(Permutation... permutations) {
-    if (permutations.length == 0)
-      return identity(0);
-    Permutation result = permutations[0];
-    for (int i = 1; i < permutations.length; i += 1)
-      result = result.pcomp(permutations[i]);
+      result = result.comp(permutation);
     return result;
-  }
-
-  /**
-   * Padded product. Take the product of the given permutations, pad as necessary.
-   * @param permutations an array of permutations
-   * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
-   * is empty
-   * @see com.github.methylene.sym.Permutation#prod(Iterable)
-   * @see com.github.methylene.sym.Permutation#pcomp
-   */
-  public static Permutation pprod(Iterable<Permutation> permutations) {
-    Permutation result = null;
-    for (Permutation permutation : permutations)
-      result = result == null ? permutation : result.pcomp(permutation);
-    return result == null ? identity(0) : result;
   }
 
 
@@ -576,9 +529,11 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Standard java comparison, compatible with {@code equals} in the sense that equal permutations compare as 0.
+   * Standard java comparison, compatible with {@code equals} in the sense that permutations compare as {@code 0}
+   * if and only they are equal.
    * @param other a permutation, not necessarily of the same length
    * @return the result of lexicographic comparison of {@code this.posmap} and {@code other.posmap}
+   * @see com.github.methylene.sym.Permutation#equals
    */
   @Override public int compareTo(Permutation other) {
     if (this == other)
@@ -604,13 +559,16 @@ public final class Permutation implements Comparable<Permutation> {
    * <code><pre>
    *   apply(a)[apply(i)] == a[i];
    * </pre></code>
-   * @param i a non negative number which is smaller than {@code this.length()}
+   * If the input is greater than or equal to {@code this.length()}, then the same number is returned.
+   * @param i a non negative number
    * @return the moved index
-   * @throws java.lang.IllegalArgumentException if {@code i < 0} or {@code i >= this.length}.
+   * @throws java.lang.IllegalArgumentException if the input is negative
    */
   public int apply(int i) {
-    if (i < 0 || i >= posmap.length)
-      throw new IllegalArgumentException("wrong i: " + i);
+    if (i < 0)
+      throw new IllegalArgumentException("negative index: " + i);
+    if (i >= posmap.length)
+      return i;
     return posmap[i];
   }
 
@@ -621,15 +579,17 @@ public final class Permutation implements Comparable<Permutation> {
    * of the input.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public Object[] apply(Object[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     Object[] result = new Object[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -638,15 +598,17 @@ public final class Permutation implements Comparable<Permutation> {
    * of the input.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public Comparable[] apply(Comparable[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     Comparable[] result = new Comparable[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -654,15 +616,17 @@ public final class Permutation implements Comparable<Permutation> {
    * Rearrange an array.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public String[] apply(String[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     String[] result = new String[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -670,15 +634,17 @@ public final class Permutation implements Comparable<Permutation> {
    * Rearrange an array.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public byte[] apply(byte[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     byte[] result = new byte[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -686,15 +652,17 @@ public final class Permutation implements Comparable<Permutation> {
    * Rearrange an array.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public short[] apply(short[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     short[] result = new short[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -702,15 +670,17 @@ public final class Permutation implements Comparable<Permutation> {
    * Rearrange an array.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public int[] apply(int[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     int[] result = new int[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -718,15 +688,17 @@ public final class Permutation implements Comparable<Permutation> {
    * Rearrange an array.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public long[] apply(long[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     long[] result = new long[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -734,15 +706,17 @@ public final class Permutation implements Comparable<Permutation> {
    * Rearrange an array.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public float[] apply(float[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     float[] result = new float[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -750,15 +724,17 @@ public final class Permutation implements Comparable<Permutation> {
    * Rearrange an array.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public double[] apply(double[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     double[] result = new double[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -766,15 +742,17 @@ public final class Permutation implements Comparable<Permutation> {
    * Rearrange an array.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public boolean[] apply(boolean[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     boolean[] result = new boolean[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
@@ -782,70 +760,62 @@ public final class Permutation implements Comparable<Permutation> {
    * Rearrange an array.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public char[] apply(char[] input) {
-    if (input.length != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length);
+    if (input.length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + input.length);
     char[] result = new char[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
+    if (input.length > posmap.length)
+      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
     return result;
   }
 
   /**
-   * Rearrange an array.
-   * @param input an array of length {@code this.length()}
-   * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * Rearrange a string. More precisely, rearrange the array that is returned from {@link String#getChars}.
+   * @param s an string of length {@code this.length()}
+   * @return the result of applying this permutation to {@code s}
+   * @throws java.lang.IllegalArgumentException if {@code s.length() < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
-  public String apply(String input) {
-    if (input.length() != posmap.length)
-      throw new IllegalArgumentException("wrong length: " + input.length());
-    char[] dst = new char[input.length()];
-    input.getChars(0, input.length(), dst, 0);
+  public String apply(String s) {
+    if (s.length() < posmap.length)
+      throw new IllegalArgumentException("s too short: " + s.length());
+    char[] dst = new char[s.length()];
+    s.getChars(0, s.length(), dst, 0);
     return new String(apply(dst));
   }
 
   /**
-   * Rearrange an iterable.
-   * @param input an iterable that has exactly {@code this.length()} elements
+   * Rearrange a list.
+   * @param input a list that has exactly {@code this.length()} elements
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input} does not have exactly {@code this.length()} elements
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
-  public <E> List<E> apply(Iterable<E> input) {
-    int i = 0;
-    ArrayList<E> result = new ArrayList<E>(posmap.length);
-    for (int k = 0; k < posmap.length; k += 1)
+  public <E> List<E> apply(List<E> input) {
+    int length = input.size();
+    if (length < posmap.length)
+      throw new IllegalArgumentException("input too short: " + length);
+    ArrayList<E> result = new ArrayList<E>(length);
+    for (int i = 0; i < length; i += 1)
       result.add(null);
-    if (input instanceof List && input instanceof RandomAccess) {
-      List<E> inputList = (List<E>) input;
-      if (inputList.size() != posmap.length)
-        throw new IllegalArgumentException("wrong input size: " + inputList.size());
-      for (int k = 0; k < inputList.size(); k += 1)
-        result.set(apply(k), inputList.get(k));
-    } else {
-      for (E el : input) {
-        if (i == posmap.length) {throw new IllegalArgumentException("too many elements in input");}
-        result.set(apply(i), el);
-        i += 1;
-      }
-      if (i < posmap.length)
-        throw new IllegalArgumentException("too few elements in input");
-    }
+    for (int i = 0; i < length; i += 1)
+      result.set(apply(i), input.get(i));
     return result;
   }
 
   /**
    * Rearrange the array that is obtained by calling
    * <pre><code>
-   *   apply(Util.symbols(this.length()));
+   *   Util.symbols(this.length());
    * </code></pre>
-   * @return the result of applying this to a standard array
+   * @return the result of rearranging a particular standard array using this instance
    * @see com.github.methylene.sym.Util#symbols
+   * @see com.github.methylene.sym.Permutation#apply(String[])
    */
   public String[] apply() {
     return apply(Util.symbols(posmap.length));

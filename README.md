@@ -6,7 +6,7 @@ Permutations for Java. Maven coordinates:
 <dependency>
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>1.8.3</version>
+  <version>1.9.0</version>
 </dependency>
 ````
 
@@ -72,21 +72,19 @@ unsort.apply(i);
 
 # Composition
 
-Permutations can be composed using the `comp` method,
-which will throw an `IllegalArgumentException` if the argument has a different `length`.
-The `pad` method can be used to get around this restriction.
+Permutations can be composed using the `comp` method.
 
 ````java
 char[] bca = new char[]{ 'b', 'c', 'a' };
 Permutation t02 = Permutation.swap(0, 2);
-System.out.println(t02.length());
-// => 3
 Permutation t01 = Permutation.swap(0, 1);
-System.out.println(t01.length());
-// => 2
-System.out.println(t02.comp(t01.pad(3)).apply(bca));
+System.out.println(t02.comp(t01).apply(bca));
 // = > abc
 ````
+
+# Padding
+
+Padding is a generic way to build longer permutations from shorter ones.
 
 Indexes `i >= p.length(), i < m` are not moved by a padded permutation `p.pad(m)`:
 
@@ -100,8 +98,8 @@ System.out.println(cycle.pad(10).apply(6));
 // => 6
 ````
 
-In version 1.8.3, the `pcomp` (padded composition) convenience method was introduced, 
-which applies the padding automatically before taking the product.
+In version 1.9.0, implicit padding was added for the `comp` and `apply` methods,
+so it's rarely necessary to apply padding explicitly.
 
 # Signature
 

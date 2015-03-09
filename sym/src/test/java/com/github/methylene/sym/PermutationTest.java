@@ -3,7 +3,7 @@ package com.github.methylene.sym;
 import static com.github.methylene.sym.MyInt.box;
 import static com.github.methylene.sym.Permutation.cycle;
 import static com.github.methylene.sym.Permutation.identity;
-import static com.github.methylene.sym.Permutation.pprod;
+import static com.github.methylene.sym.Permutation.prod;
 import static com.github.methylene.sym.Permutation.strictFactory;
 import static com.github.methylene.sym.Util.distinctInts;
 import static org.junit.Assert.assertArrayEquals;
@@ -42,7 +42,6 @@ public class PermutationTest {
   @Test public void testComp2() throws Exception {
     Permutation p = Permutation.perm1(2, 3, 1);
     Permutation p2 = strictFactory().sort(new int[]{4, 6, 10, -5, 195, 33, 2});
-    p = p.pad(p2.length());
     for (int i = 0; i < p.length(); i += 1) {
       assertEquals(p2.apply(p.apply(i)), p2.comp(p).apply(i));
     }
@@ -50,7 +49,7 @@ public class PermutationTest {
 
   @Test public void testApply() {
     int[] a = TestUtil.randomNumbers(100, 200);
-    Permutation p = Permutation.random(a.length);
+    Permutation p = Permutation.random((int) (a.length * Math.random()));
     for (int i = 0; i < a.length; i += 1) {
       assertEquals(p.apply(a)[p.apply(i)], a[i]);
     }
@@ -58,7 +57,7 @@ public class PermutationTest {
 
   @Test public void testIterable() {
     MyInt[] a = MyInt.box(TestUtil.randomNumbers(100, 200));
-    Permutation p = Permutation.random(a.length);
+    Permutation p = Permutation.random((int) (Math.random() * a.length));
     List<MyInt> arrayList = new ArrayList<MyInt>(a.length);
     List<MyInt> linkedList = new LinkedList<MyInt>();
     Collections.addAll(arrayList, a);
@@ -104,7 +103,7 @@ public class PermutationTest {
   }
 
   @Test public void testCompUneven() throws Exception {
-    Permutation p = Permutation.perm1(2, 3, 1).pad(4);
+    Permutation p = Permutation.perm1(2, 3, 1);
     Permutation p2 = Permutation.perm1(2, 3, 1, 4);
     assertArrayEquals(new String[]{"b", "c", "a", "d"}, p.comp(p2).apply());
     assertArrayEquals(new String[]{"b", "c", "a", "d"}, p2.comp(p).apply());
@@ -133,7 +132,7 @@ public class PermutationTest {
     assertTrue(Permutation.identity(5).isIdentity());
     assertTrue(Permutation.identity(5).invert().isIdentity());
     assertTrue(Permutation.identity(0).invert().isIdentity());
-    assertTrue(Permutation.prod(Permutation.prod().pad(2), Permutation.identity(2)).isIdentity());
+    assertTrue(Permutation.prod(Permutation.prod(), Permutation.identity(2)).isIdentity());
     Assert.assertEquals(5, Permutation.identity(5).length());
   }
 
@@ -167,22 +166,22 @@ public class PermutationTest {
 
   @Test public void testCycleApply() throws Exception {
     Assert.assertArrayEquals(new String[]{"c", "a", "b"},
-        Permutation.prod(Permutation.cycle1(1, 2).pad(3), Permutation.cycle1(2, 3)).apply());
+        Permutation.prod(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3)).apply());
     Assert.assertArrayEquals(new String[]{"c", "a", "b"}, Permutation.cycle1(1, 2, 3).apply());
-    Assert.assertArrayEquals(new String[]{"a", "c", "b"}, Permutation.prod(Permutation.cycle1(1, 2).pad(3),
-        Permutation.prod(Permutation.cycle1(1, 2).pad(3), Permutation.cycle1(2, 3))).apply());
+    Assert.assertArrayEquals(new String[]{"a", "c", "b"}, Permutation.prod(Permutation.cycle1(1, 2),
+        Permutation.prod(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))).apply());
   }
 
   @Test public void testCycleEquals() throws Exception {
     assertTrue(Permutation.prod(Permutation.cycle1(1, 2), Permutation.cycle1(2, 1)).isIdentity());
-    Assert.assertEquals(Permutation.cycle1(2, 3), Permutation.prod(Permutation.cycle1(1, 2).pad(3),
-        Permutation.prod(Permutation.cycle1(1, 2).pad(3), Permutation.cycle1(2, 3))));
+    Assert.assertEquals(Permutation.cycle1(2, 3), Permutation.prod(Permutation.cycle1(1, 2),
+        Permutation.prod(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))));
   }
 
   @Test public void testCycleLaw() throws Exception {
     Permutation longest = Permutation.cycle1(2, 4, 1, 11, 3);
-    Assert.assertEquals(Permutation.prod(Permutation.cycle1(2, 4).pad(longest.length()),
-        Permutation.cycle1(4, 1, 11, 3).pad(longest.length())), longest);
+    Assert.assertEquals(Permutation.prod(Permutation.cycle1(2, 4),
+        Permutation.cycle1(4, 1, 11, 3)), longest);
   }
 
   @Test public void testSort() throws Exception {
@@ -248,18 +247,15 @@ public class PermutationTest {
     }
   }
 
+  /* negative index */
   @Test(expected = IllegalArgumentException.class)
   public void testApplyInvalid() {
     Permutation.identity(3).apply(-1);
   }
 
+  /* input too short */
   @Test(expected = IllegalArgumentException.class)
   public void testApplyInvalid2() {
-    Permutation.identity(3).apply(3);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testApplyInvalid3() {
     Permutation.identity(3).apply(new int[]{1, 2});
   }
 
@@ -311,7 +307,7 @@ public class PermutationTest {
     int[] a = distinctInts(size, 8);
     Permutation random;
     do {
-      random = Permutation.random(size);
+      random = Permutation.random((int) (Math.random() * size));
     } while (random.isIdentity());
     int[] b = random.apply(a);
     assertFalse(Arrays.equals(a, b));
@@ -328,8 +324,8 @@ public class PermutationTest {
 
   @Test
   public void testInsert() {
-    assertEquals("23145", Permutation.delins(0, 2).pad(5).apply("12345"));
-    assertEquals("14235", Permutation.delins(3, 1).pad(5).apply("12345"));
+    assertEquals("23145", Permutation.delins(0, 2).apply("12345"));
+    assertEquals("14235", Permutation.delins(3, 1).apply("12345"));
   }
 
   /* various assertions about Sym(5) */
@@ -384,8 +380,8 @@ public class PermutationTest {
     Permutation c0 = cycle(7, 9);
     Permutation c1 = cycle(1, 4, 8, 10, 3, 6, 11);
     Permutation c2 = cycle(0, 2, 5);
-    assertEquals("Hello world!", pprod(c0, c1, c2).invert().apply(" !Hdellloorw"));
-    assertEquals("Hello world!", pprod(Arrays.asList(c0, c1, c2)).invert().apply(" !Hdellloorw"));
+    assertEquals("Hello world!", prod(c0, c1, c2).invert().apply(" !Hdellloorw"));
+    assertEquals("Hello world!", prod(Arrays.asList(c0, c1, c2)).invert().apply(" !Hdellloorw"));
   }
 
 

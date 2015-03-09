@@ -21,6 +21,18 @@ public class Util {
   }
 
   /**
+   * Creates an array of the numbers {@code 0} to {@code length - 1} in sequence.
+   * @param length a non-negative number
+   * @return a sequence of length {@code length}
+   */
+  public static int[] sequence(int length) {
+    int[] result = new int[length];
+    for (int i = 0; i < length; i += 1)
+      result[i] = i;
+    return result;
+  }
+
+  /**
    * Find element in array using exhaustive search. This is not very fast,
    * but may be sufficient for one-off searches.
    * @param ints an array
