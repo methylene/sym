@@ -90,7 +90,7 @@ public class PermutationFactoryComparatorTest {
     // so that all elements in a can still be found in b,
     // but b is not a reordering of a anymore
     for (int j = 0; j < b.length; j += 1) {
-      if (b[dupes[0]] != b[j]) {
+      if (!b[dupes[0]].equals(b[j])) {
         b[dupes[0]] = b[j];
         break;
       }

@@ -180,9 +180,9 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException if {@code targetLength} is less than {@code this.length}
    */
   public Permutation pad(int targetLength) {
-    if (targetLength < length())
+    if (targetLength < posmap.length)
       throw new IllegalArgumentException("targetLength can not be less than current length");
-    if (targetLength == length())
+    if (targetLength == posmap.length)
       return this;
     return new Permutation(Util.pad(posmap, targetLength));
   }
@@ -577,7 +577,7 @@ public final class Permutation implements Comparable<Permutation> {
 
   /**
    * Move an index. The following is true for arrays {@code a} of any type and of length
-   * {@code a.length == this.length, and all indexes {@code 0 <= i < a.length}:
+   * {@code a.length == this.length}, and all indexes {@code 0 <= i < a.length}:
    * <code><pre>
    *   apply(a)[apply(i)] == a[i];
    * </pre></code>
