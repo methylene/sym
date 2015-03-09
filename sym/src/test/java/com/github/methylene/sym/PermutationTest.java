@@ -16,6 +16,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -58,11 +59,15 @@ public class PermutationTest {
   @Test public void testIterable() {
     MyInt[] a = MyInt.box(TestUtil.randomNumbers(100, 200));
     Permutation p = Permutation.random(a.length);
-    List<MyInt> myInts = new ArrayList<MyInt>(a.length);
-    Collections.addAll(myInts, a);
-    myInts = p.apply(myInts);
+    List<MyInt> arrayList = new ArrayList<MyInt>(a.length);
+    List<MyInt> linkedList = new LinkedList<MyInt>();
+    Collections.addAll(arrayList, a);
+    Collections.addAll(linkedList, a);
+    arrayList = p.apply(arrayList);
+    linkedList = p.apply(linkedList);
     for (int i = 0; i < a.length; i += 1) {
-      assertEquals(p.apply(a)[i], myInts.get(i));
+      assertEquals(p.apply(a)[i], arrayList.get(i));
+      assertEquals(p.apply(a)[i], linkedList.get(i));
     }
   }
 
@@ -382,5 +387,6 @@ public class PermutationTest {
     assertEquals("Hello world!", pprod(c0, c1, c2).invert().apply(" !Hdellloorw"));
     assertEquals("Hello world!", pprod(Arrays.asList(c0, c1, c2)).invert().apply(" !Hdellloorw"));
   }
+
 
 }
