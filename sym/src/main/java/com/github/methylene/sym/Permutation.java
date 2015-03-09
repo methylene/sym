@@ -575,7 +575,8 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. Each element of the return value of this method can be safely cast to the element type
+   * of the input.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
