@@ -101,14 +101,6 @@ System.out.println(cycle.pad(10).apply(6));
 In version 1.9.0, implicit padding was added for the `comp` and `apply` methods,
 so it's rarely necessary to apply padding explicitly.
 
-# Signature
-
-Finding the [signature](http://en.wikipedia.org/wiki/Parity_of_a_permutation) is easy:
-
-````java
-Permutation.random(5).signature();
-// => -1
-````
 
 # Cycle decomposition, orbits etc
 
