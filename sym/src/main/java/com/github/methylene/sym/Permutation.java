@@ -189,11 +189,13 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Take the product of the given permutations.
+   * Take the product of the given permutations. All permutations in the argument must have the same length, otherwise
+   * an exception is thrown.
    * @param permutations an array of permutations, all of which must have the same length
    * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
    * is empty
    * @throws java.lang.IllegalArgumentException if not all permutations have the same length
+   * @see com.github.methylene.sym.Permutation#pprod(Permutation[])
    */
   public static Permutation prod(Permutation... permutations) {
     if (permutations.length == 0)
@@ -205,11 +207,13 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Take the product of the given permutations.
+   * Take the product of the given permutations. All permutations in the argument must have the same length, otherwise
+   * an exception is thrown.
    * @param permutations an iterable permutations, all of which must have the same length
    * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
    * is empty
    * @throws java.lang.IllegalArgumentException if not all permutations have the same length
+   * @see com.github.methylene.sym.Permutation#pprod(Iterable)
    */
   public static Permutation prod(Iterable<Permutation> permutations) {
     Permutation result = null;
