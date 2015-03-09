@@ -12,7 +12,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,6 +51,17 @@ public class PermutationTest {
     Permutation p = Permutation.random(a.length);
     for (int i = 0; i < a.length; i += 1) {
       assertEquals(p.apply(a)[p.apply(i)], a[i]);
+    }
+  }
+
+  @Test public void testIterable() {
+    MyInt[] a = MyInt.box(TestUtil.randomNumbers(100, 200));
+    Permutation p = Permutation.random(a.length);
+    List<MyInt> myInts = new ArrayList<MyInt>(a.length);
+    Collections.addAll(myInts, a);
+    myInts = p.apply(myInts);
+    for (int i = 0; i < a.length; i += 1) {
+      assertEquals(p.apply(a)[i], myInts.get(i));
     }
   }
 
@@ -350,7 +363,7 @@ public class PermutationTest {
   public void testZero() {
     Permutation p = identity(0);
     assertEquals(new Permutation(new int[0]), p);
-    assertEquals(p , cycle());
+    assertEquals(p, cycle());
     assertEquals(0, p.length());
     assertArrayEquals(new int[0], p.apply(new int[0]));
     assertEquals(0, p.toCycles().size());

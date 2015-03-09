@@ -558,7 +558,8 @@ public final class Permutation implements Comparable<Permutation> {
     /* ============== apply to arrays ============== */
 
   /**
-   * Rearrange an array. The return value of this method can be safely cast to the type of the argument.
+   * Rearrange an array. Each element of the return value of this method can be safely cast to the element type
+   * of the input.
    * @param input an array of length {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
@@ -568,6 +569,22 @@ public final class Permutation implements Comparable<Permutation> {
     if (input.length != posmap.length)
       throw new IllegalArgumentException("wrong length: " + input.length);
     Object[] result = new Object[input.length];
+    for (int i = 0; i < posmap.length; i += 1)
+      result[posmap[i]] = input[i];
+    return result;
+  }
+
+  /**
+   * Rearrange an array.
+   * @param input an array of length {@code this.length()}
+   * @return the result of applying this permutation to {@code input}
+   * @throws java.lang.IllegalArgumentException if {@code input.length != this.length()}
+   * @see com.github.methylene.sym.Permutation#apply(int)
+   */
+  public Comparable[] apply(Comparable[] input) {
+    if (input.length != posmap.length)
+      throw new IllegalArgumentException("wrong length: " + input.length);
+    Comparable[] result = new Comparable[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
     return result;
@@ -730,6 +747,29 @@ public final class Permutation implements Comparable<Permutation> {
     char[] dst = new char[input.length()];
     input.getChars(0, input.length(), dst, 0);
     return new String(apply(dst));
+  }
+
+  /**
+   * Rearrange an iterable.
+   * @param input an iterable that has exactly {@code this.length()} elements
+   * @return the result of applying this permutation to {@code input}
+   * @throws java.lang.IllegalArgumentException if {@code input} does not have exactly {@code this.length()} elements
+   * @see com.github.methylene.sym.Permutation#apply(int)
+   */
+  public <E> List<E> apply(Iterable<E> input) {
+    int i = 0;
+    ArrayList<E> result = new ArrayList<E>(posmap.length);
+    for (int k = 0; k < posmap.length; k += 1)
+      result.add(null);
+    for (E el: input) {
+      if (i == posmap.length)
+        throw new IllegalArgumentException("too many elements in input");
+      result.set(apply(i), el);
+      i += 1;
+    }
+    if (i < posmap.length)
+      throw new IllegalArgumentException("too few elements in input");
+    return result;
   }
 
   /**
