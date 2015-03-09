@@ -98,7 +98,7 @@ System.out.println(cycle.pad(10).apply(6));
 // => 6
 ````
 
-In version 1.9.0, implicit padding was added for the `comp` and `apply` methods,
+In version 1.9.0, implicit padding was added to the `comp` and `apply` methods,
 so it's rarely necessary to apply padding explicitly.
 
 
