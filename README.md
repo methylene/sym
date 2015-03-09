@@ -6,7 +6,7 @@ Permutations for Java. Get Maven:
 <dependency>
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>1.8</version>
+  <version>1.8.1</version>
 </dependency>
 ````
 
@@ -139,12 +139,13 @@ This can be verified by the following code:
 
 ````java
 String hello = "Hello world!";
-String elllo = Permutation.factory().sort(hello).apply(hello);
+String dello = Permutation.factory().sort(hello).apply(hello);
+System.out.println(dello);
 // => " !Hdellloorw"
-Permutation c = prod(cycle(7, 9).pad(12), 
-                     cycle(1, 4, 8, 10, 3, 6, 11), 
-                     cycle(0, 2, 5).pad(12));
-System.out.println(c.invert().apply(elllo));
+Permutation c = Permutation.pprod(cycle(7, 9), 
+                                  cycle(1, 4, 8, 10, 3, 6, 11), 
+                                  cycle(0, 2, 5));
+System.out.println(c.invert().apply(dello));
 // => "Hello world!"
 ````
 
