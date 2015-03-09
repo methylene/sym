@@ -3,6 +3,7 @@ package com.github.methylene.sym;
 import static com.github.methylene.sym.MyInt.box;
 import static com.github.methylene.sym.Permutation.cycle;
 import static com.github.methylene.sym.Permutation.identity;
+import static com.github.methylene.sym.Permutation.pprod;
 import static com.github.methylene.sym.Permutation.strictFactory;
 import static com.github.methylene.sym.Util.distinctInts;
 import static org.junit.Assert.assertArrayEquals;
@@ -370,6 +371,16 @@ public class PermutationTest {
     assertEquals(identity(1), cycle(0));
     assertEquals(identity(2), cycle(1));
     assertEquals(identity(3), cycle(2));
+  }
+
+  /* example from README */
+  @Test
+  public void testPprod() {
+    Permutation c0 = cycle(7, 9);
+    Permutation c1 = cycle(1, 4, 8, 10, 3, 6, 11);
+    Permutation c2 = cycle(0, 2, 5);
+    assertEquals("Hello world!", pprod(c0, c1, c2).invert().apply(" !Hdellloorw"));
+    assertEquals("Hello world!", pprod(Arrays.asList(c0, c1, c2)).invert().apply(" !Hdellloorw"));
   }
 
 }

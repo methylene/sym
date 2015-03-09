@@ -236,6 +236,23 @@ public final class Permutation implements Comparable<Permutation> {
     return prod(padded);
   }
 
+  /**
+   * Take the product of the given permutations.
+   * @param permutations an iterable permutations, all of which must have the same length
+   * @return the product (composition) of {@code permutations}, or a permutation of length 0 if {@code permutations}
+   * is empty
+   * @throws java.lang.IllegalArgumentException if not all permutations have the same length
+   */
+  public static Permutation pprod(Iterable<Permutation> permutations) {
+    int length = 0;
+    for (Permutation p : permutations)
+      length = Math.max(length, p.length());
+    Permutation result = null;
+    for (Permutation permutation : permutations)
+      result = result == null ? permutation.pad(length) : result.comp(permutation.pad(length));
+    return result == null ? identity(0) : result;
+  }
+
 
   /**
    * Raises this permutation to the {@code n}th power.
