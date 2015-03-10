@@ -6,7 +6,7 @@ Permutations for Java. Maven coordinates:
 <dependency>
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>1.9.0</version>
+  <version>1.9.1</version>
 </dependency>
 ````
 
