@@ -98,7 +98,7 @@ System.out.println(s02.comp(s01).apply(bca));
 // = > abc
 ````
 
-Applying the composed permutation `t02.comp(t01)` is equivalent to first applying `t01` and then `t02`
+Applying the composed permutation `s02.comp(s01)` is equivalent to first applying `s01` and then `s02`
 
 ````java
 char[] m = s01.apply(bca);
