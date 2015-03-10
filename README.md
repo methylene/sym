@@ -20,7 +20,7 @@ This library is available as a maven artifact:
 ### Shuffling an array
 
 ````java
-String[] a = new String[]{"Check", "out", "this", "great", "library"};
+String[] a = {"Check", "out", "this", "great", "library"};
 System.out.println(Permutation.random(a.length).apply(a));
 // => [great, library, Check, this, out]
 ````
