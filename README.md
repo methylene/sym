@@ -13,7 +13,7 @@ This library is available as a maven artifact:
 <dependency>
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>1.9.3</version>
+  <version>1.9.4</version>
 </dependency>
 ````
 
