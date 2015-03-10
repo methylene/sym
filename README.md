@@ -2,7 +2,7 @@
 
 ## Permutations for Java
 
-A permutation is an object that encapsulates certain operations on arrays
+Permutation are objects that encapsulate certain operations on arrays and lists,
 such as sorting, shuffling, swapping two elements, or moving an element by deleting and inserting.
 
 This library is available as a maven artifact:
