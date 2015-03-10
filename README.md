@@ -61,7 +61,7 @@ String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
 Permutation sort = Permutation.factory().sort(a);
 ````
 
-sort `a`, and get the permutation that undoes the sorting
+and get the permutation that undoes the sorting
 
 ````java
 String[] sorted = sort.apply(a);
