@@ -44,7 +44,7 @@ String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
 Permutation rearrange = Permutation.factory().from(header, newHeader);
 ````
 
-and we can now use that permutation on the rows
+and we can now rearrange the rows accordingly by applying it
 
 ````java
 rearrange.apply(uk);
@@ -56,17 +56,17 @@ rearrange.apply(lt);
 ### Searching an array
 
 This example shows how to find the index of a given string in an unsorted array.
-Get a permutation that sorts `a`
+We get a permutation that sorts `a`
 
 ````java
 String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
 Permutation sort = Permutation.factory().sort(a);
+String[] sorted = sort.apply(a);
 ````
 
-and get the permutation that undoes the sorting
+as well as the the permutation that undoes the sorting
 
 ````java
-String[] sorted = sort.apply(a);
 Permutation unsort = sort.invert();
 ````
 
@@ -111,7 +111,6 @@ System.out.println(cycle.padding(10).apply(6));
 
 In version 1.9.0, implicit padding was added to the `comp` and `apply` methods,
 so it's rarely necessary to apply padding explicitly.
-
 
 ### Cycle decomposition, orbits etc
 
