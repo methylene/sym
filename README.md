@@ -24,8 +24,8 @@ Assuming we have a bunch of CSV and a header
 
 ````java
 String[] header = new String[]{"country", "area", "pop", "gdp"};
-Object[] row1 = new Object[]{"UK", 243610, 255.6, 38309};
-Object[] row2 = new Object[]{"Lithuania", 65300, 45, 28245};
+Object[] uk = new Object[]{"UK", 243610, 255.6, 38309};
+Object[] lt = new Object[]{"Lithuania", 65300, 45, 28245};
 ````
 
 Given a rearrangement of the header fields, 
@@ -39,9 +39,9 @@ Permutation rearrange = Permutation.factory().from(header, newHeader);
 Now we can use the same permutation on the rows
 
 ````java
-rearrange.apply(row1);
+rearrange.apply(uk);
 // => [UK, 255.6, 38309, 243610]
-rearrange.apply(row2);
+rearrange.apply(lt);
 // => [Lithuania, 45, 28245, 65300]
 ````
 
