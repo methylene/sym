@@ -266,30 +266,21 @@ public final class Permutation implements Comparable<Permutation> {
   /**
    * Creates a cycle that acts as a delete followed by an insert. Examples:
    * <pre><code>
-   *   Permutation.delins(0, 2).padding(5).apply("12345");
+   *   Permutation.move(0, 2).apply("12345");
    *   => 23145
    *   </code></pre>
    * <pre><code>
-   *   Permutation.delins(3, 1).padding(5).apply("12345");
+   *   Permutation.move(3, 1).apply("12345");
    *   => 14235
    * </code></pre>
+   * If {@code delete == insert}, the identity of length {@code delete + 1} is returned.
    * @param delete a non-negative integer
    * @param insert a non-negative integer
    * @return a permutation of length {@code Math.max(delete, insert) + 1}
    * @see com.github.methylene.sym.Permutation#cycle
    */
-  public static Permutation delins(int delete, int insert) {
-    if (delete == insert) {
-      return identity(delete);
-    } else {
-      int shift = delete < insert ? -1 : 1;
-      int[] c = new int[Math.abs(delete - insert) + 1];
-      c[0] = delete;
-      for (int k = 1; k < c.length; k += 1) {
-        c[k] = insert + shift * (k - 1);
-      }
-      return cycle(c);
-    }
+  public static Permutation move(int delete, int insert) {
+    return cycle(Util.sequence(insert, delete, true));
   }
 
   /**
@@ -384,7 +375,12 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Write this permutation as a product of non trivial cycles.
+   * <p>Write this permutation as a product of cycles.</p>
+   * <p>For every permutation {@code p} in the returned list, the following are true:</p>
+   * <pre><code>
+   *   p.isCycle() == true;
+   *   p.isIdentity() == false;
+   * </code></pre>
    * @return a cycle decomposition of this permutation
    * @see com.github.methylene.sym.Permutation#cycle
    * @see com.github.methylene.sym.Permutation#isCycle

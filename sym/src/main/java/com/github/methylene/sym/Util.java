@@ -21,15 +21,34 @@ public class Util {
   }
 
   /**
-   * Creates an array of the numbers {@code 0} to {@code length - 1} in sequence.
-   * @param length a non-negative number
-   * @return a sequence of length {@code length}
+   * Creates an array of the numbers {@code start} to {@code end} in sequence.
+   * @param start a number
+   * @param end a number
+   * @param inclusive whether or not the greater of {@code start} and {@code end}
+   *                  should be included in the result
+   * @return the sequence from {@code start} to {@code end}
    */
-  public static int[] sequence(int length) {
-    int[] result = new int[length];
-    for (int i = 0; i < length; i += 1)
-      result[i] = i;
+  public static int[] sequence(int start, int end, boolean inclusive) {
+    int direction = start < end ? 1 : -1;
+    if (inclusive)
+      end += direction;
+    int[] result = new int[direction * (end - start)];
+    for (int i = 0; i < result.length; i += 1)
+      result[i] = start + direction * i;
     return result;
+  }
+
+  /**
+   * Creates an array of the numbers {@code 0} (included) to {@code end} (excluded) in sequence.
+   * If {@code end == 0} an empty array is returned.
+   * @param end a non-negative number
+   * @return an array of length {@code end}
+   * @throws java.lang.IllegalArgumentException if {@code end} is negative
+   */
+  public static int[] sequence(int end) {
+    if (end < 0)
+      throw new IllegalArgumentException("illegal end: " + end);
+    return sequence(0, end, false);
   }
 
   /**

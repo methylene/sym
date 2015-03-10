@@ -3,6 +3,7 @@ package com.github.methylene.sym;
 import static com.github.methylene.sym.MyInt.box;
 import static com.github.methylene.sym.Permutation.cycle;
 import static com.github.methylene.sym.Permutation.identity;
+import static com.github.methylene.sym.Permutation.move;
 import static com.github.methylene.sym.Permutation.prod;
 import static com.github.methylene.sym.Permutation.strictFactory;
 import static com.github.methylene.sym.Util.distinctInts;
@@ -326,9 +327,11 @@ public class PermutationTest {
   }
 
   @Test
-  public void testInsert() {
-    assertEquals("23145", Permutation.delins(0, 2).apply("12345"));
-    assertEquals("14235", Permutation.delins(3, 1).apply("12345"));
+  public void testMove() {
+    assertEquals(identity(6), move(5, 5));
+    assertEquals("213", Permutation.move(0, 1).apply("123"));
+    assertEquals("23145", Permutation.move(0, 2).apply("12345"));
+    assertEquals("14235", Permutation.move(3, 1).apply("12345"));
   }
 
   /* various assertions about Sym(5) */
