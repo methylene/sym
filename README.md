@@ -1,6 +1,11 @@
 # sym
 
-Permutations for Java. Maven coordinates:
+## Permutations for Java
+
+A permutation is an object that encapsulates certain operations on arrays
+such as sorting, shuffling, swapping two elements, or moving an element by deleting and inserting.
+
+This library is available as a maven artifact:
 
 ````xml
 <dependency>
@@ -10,7 +15,7 @@ Permutations for Java. Maven coordinates:
 </dependency>
 ````
 
-# Shuffling an array
+### Shuffling an array
 
 ````java
 String[] sentence = new String[]{"Check", "out", "this", "great", "library"};
@@ -18,7 +23,7 @@ Permutation.random(sentence.length).apply(sentence);
 // => [great, library, Check, this, out]
 ````
 
-# Changing column order
+### Changing column order
 
 In this use case we have some arrays and a header that gives meaningful names to their contents
 
@@ -46,7 +51,7 @@ rearrange.apply(lt);
 // => [Lithuania, 45, 28245, 65300]
 ````
 
-# Searching an array
+### Searching an array
 
 This example shows how to find the index of a given string in an unsorted array.
 Get a permutation that sorts `a`
@@ -73,7 +78,7 @@ if (i >= 0) {
 // => 3
 ````
 
-# Composition
+### Composition
 
 Permutations can be composed using the `comp` method.
 
@@ -85,7 +90,7 @@ System.out.println(t02.comp(t01).apply(bca));
 // = > abc
 ````
 
-# Padding
+### Padding
 
 Padding is a generic way to build longer permutations from shorter ones.
 
@@ -105,7 +110,7 @@ In version 1.9.0, implicit padding was added to the `comp` and `apply` methods,
 so it's rarely necessary to apply padding explicitly.
 
 
-# Cycle decomposition, orbits etc
+### Cycle decomposition, orbits etc
 
 Consider the following
 
