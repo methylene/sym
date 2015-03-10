@@ -33,7 +33,7 @@ Object[] uk = new Object[]{"UK", 243610, 255.6, 38309};
 Object[] lt = new Object[]{"Lithuania", 65300, 45, 28245};
 ````
 
-Our client now gives us "rearrangement" of the header fields, and asks us to rearrange the
+Our client hands us a "rearrangement" of the header fields, and asks us to rearrange the
 arrays accordingly. Fortunately, we can use `Permutation.from` 
 to find a permutation that performs the rearranging
 
@@ -42,7 +42,7 @@ String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
 Permutation rearrange = Permutation.factory().from(header, newHeader);
 ````
 
-Now we can use the this permutation on the rows
+and we can now use that permutation on the rows
 
 ````java
 rearrange.apply(uk);
@@ -61,13 +61,14 @@ String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
 Permutation sort = Permutation.factory().sort(a);
 ````
 
-Sort `a`, and get the permutation that undoes the sorting
+sort `a`, and get the permutation that undoes the sorting
 
 ````java
 String[] sorted = sort.apply(a);
 Permutation unsort = sort.invert();
 ````
-Now we can find the index of `"x"` using 
+
+and now we can find the index of `"x"` using 
 [binary search](http://docs.oracle.com/javase/7/docs/api/java/util/Arrays.html):
 
 ````java
@@ -112,7 +113,7 @@ so it's rarely necessary to apply padding explicitly.
 
 ### Cycle decomposition, orbits etc
 
-Consider the following
+Consider the following code
 
 ````java
 static int[] findCycle(Permutation p) {
@@ -129,14 +130,14 @@ public static void main(String[] args) {
 }
 ````
 
-This finds a permutation that sorts the string `"Hello world!"` (there are several)
-and then prints its decomposition into <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycles</a>:
+which finds a permutation that sorts the string `"Hello world!"` (there are several)
+and then prints its decomposition into <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycles</a>
 
     [7, 9]
     [1, 4, 8, 10, 3, 6, 11]
     [0, 2, 5]
 
-This can be verified by the following code:
+as can be verified by the following code
 
 ````java
 Permutation c = Permutation.prod(cycle(9, 7),
