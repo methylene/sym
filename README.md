@@ -91,28 +91,27 @@ if (i >= 0) {
 Permutations can be composed using the `comp` method.
 
 ````java
-char[] bca = new char[]{ 'b', 'c', 'a' };
 Permutation s02 = Permutation.swap(0, 2);
 Permutation s01 = Permutation.swap(0, 1);
-System.out.println(s02.comp(s01).apply(bca));
+System.out.println(s02.comp(s01).apply("bca"));
 // = > abc
 ````
 
 Applying the composed permutation `s02.comp(s01)` is equivalent to first applying `s01` and then `s02`
 
 ````java
-char[] m = s01.apply(bca);
-m = s02.apply(m);
-System.out.println(m);
+String s = s01.apply("bca");
+s = s02.apply(s);
+System.out.println(s);
 // = > abc
 ````
 
 but doing it the other way round will generally give a different result.
 
 ````java
-char[] m = s02.apply(bca);
-m = s01.apply(m);
-System.out.println(m);
+String s = s02.apply("bca");
+s = s01.apply(s);
+System.out.println(s);
 // = > cab
 ````
 
@@ -123,21 +122,19 @@ Padding is a generic way to build longer permutations from shorter ones.
 Indexes `i >= p.length(), i < m` are not moved by a padded permutation `p.padding(m)`:
 
 ````java
-Permutation cycle = Permutation.cycle(0, 1, 2, 3);
-System.out.println(cycle.apply(0));
-// => 1
-System.out.println(cycle.apply(3));
-// => 0
-System.out.println(cycle.padding(10).apply(6));
-// => 6
+Permutation c = Permutation.cycle(0, 1, 2, 3);
+System.out.println(c.apply("1234"));
+// => 4123
+System.out.println(c.padding(10).apply("1234567890"));
+// => 4123567890
 ````
 
 In version 1.9.0, implicit padding was added to the `comp` and `apply` methods,
 so it's rarely necessary to apply padding explicitly.
 
 ````java
-System.out.println(cycle.apply(6));
-// => 6
+System.out.println(c.apply("1234567890"));
+// => 4123567890
 ````
 
 ### Cycle decomposition, orbits etc
