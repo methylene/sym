@@ -53,15 +53,14 @@ Object[] uk = {"UK", 243610, 255.6, 38309};
 Object[] lt = {"Lithuania", 65300, 45, 28245};
 ````
 
-Our client hands us a "rearrangement" of the header fields, and asks us to rearrange the
-rows accordingly.
+Our client hands us a "rearrangement" of the header fields, and asks us to change the columns accordingly.
 
 ````java
 String[] newHeader = {"country", "pop", "gdp", "area"};
 ````
 
 Fortunately, we can use the `Permutation.from` method 
-to find a permutation that performs the rearranging,
+to find a permutation that performs this operation,
 
 ````java
 Permutation rearrange = Permutation.factory().from(header, newHeader);
@@ -79,7 +78,7 @@ System.out.println(Arrays.toString(rearrange.apply(lt)));
 ### Searching an array
 
 This example shows how to find the index of a given string in an unsorted array.
-We get a permutation that sorts `a`
+We obtain a permutation that sorts `a`
 
 ````java
 String[] a = {"a", "f", "v", "x", "x", "n"};
