@@ -92,10 +92,28 @@ Permutations can be composed using the `comp` method.
 
 ````java
 char[] bca = new char[]{ 'b', 'c', 'a' };
-Permutation t02 = Permutation.swap(0, 2);
-Permutation t01 = Permutation.swap(0, 1);
-System.out.println(t02.comp(t01).apply(bca));
+Permutation s02 = Permutation.swap(0, 2);
+Permutation s01 = Permutation.swap(0, 1);
+System.out.println(s02.comp(s01).apply(bca));
 // = > abc
+````
+
+Applying the composed permutation `t02.comp(t01)` is equivalent to first applying `t01` and then `t02`
+
+````java
+char[] m = s01.apply(bca);
+m = s02.apply(m);
+System.out.println(m);
+// = > abc
+````
+
+but doing it the other way round will generally give a different result.
+
+````java
+char[] m = s02.apply(bca);
+m = s01.apply(m);
+System.out.println(m);
+// = > cab
 ````
 
 ### Padding
