@@ -47,23 +47,26 @@ rearrange.apply(lt);
 
 # Searching an array
 
-First we get a permutation that sorts `a`
+Get a permutation that sorts `a`
 
 ````java
 String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
 Permutation sort = Permutation.factory().sort(a);
 ````
-Now we use the `sort` permutation to sort `a`, and also calculate the permutation that undoes the sorting
+Sort `a`, and get the permutation that undoes the sorting
 
 ````java
 String[] sorted = sort.apply(a);
 Permutation unsort = sort.invert();
 ````
-Now we can get the index of a given string in `a` as follows:
+Now we can find the index of a given string using 
+[binary search](http://docs.oracle.com/javase/7/docs/api/java/util/Arrays.html):
 
 ````java
 int i = Arrays.binarySearch(sorted, "x");
-unsort.apply(i);
+if (i >= 0) {
+  System.out.println(unsort.apply(i));
+}
 // => 3
 ````
 
