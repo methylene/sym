@@ -173,12 +173,12 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Create a permutation of greater {@code length}.
+   * Create a permutation of greater or equal {@code length}.
    * If {@code n} is a number such that {@code this.length <= n}, the following holds
    * for all indexes {@code 0 <= i < n}:
    * <pre><code>
-   *   this.padding(n).apply(i) = this.apply(i) // if i is less than this.length
-   *   this.padding(n).apply(i) // otherwise
+   *   this.padding(n).apply(i) == this.apply(i) // if i < this.length()
+   *   this.padding(n).apply(i) == i // if i >= this.length()
    * </code></pre>
    * @param targetLength a number that is not smaller than {@code this.length}
    * @return the padded permutation
