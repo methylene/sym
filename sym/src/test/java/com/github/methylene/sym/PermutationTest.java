@@ -52,6 +52,9 @@ public class PermutationTest {
     Permutation p = Permutation.random((int) (a.length * Math.random()));
     for (int i = 0; i < a.length; i += 1) {
       assertEquals(p.apply(a)[p.apply(i)], a[i]);
+      if (i >= p.length()) {
+        assertEquals(a[i], p.apply(a)[i]);
+      }
     }
   }
 

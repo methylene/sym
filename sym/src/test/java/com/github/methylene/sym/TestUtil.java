@@ -1,6 +1,7 @@
 package com.github.methylene.sym;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -180,12 +181,17 @@ public class TestUtil {
       max = Math.max(max, i);
     int[] test = new int[max + 1];
     Arrays.fill(test, -1);
-    for (int i = 0; i < input.length; i += 1) {
-      if (test[input[i]] == -1) {
-        test[input[i]] = i;
+    int i = (int) (Math.random() * input.length);
+    for (int k = 0; k < input.length; k += 1) {
+      if (test[(int) input[i]] == -1) {
+        test[(int) input[i]] = i;
       } else {
-        return new int[] { test[input[i]], i };
+        return new int[] { test[(int) input[i]], i };
       }
+      if (k > input.length)
+        break;
+      i += 1;
+      i = i % input.length;
     }
     return new int[0];
   }
@@ -208,12 +214,17 @@ public class TestUtil {
       max = (int) Math.max(max, i);
     int[] test = new int[max + 1];
     Arrays.fill(test, -1);
-    for (int i = 0; i < input.length; i += 1) {
+    int i = (int) (Math.random() * input.length);
+    for (int k = 0; k < input.length; k += 1) {
       if (test[(int) input[i]] == -1) {
         test[(int) input[i]] = i;
       } else {
         return new int[] { test[(int) input[i]], i };
       }
+      if (k > input.length)
+        break;
+      i += 1;
+      i = i % input.length;
     }
     return new int[0];
   }
@@ -244,7 +255,7 @@ public class TestUtil {
 
   @Test public void testDuplicateIndexes() {
     int[] ints = duplicateIndexes(new int[]{1, 2, 1});
-    assertArrayEquals(new int[]{0, 2}, ints);
+    assertTrue(Arrays.equals(new int[]{0, 2}, ints) || Arrays.equals(new int[]{2, 0}, ints));
   }
 
 }
