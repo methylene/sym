@@ -135,6 +135,11 @@ System.out.println(cycle.padding(10).apply(6));
 In version 1.9.0, implicit padding was added to the `comp` and `apply` methods,
 so it's rarely necessary to apply padding explicitly.
 
+````java
+System.out.println(cycle.apply(6));
+// => 6
+````
+
 ### Cycle decomposition, orbits etc
 
 Consider the following code
