@@ -13,16 +13,34 @@ This library is available as a maven artifact:
 <dependency>
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>1.9.2</version>
+  <version>1.9.3</version>
 </dependency>
 ````
 
 ### Shuffling an array
 
 ````java
-String[] sentence = new String[]{"Check", "out", "this", "great", "library"};
-Permutation.random(sentence.length).apply(sentence);
+String[] a = new String[]{"Check", "out", "this", "great", "library"};
+System.out.println(Permutation.random(a.length).apply(a));
 // => [great, library, Check, this, out]
+````
+
+A permutation can be applied to arrays, lists or strings, as long as they are not too short.
+
+````java
+System.out.println(new Permutation(new int[]{0, 2, 1}).apply("abc"));
+// => acb
+System.out.println(new Permutation(new int[]{0, 2, 1}).apply("ab"));
+// => IllegalArgumentException: input too short: 2, minimum input length is 3
+````
+
+It is also possible to apply the permutation to an index.
+
+````java
+System.out.println(new Permutation(new int[]{0, 2, 1}).apply(1));
+// => 2
+System.out.println(new Permutation(new int[]{0, 2, 1}).apply(-1));
+// => IllegalArgumentException: negative index: -1
 ````
 
 ### Changing column order

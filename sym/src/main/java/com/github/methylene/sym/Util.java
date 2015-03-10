@@ -79,11 +79,12 @@ public class Util {
   }
 
   /**
-   * Add sequence numbers at the end of given array.
+   * Add sequence numbers at the end of given array. If the input array is not shorter than the input,
+   * it is returned. Otherwise a new array is created.
    * @param a an array
-   * @param targetLength a number not less than {@code a.length}
-   * @return the array {@code b} defined as {@code b[i] = a[i]} for {@code i < a.length},
-   * and {@code b[i] = i} otherwise
+   * @param targetLength a non negative number
+   * @return the array {@code b} defined as {@code b[i] = a[i]} if {@code i < a.length},
+   * and {@code b[i] = i} if {@code a.length <= i < targetLength}
    */
   public static int[] padding(int[] a, int targetLength) {
     if (targetLength <= a.length)
@@ -118,7 +119,7 @@ public class Util {
    * @param maxFactor controls the size of random numbers that are generated. All generated numbers will be
    *                  smaller than {@code size * maxFactor}.
    *                  This number must be not be less than 2.
-   * @return Random array of {@code size} distinct integers between {@code 0} and {@code size * maxFactor}
+   * @return a random array of {@code size} distinct nonnegative integers, all less than {@code size * maxFactor}
    * @throws java.lang.IllegalArgumentException if {@code factor} is less than 2
    */
   public static int[] distinctInts(int size, int maxFactor) {
@@ -144,7 +145,12 @@ public class Util {
   }
 
   /**
-   * Generates a list of distinct strings of given length.
+   * Generates an array of distinct strings of the requested length. 
+   * The array always starts with {@code "a"} and then all lower case one letter strings in lexicographic order.
+   * Next come all lowercase two letter
+   * strings starting with {@code "aa"}, in lexicographic order.
+   * Note that the array returned by this method is sorted if and only if {@code n < 27},
+   * because {@code "b".compareTo("aa") > 0}.
    * @param n length of array to generate
    * @return a list of distinct strings of length n
    */
@@ -159,11 +165,11 @@ public class Util {
   }
 
   /**
-   * If called iteratively, this produces an infinite sequence of distinct strings.
+   * Utility method used by symbols method.
    * @param s a string
    * @return a string that's different from {@code s}
    */
-  public static String nextString(String s) {
+  private static String nextString(String s) {
     char last = s.charAt(s.length() - 1);
     if (last == 'z') {
       int nflip = 1;

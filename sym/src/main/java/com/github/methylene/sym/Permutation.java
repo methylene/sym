@@ -578,7 +578,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public Object[] apply(Object[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     Object[] result = new Object[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -597,7 +597,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public Comparable[] apply(Comparable[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     Comparable[] result = new Comparable[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -615,7 +615,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public String[] apply(String[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     String[] result = new String[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -633,7 +633,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public byte[] apply(byte[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     byte[] result = new byte[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -651,7 +651,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public short[] apply(short[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     short[] result = new short[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -669,7 +669,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public int[] apply(int[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     int[] result = new int[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -687,7 +687,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public long[] apply(long[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     long[] result = new long[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -705,7 +705,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public float[] apply(float[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     float[] result = new float[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -723,7 +723,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public double[] apply(double[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     double[] result = new double[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -741,7 +741,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public boolean[] apply(boolean[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     boolean[] result = new boolean[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -759,7 +759,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public char[] apply(char[] input) {
     if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length);
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
     char[] result = new char[input.length];
     for (int i = 0; i < posmap.length; i += 1)
       result[posmap[i]] = input[i];
@@ -777,7 +777,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public String apply(String s) {
     if (s.length() < posmap.length)
-      throw new IllegalArgumentException("s too short: " + s.length());
+      throw new IllegalArgumentException("input too short: " + s.length() + ", minimum input length is " + posmap.length);
     char[] dst = new char[s.length()];
     s.getChars(0, s.length(), dst, 0);
     return new String(apply(dst));
@@ -793,7 +793,7 @@ public final class Permutation implements Comparable<Permutation> {
   public <E> List<E> apply(List<E> input) {
     int length = input.size();
     if (length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + length);
+      throw new IllegalArgumentException("input too short: " + length + ", minimum input size is " + posmap.length);
     ArrayList<E> result = new ArrayList<E>(length);
     for (int i = 0; i < length; i += 1)
       result.add(null);
@@ -807,7 +807,7 @@ public final class Permutation implements Comparable<Permutation> {
    * <pre><code>
    *   Util.symbols(this.length());
    * </code></pre>
-   * @return the result of rearranging a particular standard array using this instance
+   * @return the result of applying this permutation to a certain standard array of length {@code this.length}
    * @see com.github.methylene.sym.Util#symbols
    * @see com.github.methylene.sym.Permutation#apply(String[])
    */
