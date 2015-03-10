@@ -66,14 +66,13 @@ public class Util {
    * @return the array {@code b} defined as {@code b[i] = a[i]} for {@code i < a.length},
    * and {@code b[i] = i} otherwise
    */
-  public static int[] pad(int[] a, int targetLength) {
+  public static int[] padding(int[] a, int targetLength) {
     if (targetLength <= a.length)
       return a;
     int[] result = new int[targetLength];
     System.arraycopy(a, 0, result, 0, a.length);
-    for (int i = a.length; i < targetLength; i += 1) {
+    for (int i = a.length; i < targetLength; i += 1)
       result[i] = i;
-    }
     return result;
   }
 

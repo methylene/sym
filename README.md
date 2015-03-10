@@ -86,7 +86,7 @@ System.out.println(t02.comp(t01).apply(bca));
 
 Padding is a generic way to build longer permutations from shorter ones.
 
-Indexes `i >= p.length(), i < m` are not moved by a padded permutation `p.pad(m)`:
+Indexes `i >= p.length(), i < m` are not moved by a padded permutation `p.padding(m)`:
 
 ````java
 Permutation cycle = Permutation.cycle(0, 1, 2, 3);
@@ -94,7 +94,7 @@ System.out.println(cycle.apply(0));
 // => 1
 System.out.println(cycle.apply(3));
 // => 0
-System.out.println(cycle.pad(10).apply(6));
+System.out.println(cycle.padding(10).apply(6));
 // => 6
 ````
 

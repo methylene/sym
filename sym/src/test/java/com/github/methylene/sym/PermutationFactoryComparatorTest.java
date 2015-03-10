@@ -1,8 +1,12 @@
 package com.github.methylene.sym;
 
+import static com.github.methylene.sym.MyInt.COMP;
 import static org.junit.Assert.assertArrayEquals;
 import static com.github.methylene.sym.TestUtil.randomNumbers;
 import static com.github.methylene.sym.MyInt.box;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /* like PermutationFactoryTest, but use the Comparator versions of sort and from */
@@ -67,7 +71,7 @@ public class PermutationFactoryComparatorTest {
     }
   }
 
-  @Test (expected = IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void testStrictSortFail() {
     strict.sort(randomMyInts(100, 200), MyInt.COMP);
   }
@@ -79,25 +83,54 @@ public class PermutationFactoryComparatorTest {
     strict.from(a, b, MyInt.COMP);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testMismatch() {
-    MyInt[] a = randomMyInts(100, 110);
-    Object[] b = Permutation.random(a.length).apply(a);
 
-    int[] dupes = TestUtil.duplicateIndexes(b, MyInt.COMP);
+    for (int _ = 0; _ < 1000; _ += 1) {
+      try {
+        MyInt[] a = randomMyInts(100, 110);
+        Object[] b = Permutation.random(a.length).apply(a);
 
-    // subtly mess things up by changing b,
-    // so that all elements in a can still be found in b,
-    // but b is not a reordering of a anymore
-    for (int j = 0; j < b.length; j += 1) {
-      if (!b[dupes[0]].equals(b[j])) {
-        b[dupes[0]] = b[j];
-        break;
+        int[] bdupes = TestUtil.duplicateIndexes(b, MyInt.COMP);
+        int[] adupes = TestUtil.duplicateIndexes(a, MyInt.COMP);
+
+        MyInt changed = null;
+        // subtly mess things up by changing b,
+        // so that all elements in a can still be found in b,
+        // but b is not a reordering of a anymore
+        if (Math.random() < 0.5) {
+          for (int j = 0; j < b.length; j += 1) {
+            if (!b[bdupes[0]].equals(b[j])) {
+              b[bdupes[0]] = b[j];
+              changed = (MyInt) b[j];
+              break;
+            }
+          }
+        } else {
+          for (int j = 0; j < a.length; j += 1) {
+            if (!a[adupes[0]].equals(a[j])) {
+              a[adupes[0]] = a[j];
+              changed = a[j];
+              break;
+            }
+          }
+        }
+        int bc = TestUtil.count(b, changed);
+        int ac = TestUtil.count(a, changed);
+        assertNotEquals(bc, ac);
+        assertTrue(ac > 0);
+        assertTrue(bc > 0);
+
+
+        // this should throw an exception
+        nonstrict.from(a, b, MyInt.COMP).apply(a);
+        assertFalse("we should never get here", true);
+      } catch (IllegalArgumentException __) {
+        // ignore
       }
     }
 
-    // this should throw an exception
-    nonstrict.from(a, b, MyInt.COMP).apply(a);
+
   }
 
 

@@ -333,8 +333,7 @@ public final class PermutationFactory {
    * or if {@code b} can not be obtained by rearranging {@code a}.
    */
   public Permutation from(int[] a, int[] b) {
-    if (a.length != b.length)
-      throw new IllegalArgumentException("arguments must have equal length");
+    if (a.length != b.length) {throw new IllegalArgumentException("arguments must have equal length");}
     Permutation sortB = sort(b);
     int[] sortedB = sortB.apply(b);
     Permutation unsortB = sortB.invert();
@@ -342,8 +341,7 @@ public final class PermutationFactory {
     boolean[] used = new boolean[b.length];
     for (int i = 0; i < a.length; i += 1) {
       int idx = Arrays.binarySearch(sortedB, a[i]);
-      if (idx < 0)
-        throw new IllegalArgumentException("not in b: " + a[i]);
+      if (idx < 0) {throw new IllegalArgumentException("not in b: " + a[i]);}
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
@@ -363,6 +361,8 @@ public final class PermutationFactory {
         }
       }
       result[i] = unsortB.apply(idx + offset);
+      if (a[i] != b[result[i]])
+        throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
     return new Permutation(result, validate);
@@ -372,6 +372,7 @@ public final class PermutationFactory {
    * Returns a permutation that rearranges {@code a} into {@code b}.
    * See the documentation of
    * {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])} for details.
+   * @throws java.lang.NullPointerException if {@code a} or {@code b} contain null
    */
   public Permutation from(Comparable[] a, Comparable[] b) {
     if (a.length != b.length)
@@ -404,6 +405,8 @@ public final class PermutationFactory {
         }
       }
       result[i] = unsortB.apply(idx + offset);
+      if (!a[i].equals(b[result[i]]))
+        throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
     return new Permutation(result, validate);
@@ -445,6 +448,8 @@ public final class PermutationFactory {
         }
       }
       result[i] = unsortB.apply(idx + offset);
+      if (a[i] != b[result[i]])
+        throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
     return new Permutation(result, validate);
@@ -486,6 +491,8 @@ public final class PermutationFactory {
         }
       }
       result[i] = unsortB.apply(idx + offset);
+      if (a[i] != b[result[i]])
+        throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
     return new Permutation(result, validate);
@@ -527,6 +534,8 @@ public final class PermutationFactory {
         }
       }
       result[i] = unsortB.apply(idx + offset);
+      if (a[i] != b[result[i]])
+        throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
     return new Permutation(result, validate);
@@ -568,6 +577,8 @@ public final class PermutationFactory {
         }
       }
       result[i] = unsortB.apply(idx + offset);
+      if (a[i] != b[result[i]])
+        throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
     return new Permutation(result, validate);
@@ -579,6 +590,7 @@ public final class PermutationFactory {
    * It is needed for efficient lookups in {@code b}.
    * See the documentation of
    * {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])} for details.
+   * @throws java.lang.NullPointerException if {@code a} or {@code b} contain null
    */
   public Permutation from(Object[] a, Object[] b, Comparator comp) {
     if (a.length != b.length)
@@ -611,6 +623,8 @@ public final class PermutationFactory {
         }
       }
       result[i] = unsortB.apply(idx + offset);
+      if (!a[i].equals(b[result[i]]))
+        throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
     return new Permutation(result, validate);

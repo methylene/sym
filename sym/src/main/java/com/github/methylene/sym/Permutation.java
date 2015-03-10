@@ -4,11 +4,9 @@ import static com.github.methylene.sym.Util.distinctInts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.RandomAccess;
 
 /**
  * <p>A permutation that can be used to rearrange arrays.</p>
@@ -161,13 +159,13 @@ public final class Permutation implements Comparable<Permutation> {
    * permutations, to make the composition meaningful.</p>
    * @param other a permutation
    * @return the product of this instance and {@code other}
-   * @see com.github.methylene.sym.Permutation#pad
+   * @see com.github.methylene.sym.Permutation#padding
    * @see com.github.methylene.sym.Permutation#prod
    */
   public Permutation comp(Permutation other) {
     int length = Math.max(posmap.length, other.posmap.length);
-    int[] lhs = Util.pad(posmap, length);
-    int[] rhs = Util.pad(other.posmap, length);
+    int[] lhs = Util.padding(posmap, length);
+    int[] rhs = Util.padding(other.posmap, length);
     int[] result = new int[length];
     for (int i = 0; i < length; i += 1)
       result[i] = lhs[rhs[i]];
@@ -179,19 +177,19 @@ public final class Permutation implements Comparable<Permutation> {
    * If {@code n} is a number such that {@code this.length <= n}, the following holds
    * for all indexes {@code 0 <= i < n}:
    * <pre><code>
-   *   this.pad(n).apply(i) = this.apply(i) // if i is less than this.length
-   *   this.pad(n).apply(i) // otherwise
+   *   this.padding(n).apply(i) = this.apply(i) // if i is less than this.length
+   *   this.padding(n).apply(i) // otherwise
    * </code></pre>
    * @param targetLength a number that is not smaller than {@code this.length}
    * @return the padded permutation
    * @throws java.lang.IllegalArgumentException if {@code targetLength} is less than {@code this.length}
    */
-  public Permutation pad(int targetLength) {
+  public Permutation padding(int targetLength) {
     if (targetLength < posmap.length)
       throw new IllegalArgumentException("targetLength can not be less than current length");
     if (targetLength == posmap.length)
       return this;
-    return new Permutation(Util.pad(posmap, targetLength));
+    return new Permutation(Util.padding(posmap, targetLength));
   }
 
   /**
@@ -268,11 +266,11 @@ public final class Permutation implements Comparable<Permutation> {
   /**
    * Creates a cycle that acts as a delete followed by an insert. Examples:
    * <pre><code>
-   *   Permutation.delins(0, 2).pad(5).apply("12345");
+   *   Permutation.delins(0, 2).padding(5).apply("12345");
    *   => 23145
    *   </code></pre>
    * <pre><code>
-   *   Permutation.delins(3, 1).pad(5).apply("12345");
+   *   Permutation.delins(3, 1).padding(5).apply("12345");
    *   => 14235
    * </code></pre>
    * @param delete a non-negative integer
@@ -417,7 +415,7 @@ public final class Permutation implements Comparable<Permutation> {
     }
     ArrayList<Permutation> result = new ArrayList<Permutation>(orbits.size());
     for (int[] orbit : orbits) {
-      result.add(cycle(orbit).pad(posmap.length));
+      result.add(cycle(orbit).padding(posmap.length));
     }
     return result;
   }
@@ -439,7 +437,7 @@ public final class Permutation implements Comparable<Permutation> {
       }
       assert orbit != null;
       for (int i = 0; i < orbit.length - 1; i += 1)
-        result.add(swap(orbit[i], orbit[i + 1]).pad(posmap.length));
+        result.add(swap(orbit[i], orbit[i + 1]).padding(posmap.length));
     }
     return result;
   }

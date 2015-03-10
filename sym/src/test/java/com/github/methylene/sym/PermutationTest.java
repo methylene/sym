@@ -90,10 +90,10 @@ public class PermutationTest {
     Permutation.perm1(-1, 0, 1);
   }
 
-  /* test defining property of pad */
+  /* test defining property of padding */
   @Test public void testPad() {
     Permutation p = strictFactory().sort(new int[]{4, 6, 10, -5, 195, 33, 2});
-    Permutation padded = p.pad(100);
+    Permutation padded = p.padding(100);
     for (int i = 0; i < 100; i += 1) {
       if (i < p.length())
         assertEquals(p.apply(i), padded.apply(i));
@@ -336,8 +336,8 @@ public class PermutationTest {
       int order = p.order();
       sign += p.signature();
       List<Permutation> cycles = p.toCycles();
-      assertEquals(p, Permutation.prod(cycles).pad(5));
-      assertEquals(p, Permutation.prod(p.toTranspositions()).pad(5));
+      assertEquals(p, Permutation.prod(cycles).padding(5));
+      assertEquals(p, Permutation.prod(p.toTranspositions()).padding(5));
       if (p.isReverse()) {
         assertEquals(2, order);
         assertEquals(1, p.signature());

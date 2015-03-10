@@ -226,6 +226,21 @@ public class TestUtil {
     return result;
   }
 
+  static int count(int[] a, int i) {
+    int c = 0;
+    for (int j: a)
+      if (j == i)
+        c += 1;
+    return c;
+  }
+
+  static int count(Object[] a, Object i) {
+    int c = 0;
+    for (Object j: a)
+      if (j.equals(i))
+        c += 1;
+    return c;
+  }
 
   @Test public void testDuplicateIndexes() {
     int[] ints = duplicateIndexes(new int[]{1, 2, 1});
