@@ -3,7 +3,9 @@
 ## Permutations for Java
 
 Permutation are objects that encapsulate certain operations on arrays and lists,
-such as sorting, shuffling, swapping two elements, or moving an element by deleting and inserting.
+such as sorting, shuffling, swapping two elements, or 
+[moving](http://methylene.github.io/sym/current/com/github/methylene/sym/Permutation.html#move%28int,%20int%29) 
+an element.
 
 This library is available as a maven artifact:
 
