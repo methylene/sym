@@ -29,11 +29,16 @@ Object[] row2 = new Object[]{"Lithuania", 65300, 45, 28245};
 ````
 
 Given a rearrangement of the header fields, 
-it's easy to apply the same reordering to the data rows using `Permutation.from`:
+we can use `Permutation.from` to find the permutation that rearranges `header` into `newHeader`
 
 ````java
 String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
 Permutation rearrange = Permutation.factory().from(header, newHeader);
+````
+
+Now we can use the same permutation on the rows
+
+````java
 rearrange.apply(row1);
 // => [UK, 255.6, 38309, 243610]
 rearrange.apply(row2);
@@ -42,26 +47,18 @@ rearrange.apply(row2);
 
 # Searching an array
 
-Finding the index of a given element `e` in an array `a` is an `O(n)` 
-operation at first glance, because we need to check equality on each element of `a` in sequence.
-
-If we search more than once in the same array, a HashMap 
-that maps each element to its index could be used to speed this up.
-Here's another way of doing it.
-
-We make a sorted copy of `a`, along with the `unsort` permutation,
-which maps indexes in `sorted` back to their original position in `a`.
+First we get a permutation that sorts `a`
 
 ````java
 String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
 Permutation sort = Permutation.factory().sort(a);
-Permutation unsort = sort.invert();
-String[] sorted = sort.apply(a);
 ````
+Now we use the `sort` permutation to sort `a`, and also calculate the permutation that undoes the sorting
 
-`sorted` is equal to what `Arrays.sort(a)` would produce.
-However `sort.apply(a)` returns a copy and leaves `a` unchanged.
-
+````java
+String[] sorted = sort.apply(a);
+Permutation unsort = sort.invert();
+````
 Now we can get the index of a given string in `a` as follows:
 
 ````java
