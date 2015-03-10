@@ -36,15 +36,20 @@ Object[] lt = new Object[]{"Lithuania", 65300, 45, 28245};
 ````
 
 Our client hands us a "rearrangement" of the header fields, and asks us to rearrange the
-arrays accordingly. Fortunately, we can use `Permutation.from` 
-to find a permutation that performs the rearranging
+arrays accordingly.
 
 ````java
 String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
+````
+
+Fortunately, we can use the `Permutation.from` method 
+to find a permutation that performs the rearranging,
+
+````java
 Permutation rearrange = Permutation.factory().from(header, newHeader);
 ````
 
-and we can now rearrange the rows accordingly by applying it
+and we are now able to rearrange the rows as required.
 
 ````java
 rearrange.apply(uk);
