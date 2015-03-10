@@ -48,16 +48,16 @@ System.out.println(new Permutation(new int[]{0, 2, 1}).apply(-1));
 In this use case we have some arrays and a header that gives meaningful names to their contents
 
 ````java
-String[] header = new String[]{"country", "area", "pop", "gdp"};
-Object[] uk = new Object[]{"UK", 243610, 255.6, 38309};
-Object[] lt = new Object[]{"Lithuania", 65300, 45, 28245};
+String[] header = {"country", "area", "pop", "gdp"};
+Object[] uk = {"UK", 243610, 255.6, 38309};
+Object[] lt = {"Lithuania", 65300, 45, 28245};
 ````
 
 Our client hands us a "rearrangement" of the header fields, and asks us to rearrange the
-arrays accordingly.
+rows accordingly.
 
 ````java
-String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
+String[] newHeader = {"country", "pop", "gdp", "area"};
 ````
 
 Fortunately, we can use the `Permutation.from` method 
@@ -70,9 +70,9 @@ Permutation rearrange = Permutation.factory().from(header, newHeader);
 and we are now able to rearrange the rows as required.
 
 ````java
-rearrange.apply(uk);
+System.out.println(Arrays.toString(rearrange.apply(uk)));
 // => [UK, 255.6, 38309, 243610]
-rearrange.apply(lt);
+System.out.println(Arrays.toString(rearrange.apply(lt)));
 // => [Lithuania, 45, 28245, 65300]
 ````
 
@@ -82,7 +82,7 @@ This example shows how to find the index of a given string in an unsorted array.
 We get a permutation that sorts `a`
 
 ````java
-String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
+String[] a = {"a", "f", "v", "x", "x", "n"};
 Permutation sort = Permutation.factory().sort(a);
 String[] sorted = sort.apply(a);
 ````
