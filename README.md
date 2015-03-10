@@ -20,7 +20,7 @@ Permutation.random(sentence.length).apply(sentence);
 
 # Changing column order
 
-Assuming we have a bunch of CSV and a header
+In this use case we have some arrays and a header that gives meaningful names to their contents
 
 ````java
 String[] header = new String[]{"country", "area", "pop", "gdp"};
@@ -28,15 +28,16 @@ Object[] uk = new Object[]{"UK", 243610, 255.6, 38309};
 Object[] lt = new Object[]{"Lithuania", 65300, 45, 28245};
 ````
 
-Given a rearrangement of the header fields, 
-we can use `Permutation.from` to find the permutation that rearranges `header` into `newHeader`
+Our client now gives us "rearrangement" of the header fields, and asks us to rearrange the
+arrays accordingly. Fortunately, we can use `Permutation.from` 
+to find a permutation that performs the rearranging
 
 ````java
 String[] newHeader = new String[]{"country", "pop", "gdp", "area"};
 Permutation rearrange = Permutation.factory().from(header, newHeader);
 ````
 
-Now we can use the same permutation on the rows
+Now we can use the this permutation on the rows
 
 ````java
 rearrange.apply(uk);
@@ -47,19 +48,21 @@ rearrange.apply(lt);
 
 # Searching an array
 
+This example shows how to find the index of a given string in an unsorted array.
 Get a permutation that sorts `a`
 
 ````java
 String[] a = new String[]{"a", "f", "v", "x", "x", "n"};
 Permutation sort = Permutation.factory().sort(a);
 ````
+
 Sort `a`, and get the permutation that undoes the sorting
 
 ````java
 String[] sorted = sort.apply(a);
 Permutation unsort = sort.invert();
 ````
-Now we can find the index of a given string using 
+Now we can find the index of `"x"` using 
 [binary search](http://docs.oracle.com/javase/7/docs/api/java/util/Arrays.html):
 
 ````java
