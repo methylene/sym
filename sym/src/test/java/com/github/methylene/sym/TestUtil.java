@@ -1,6 +1,7 @@
 package com.github.methylene.sym;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ public class TestUtil {
    * @param n length of permutations to generate
    * @return all possible permutations of length {@code n}
    */
-  static List<Permutation> permutations(int n) {
+  static List<Permutation> sym(int n) {
     int[] start = new int[n];
     for (int i = 0; i < n; i += 1) {
       start[i] = i + 1;
@@ -80,7 +81,7 @@ public class TestUtil {
             } else {
               idxb += 1;
             }
-            return new Permutation[] { pa, pb };
+            return new Permutation[]{pa, pb};
           }
 
           @Override public void remove() {
@@ -186,7 +187,7 @@ public class TestUtil {
       if (test[(int) input[i]] == -1) {
         test[(int) input[i]] = i;
       } else {
-        return new int[] { test[(int) input[i]], i };
+        return new int[]{test[(int) input[i]], i};
       }
       if (k > input.length)
         break;
@@ -202,7 +203,7 @@ public class TestUtil {
       if (!test.containsKey(input[i])) {
         test.put(input[i], i);
       } else {
-        return new int[] { test.get(input[i]), i };
+        return new int[]{test.get(input[i]), i};
       }
     }
     return new int[0];
@@ -219,7 +220,7 @@ public class TestUtil {
       if (test[(int) input[i]] == -1) {
         test[(int) input[i]] = i;
       } else {
-        return new int[] { test[(int) input[i]], i };
+        return new int[]{test[(int) input[i]], i};
       }
       if (k > input.length)
         break;
@@ -239,7 +240,7 @@ public class TestUtil {
 
   static int count(int[] a, int i) {
     int c = 0;
-    for (int j: a)
+    for (int j : a)
       if (j == i)
         c += 1;
     return c;
@@ -247,15 +248,38 @@ public class TestUtil {
 
   static int count(Object[] a, Object i) {
     int c = 0;
-    for (Object j: a)
+    for (Object j : a)
       if (j.equals(i))
         c += 1;
     return c;
   }
 
+  static int signatureSum(List<Permutation> permutations) {
+    int result = 0;
+    for (Permutation p : permutations)
+      result += p.signature();
+    return result;
+  }
+
+  static int factorial(int n) {
+    int seed = 1;
+    for (int i = 1; i <= n; i += 1)
+      seed = seed * i;
+    return seed;
+  }
+
   @Test public void testDuplicateIndexes() {
     int[] ints = duplicateIndexes(new int[]{1, 2, 1});
     assertTrue(Arrays.equals(new int[]{0, 2}, ints) || Arrays.equals(new int[]{2, 0}, ints));
+  }
+
+  @Test public void testFactorial() {
+    assertEquals(1, factorial(0));
+    assertEquals(1, factorial(1));
+    assertEquals(2, factorial(2));
+    assertEquals(6, factorial(3));
+    assertEquals(24, factorial(4));
+    assertEquals(120, factorial(5));
   }
 
 }

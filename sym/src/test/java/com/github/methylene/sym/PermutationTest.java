@@ -338,7 +338,7 @@ public class PermutationTest {
   @Test
   public void testCyclesAndTranspositions() {
     int sign = 0;
-    for (Permutation p : TestUtil.permutations(5)) {
+    for (Permutation p : TestUtil.sym(5)) {
       int order = p.order();
       sign += p.signature();
       List<Permutation> cycles = p.toCycles();

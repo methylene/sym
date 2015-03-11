@@ -4,10 +4,12 @@ import static com.github.methylene.sym.TestUtil.cartesian;
 import static com.github.methylene.sym.TestUtil.center;
 import static com.github.methylene.sym.TestUtil.commutator;
 import static com.github.methylene.sym.TestUtil.isClosed;
-import static com.github.methylene.sym.TestUtil.permutations;
+import static com.github.methylene.sym.TestUtil.sym;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static com.github.methylene.sym.TestUtil.signatureSum;
+import static com.github.methylene.sym.TestUtil.factorial;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -19,13 +21,13 @@ public class UtilTest {
 
   @Test
   public void testCombinations() throws Exception {
-    List<Permutation> permutations = permutations(3);
+    List<Permutation> permutations = sym(3);
     assertEquals(6, permutations.size());
     Set<Permutation> perms = new HashSet<Permutation>();
     for (Permutation perm: permutations) {
       assertTrue(perms.add(perm));
     }
-    for (Permutation perm: permutations(3)) {
+    for (Permutation perm: sym(3)) {
       assertFalse(perms.add(perm));
     }
   }
@@ -34,7 +36,7 @@ public class UtilTest {
   public void testCartesian() throws Exception {
     int total = 0;
     int offDiagonal = 0;
-    List<Permutation> a = permutations(3);
+    List<Permutation> a = sym(3);
     for (Permutation[] permutation: cartesian(a, a)) {
       total += 1;
       if (permutation[0] != permutation[1]) {
@@ -47,7 +49,7 @@ public class UtilTest {
 
   @Test
   public void testCenter() throws Exception {
-    List<Permutation> a = permutations(5);
+    List<Permutation> a = sym(5);
     List<Permutation> center = center(a);
     assertEquals(1, center.size());
     assertTrue(center.get(0).isIdentity());
@@ -71,24 +73,34 @@ public class UtilTest {
 
   @Test
   public void testCommutator5() throws Exception {
-    assertEquals(120, permutations(5).size());
-    assertTrue(isClosed(permutations(5)));
-    assertEquals(60, commutator(permutations(5)).size());
-    assertTrue(isClosed(commutator(permutations(5))));
-    assertEquals(60, commutator(commutator(permutations(5))).size());
-    assertTrue(isClosed(commutator(commutator(permutations(5)))));
+    assertEquals(120, sym(5).size());
+    assertTrue(isClosed(sym(5)));
+    assertEquals(60, commutator(sym(5)).size());
+    assertTrue(isClosed(commutator(sym(5))));
+    assertEquals(60, commutator(commutator(sym(5))).size());
+    assertTrue(isClosed(commutator(commutator(sym(5)))));
   }
 
   @Test
   public void testCommutator4() throws Exception {
-    assertEquals(24, permutations(4).size());
-    assertTrue(isClosed(permutations(4)));
-    assertEquals(12, commutator(permutations(4)).size());
-    assertTrue(isClosed(commutator(permutations(4))));
-    assertEquals(4, commutator(commutator(permutations(4))).size());
-    assertTrue(isClosed(commutator(commutator(permutations(4)))));
-    assertEquals(1, commutator(commutator(commutator(permutations(4)))).size());
-    assertTrue(isClosed(commutator(commutator(commutator(permutations(4))))));
+    assertEquals(24, sym(4).size());
+    assertTrue(isClosed(sym(4)));
+    assertEquals(12, commutator(sym(4)).size());
+    assertTrue(isClosed(commutator(sym(4))));
+    assertEquals(4, commutator(commutator(sym(4))).size());
+    assertTrue(isClosed(commutator(commutator(sym(4)))));
+    assertEquals(1, commutator(commutator(commutator(sym(4)))).size());
+    assertTrue(isClosed(commutator(commutator(commutator(sym(4))))));
+  }
+
+  @Test
+  public void testCommutatorEven() throws Exception {
+    for (int i = 3; i < 7; i += 1) {
+      List<Permutation> sym = sym(i);
+      assertEquals(factorial(i), sym.size());
+      assertEquals(0, signatureSum(sym));
+      assertEquals(sym.size() / 2, signatureSum(commutator(sym)));
+    }
   }
 
 }
