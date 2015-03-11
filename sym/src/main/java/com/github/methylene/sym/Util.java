@@ -128,15 +128,15 @@ public class Util {
     boolean[] test = new boolean[size * maxFactor];
     int[] result = new int[size];
     for (int i = 0; i < size; i += 1) {
-      Integer candidate = (int) (size * maxFactor * Math.random());
-      int direction = Math.random() >= 0.5 ? 1 : -1;
+      double random = Math.random();
+      int candidate = (int) (size * maxFactor * random);
+      int direction = candidate % 2 == 0 ? -1 : 1;
       while (test[candidate]) {
         candidate += direction;
-        if (candidate == test.length) {
-          candidate -= test.length;
-        } else if (candidate < 0) {
-          candidate += test.length;
-        }
+        if (candidate == test.length)
+          candidate = 0;
+        else if (candidate == -1)
+          candidate = test.length - 1;
       }
       test[candidate] = true;
       result[i] = candidate;

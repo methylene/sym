@@ -12,7 +12,9 @@ import static com.github.methylene.sym.TestUtil.signatureSum;
 import static com.github.methylene.sym.TestUtil.factorial;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -100,6 +102,14 @@ public class UtilTest {
       assertEquals(factorial(i), sym.size());
       assertEquals(0, signatureSum(sym));
       assertEquals(sym.size() / 2, signatureSum(commutator(sym)));
+    }
+  }
+
+  @Test
+  public void testDistinctInts() {
+    for (int i = 0; i < 1000; i += 1) {
+      int[] ints = Util.distinctInts((int) (Math.random() * 1024), (int) (Math.random() * 10) + 2);
+      assertTrue(TestUtil.isDistinct(ints));
     }
   }
 

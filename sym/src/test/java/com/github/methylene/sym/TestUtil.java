@@ -1,6 +1,5 @@
 package com.github.methylene.sym;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -268,12 +267,42 @@ public class TestUtil {
     return seed;
   }
 
-  @Test public void testDuplicateIndexes() {
+  static <E extends Comparable> boolean isDistinct(Iterable<E> input) {
+    Iterable<E> distinct = distinct(input);
+    Iterator it = distinct.iterator();
+    for(E _: input) {
+      if (!it.hasNext())
+        return false;
+      it.next();
+    }
+    assert !it.hasNext();
+    return true;
+  }
+
+  static <E extends Comparable> boolean isDistinct(int[] input) {
+    int max = 0;
+    for (int i: input) {
+      if (i < 0)
+        throw new IllegalArgumentException("negative numbers are not allowed");
+      max = Math.max(max, i);
+    }
+    boolean[] test = new boolean[max + 1];
+    for (int i: input) {
+      if (test[i])
+        return false;
+      test[i] = true;
+    }
+    return true;
+  }
+
+  @Test
+  public void testDuplicateIndexes() {
     int[] ints = duplicateIndexes(new int[]{1, 2, 1});
     assertTrue(Arrays.equals(new int[]{0, 2}, ints) || Arrays.equals(new int[]{2, 0}, ints));
   }
 
-  @Test public void testFactorial() {
+  @Test
+  public void testFactorial() {
     assertEquals(1, factorial(0));
     assertEquals(1, factorial(1));
     assertEquals(2, factorial(2));
