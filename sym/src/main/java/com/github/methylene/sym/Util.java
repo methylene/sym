@@ -221,6 +221,17 @@ public class Util {
    * @param input an array
    * @return a sorted copy of the input
    */
+  public static short[] sortedCopy(short[] input) {
+    short[] sorted = Arrays.copyOf(input, input.length);
+    Arrays.sort(sorted);
+    return sorted;
+  }
+
+  /**
+   * Returns a sorted copy of the input.
+   * @param input an array
+   * @return a sorted copy of the input
+   */
   public static double[] sortedCopy(double[] input) {
     double[] sorted = Arrays.copyOf(input, input.length);
     Arrays.sort(sorted);

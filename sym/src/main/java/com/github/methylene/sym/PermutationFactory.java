@@ -117,6 +117,33 @@ public final class PermutationFactory {
   /**
    * Returns a permutation that sorts the input.
    * @see com.github.methylene.sym.PermutationFactory#sort(char[]) */
+  public Permutation sort(short[] input) {
+    short[] sorted = Util.sortedCopy(input);
+    int[] result = new int[input.length];
+    boolean[] used = new boolean[input.length];
+    for (int i = 0; i < input.length; i += 1) {
+      int idx = Arrays.binarySearch(sorted, input[i]);
+      int offset = 0;
+      int direction = 1;
+      while (used[idx + offset]) {
+        if (strict)
+          throw new IllegalArgumentException("duplicate: " + input[i]);
+        offset += direction;
+        if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
+          assert direction != -1;
+          offset = -1;
+          direction = -1;
+        }
+      }
+      result[i] = idx + offset;
+      used[idx + offset] = true;
+    }
+    return new Permutation(result, validate);
+  }
+
+  /**
+   * Returns a permutation that sorts the input.
+   * @see com.github.methylene.sym.PermutationFactory#sort(char[]) */
   public Permutation sort(long[] input) {
     long[] sorted = Util.sortedCopy(input);
     int[] result = new int[input.length];
