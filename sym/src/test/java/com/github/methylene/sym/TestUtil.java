@@ -229,14 +229,6 @@ public class TestUtil {
     return new int[0];
   }
 
-  static int[] randomNumbers(int maxNumber, int length) {
-    int[] result = new int[length];
-    for (int i = 0; i < length; i += 1) {
-      result[i] = (int) (maxNumber * Math.random());
-    }
-    return result;
-  }
-
   static int count(int[] a, int i) {
     int c = 0;
     for (int j : a)

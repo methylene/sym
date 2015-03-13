@@ -11,6 +11,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static com.github.methylene.sym.Util.randomNumbers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -49,7 +50,7 @@ public class PermutationTest {
   }
 
   @Test public void testApply() {
-    int[] a = TestUtil.randomNumbers(100, 200);
+    int[] a = randomNumbers(100, 200);
     Permutation p = Permutation.random((int) (a.length * Math.random()));
     for (int i = 0; i < a.length; i += 1) {
       assertEquals(p.apply(a)[p.apply(i)], a[i]);
@@ -60,7 +61,7 @@ public class PermutationTest {
   }
 
   @Test public void testIterable() {
-    MyInt[] a = MyInt.box(TestUtil.randomNumbers(100, 200));
+    MyInt[] a = MyInt.box(randomNumbers(100, 200));
     Permutation p = Permutation.random((int) (Math.random() * a.length));
     List<MyInt> arrayList = new ArrayList<MyInt>(a.length);
     List<MyInt> linkedList = new LinkedList<MyInt>();

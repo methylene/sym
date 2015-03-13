@@ -2,7 +2,7 @@ package com.github.methylene.sym;
 
 import static com.github.methylene.sym.MyInt.COMP;
 import static org.junit.Assert.assertArrayEquals;
-import static com.github.methylene.sym.TestUtil.randomNumbers;
+import static com.github.methylene.sym.Util.randomNumbers;
 import static com.github.methylene.sym.MyInt.box;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;

@@ -191,3 +191,7 @@ System.out.println(c.apply(" !Hdellloorw"));
 ````
 
 For more ideas, see the [javadoc](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html).
+
+<!--
+Idea: add Kendall tau distance?
+-->
