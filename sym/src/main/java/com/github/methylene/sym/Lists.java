@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.RandomAccess;
 
@@ -73,7 +74,7 @@ public class Lists {
      * this list will not contain two elements that are equal, and can be used as a set.
      * @return the uniqueness constraint
      */
-    public PermutationFactory.UniquenessConstraint getUniquenessConstraint() {
+    public final PermutationFactory.UniquenessConstraint getUniquenessConstraint() {
       return factory.getUniquenessConstraint();
     }
 
@@ -83,10 +84,22 @@ public class Lists {
      * this list will not contain any null values.
      * @return the null policy
      */
-    public PermutationFactory.NullPolicy getNullPolicy() {
+    public final PermutationFactory.NullPolicy getNullPolicy() {
       return factory.getNullPolicy();
     }
 
+    /**
+     * The subList method is not supported by this list implementation.
+     * This method always throws an UnsupportedOperationException.
+     * @param fromIndex an int
+     * @param toIndex an int
+     * @return a list
+     * @throws java.lang.UnsupportedOperationException
+     */
+    @Override
+    public final List<E> subList(int fromIndex, int toIndex) {
+      throw new UnsupportedOperationException();
+    }
   }
 
   /**
