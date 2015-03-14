@@ -136,7 +136,9 @@ public final class PermutationFactory {
 
   /**
    * Returns a permutation that sorts the input.
-   * @see com.github.methylene.sym.PermutationFactory#sort(char[]) */
+   * @param input an array
+   * @see com.github.methylene.sym.PermutationFactory#sort(char[])
+   */
   public Permutation sort(byte[] input) {
     byte[] sorted = Util.sortedCopy(input);
     int[] result = new int[input.length];
@@ -163,6 +165,7 @@ public final class PermutationFactory {
 
   /**
    * Returns a permutation that sorts the input.
+   * @param input an array
    * @see com.github.methylene.sym.PermutationFactory#sort(char[]) */
   public Permutation sort(short[] input) {
     short[] sorted = Util.sortedCopy(input);
