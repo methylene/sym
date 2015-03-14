@@ -17,11 +17,11 @@ public class SearchableTest {
    * </code></pre>
    * and
    * <pre><code>
-   *   a[j] = el;
+   *   a[j] == el
    * </code></pre>
    * then
    * <pre><code>
-   *   i <= j;
+   *   i <= j
    * </code></pre>
    * @throws Exception if the assertion is wrong
    */
