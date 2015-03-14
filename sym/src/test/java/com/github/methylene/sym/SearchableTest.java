@@ -34,8 +34,7 @@ public class SearchableTest {
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       int el = a[pair[0]];
-      IntArray searchable = searchableArray(a);
-      int i = searchable.indexOf(el);
+      int i = searchableArray(a).indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -56,8 +55,7 @@ public class SearchableTest {
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       MyInt el = a[pair[0]];
-      ObjectArray searchable = searchableArray(a, MyInt.COMP);
-      int i = searchable.indexOf(el);
+      int i = searchableArray(a, MyInt.COMP).indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -94,6 +92,8 @@ public class SearchableTest {
           assertNotEquals(j, el);
       } else {
         assertEquals(a[i], el);
+        for (int j = 0; j < i; j += 1)
+          assertNotEquals(a[j], el);
       }
     }
   }
