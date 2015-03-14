@@ -1,11 +1,9 @@
 package com.github.methylene.sym;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
 import static com.github.methylene.sym.Searchable.searchableArray;
-import static com.github.methylene.sym.Searchable.IntArray;
-import static com.github.methylene.sym.Searchable.ObjectArray;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import org.junit.Test;
 
 public class SearchableTest {
 
@@ -70,12 +68,11 @@ public class SearchableTest {
       Searchable.IntArray searchable = Searchable.strictSearchable().array(a);
       int el = (int) (maxNumber * Math.random());
       int i = searchable.indexOf(el);
-      if (i == -1) {
-        for (int j: a)
+      if (i == -1)
+        for (int j : a)
           assertNotEquals(j, el);
-      } else {
+      else
         assertEquals(a[i], el);
-      }
     }
   }
 
@@ -88,7 +85,7 @@ public class SearchableTest {
       int el = (int) (maxNumber * Math.random());
       int i = searchable.indexOf(el);
       if (i == -1) {
-        for (int j: a)
+        for (int j : a)
           assertNotEquals(j, el);
       } else {
         assertEquals(a[i], el);
