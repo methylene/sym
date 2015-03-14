@@ -1,11 +1,12 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Searchable.searchableArray;
+import static com.github.methylene.sym.Searchable.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
+import java.util.List;
 
 public class SearchableTest {
 
@@ -34,7 +35,7 @@ public class SearchableTest {
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       int el = a[pair[0]];
-      int i = searchableArray(a).indexOf(el);
+      int i = Searchable.asList(a).indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -55,7 +56,7 @@ public class SearchableTest {
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       MyInt el = a[pair[0]];
-      int i = searchableArray(a, MyInt.COMP).indexOf(el);
+      int i = asList(MyInt.COMP, a).indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -67,7 +68,7 @@ public class SearchableTest {
     for (int _ = 0; _ < 1000; _ += 1) {
       int maxNumber = (int) (Math.random() * 100);
       int[] a = Util.distinctInts(maxNumber, (int) (Math.random() * 10 + 2));
-      Searchable.IntArray searchable = Searchable.strictSearchable().array(a);
+      Searchable.IntList searchable = Searchable.uniqueLists().newList(a);
       int el = (int) (maxNumber * Math.random());
       int i = searchable.indexOf(el);
       if (i == -1)
@@ -83,7 +84,7 @@ public class SearchableTest {
     for (int _ = 0; _ < 1000; _ += 1) {
       int maxNumber = (int) (Math.random() * 100);
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-      Searchable.IntArray searchable = Searchable.searchableArray(a);
+      Searchable.IntList searchable = Searchable.asList(a);
       int el = (int) (maxNumber * Math.random());
       int i = searchable.indexOf(el);
       if (i == -1) {
@@ -100,14 +101,58 @@ public class SearchableTest {
   @Test(expected = IllegalArgumentException.class)
   public void testStrictFail() throws Exception {
     int[] ints = Util.randomNumbers(100, 105);
-    Searchable.strictSearchable().array(ints);
+    Searchable.uniqueLists().newList(ints);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void testNullComparable() throws Exception {
+    Searchable.asList(new String[]{"a", null});
+  }
+
+  @Test
+  public void testAllowNull() throws Exception {
+    MyInt[] boxes = MyInt.box(Util.randomNumbers(100, 1000));
+    boxes[181] = null;
+    boxes[278] = null;
+    Searchable.ObjectList list = Searchable.allowNull().newList(MyInt.NULL_FRIENDLY_COMP, boxes);
+    assertEquals(181, list.indexOf(null));
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void testDisallowNull() throws Exception {
+    Searchable.asList(1, 2, null);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testAllowNullForbidDuplicates() throws Exception {
+    Searchable searchable = new Searchable(PermutationFactory.builder()
+        .setNullPolicy(PermutationFactory.NullPolicy.ALLOW_NULL)
+        .setUniquenessConstraint(PermutationFactory.UniquenessConstraint.FORBID_DUPLICATES).build());
+    int size = 100;
+    MyInt[] ints = MyInt.box(Util.distinctInts(size, 4));
+    int rand = Util.randomNumbers(size / 2, 1)[0];
+    ints[rand] = null;
+    ints[2 * rand] = null;
+    searchable.newList(MyInt.NULL_FRIENDLY_COMP, ints);
+  }
+
+  @Test
+  public void testAllowNullForbidDuplicatesSuccess() throws Exception {
+    Searchable searchable = new Searchable(PermutationFactory.builder()
+        .setNullPolicy(PermutationFactory.NullPolicy.ALLOW_NULL)
+        .setUniquenessConstraint(PermutationFactory.UniquenessConstraint.FORBID_DUPLICATES).build());
+    int size = 100;
+    MyInt[] ints = MyInt.box(Util.distinctInts(size, 4));
+    int rand = Util.randomNumbers(size / 2, 1)[0];
+    ints[rand] = null; // one null is fine
+    assertEquals(rand, searchable.newList(MyInt.NULL_FRIENDLY_COMP, ints).indexOf(null));
   }
 
   @Test
   public void testReadme() {
     String string = "An array with an .indexOf method.";
     byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
-    Searchable.ByteArray a = Searchable.searchableArray(bytes);
+    List<Byte> a = Searchable.asList(bytes);
     assertEquals(17, a.indexOf((byte) '.'));
   }
 

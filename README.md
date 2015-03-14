@@ -109,7 +109,7 @@ there is also a convenience class `Searchable` to achieve the same thing with le
 ````java
 String string = "An array with an .indexOf method.";
 byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
-Searchable.ByteArray a = Searchable.searchableArray(bytes);
+List<Byte> a = Searchable.asList(bytes);
 System.out.println(a.indexOf((byte) '.'));
 // => 17
 ````

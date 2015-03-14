@@ -7,12 +7,22 @@ public class MyInt {
 
   public static class MyComparator implements java.util.Comparator<MyInt> {
     @Override public int compare(MyInt a, MyInt b) {
-//      System.out.println("comparing " + a + " and " + b);
+      return a.n - b.n;
+    }
+  }
+
+  public static class MyNullFriendlyComparator implements java.util.Comparator<MyInt> {
+    @Override public int compare(MyInt a, MyInt b) {
+      if (a == null)
+        return b == null ? 0 : -1;
+      if (b == null)
+        return 1;
       return a.n - b.n;
     }
   }
 
   public static final java.util.Comparator<MyInt> COMP = new MyComparator();
+  public static final java.util.Comparator<MyInt> NULL_FRIENDLY_COMP = new MyNullFriendlyComparator();
 
   static MyInt[] box(int[] a) {
     MyInt[] result = new MyInt[a.length];

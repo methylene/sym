@@ -12,7 +12,7 @@ import org.junit.Test;
 public class PermutationFactoryComparatorTest {
 
   private final PermutationFactory nonstrict = PermutationFactory.builder().setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
-  private final PermutationFactory strict = PermutationFactory.builder().setStrictness(PermutationFactory.Strictness.FORBID_DUPLICATES).setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
+  private final PermutationFactory strict = PermutationFactory.builder().setUniquenessConstraint(PermutationFactory.UniquenessConstraint.FORBID_DUPLICATES).setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
 
   static final int REPEAT = 1000;
 

@@ -2,6 +2,7 @@ package com.github.methylene.sym;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * <p>This class contains the {@code sort} and {@code from} factory methods.</p>
@@ -16,47 +17,66 @@ import java.util.Comparator;
 public final class PermutationFactory {
 
   /**
-   * Enum of possible Strictness settings. Default is nonstrict behaviour, i.e.
-   * {@link com.github.methylene.sym.PermutationFactory.Strictness#ALLOW_DUPLICATES}
-   * @see com.github.methylene.sym.PermutationFactory.Builder#setStrictness
+   * Enum of possible uniqueness settings. Default is to allow duplicates in the input of sort and from.
+   * @see com.github.methylene.sym.PermutationFactory#sort
+   * @see com.github.methylene.sym.PermutationFactory#from
    */
-  public static enum Strictness {
+  public static enum UniquenessConstraint {
     ALLOW_DUPLICATES, FORBID_DUPLICATES
   }
 
   /**
-   * Enum of possible paranoia settings. Default is not paranoid, i.e.
-   * {@link com.github.methylene.sym.PermutationFactory.Paranoia#SKIP_VALIDATION}.
-   * @see com.github.methylene.sym.PermutationFactory.Builder#setParanoia
+   * Enum of possible NullPolicy settings. Default is to throw an exception if null is encountered
+   * in the input of sort and from.
+   * @see com.github.methylene.sym.PermutationFactory#sort
+   * @see com.github.methylene.sym.PermutationFactory#from
+   */
+  public static enum NullPolicy {
+    ALLOW_NULL, ALLERGIC
+  }
+
+  /**
+   * Enum of paranoia settings. Default is to skip certain validations that are believed to be redundant.
+   * In place of a proof of them being redundant, there are some unit tests which have this setting on.
    */
   static enum Paranoia {
     SKIP_VALIDATION, ALWAYS_VALIDATE
   }
 
-  /* The strictness level */
-  private final Strictness strictness;
+  /* The uniqueness level */
+  private final UniquenessConstraint uniquenessConstraint;
 
   /* The paranoia setting */
   private final Paranoia paranoia;
 
-  private PermutationFactory(Strictness strictness, Paranoia paranoia) {
-    this.strictness = strictness;
+  /* The null policy */
+  private final NullPolicy nullPolicy;
+
+  private PermutationFactory(UniquenessConstraint uniquenessConstraint, NullPolicy nullPolicy, Paranoia paranoia) {
+    this.uniquenessConstraint = uniquenessConstraint;
     this.paranoia = paranoia;
+    this.nullPolicy = nullPolicy;
   }
 
   /**
    * Check the strictness setting of this factory.
    * @return the strictness setting of this factory
-   * @see com.github.methylene.sym.PermutationFactory.Builder#setStrictness
    */
-  public Strictness getStrictness() {
-    return strictness;
+  public UniquenessConstraint getUniquenessConstraint() {
+    return uniquenessConstraint;
+  }
+
+  /**
+   * Check the null policy of this factory.
+   * @return the null policyof this factory
+   */
+  public NullPolicy getNullPolicy() {
+    return nullPolicy;
   }
 
   /**
    * Get the paranoia setting of this factory.
    * @return the paranoia setting of this factory
-   * @see com.github.methylene.sym.PermutationFactory.Builder#setParanoia
    */
   Paranoia getParanoia() {
     return paranoia;
@@ -67,40 +87,44 @@ public final class PermutationFactory {
    * Builder instances can be obtained via {@link com.github.methylene.sym.PermutationFactory#builder}.
    * This may not be necessary as there are already PermutationFactory instances available
    * via {@link com.github.methylene.sym.Permutation#factory} and
-   * {@link com.github.methylene.sym.Permutation#strictFactory}.
+   * {@link com.github.methylene.sym.Permutation#duplicateRejectingFactory}.
    */
   public static class Builder {
     private Builder() {}
 
-    private Strictness strictness = Strictness.ALLOW_DUPLICATES;
+    private UniquenessConstraint uniquenessConstraint = UniquenessConstraint.ALLOW_DUPLICATES;
     private Paranoia paranoia = Paranoia.SKIP_VALIDATION;
+    private NullPolicy nullPolicy = NullPolicy.ALLERGIC;
 
     /**
-     * When strictness is set, the resulting Factory does not allow duplicate elements in input arrays,
-     * in the {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])}
-     * or {@link com.github.methylene.sym.PermutationFactory#sort(char[])} methods and their various overloads,
-     * and will throw an IllegalArgumentException instead.
+     * Set the uniqueness constraint
      * @return the current instance
      */
-    public Builder setStrictness(Strictness strictness) {
-      this.strictness = strictness;
+    public Builder setUniquenessConstraint(UniquenessConstraint uniquenessConstraint) {
+      this.uniquenessConstraint = uniquenessConstraint;
       return this;
     }
 
     /**
-     * When paranoia is set, run an extra assertion on each Permitation returned by the
-     * from {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])}
-     * and {@link com.github.methylene.sym.PermutationFactory#sort(char[])} methods and their various overloads.
-     * This is package-private as it should not be necessary outside of unit tests for this class.
+     * Set the paranoia level
      * @return the current instance
      */
-    Builder setParanoia(Paranoia validate) {
-      this.paranoia = validate;
+    Builder setParanoia(Paranoia paranoia) {
+      this.paranoia = paranoia;
+      return this;
+    }
+
+    /**
+     * Set the null policy
+     * @return the current instance
+     */
+    public Builder setNullPolicy(NullPolicy nullPolicy) {
+      this.nullPolicy = nullPolicy;
       return this;
     }
 
     public PermutationFactory build() {
-      return new PermutationFactory(strictness, paranoia);
+      return new PermutationFactory(uniquenessConstraint, nullPolicy, paranoia);
     }
   }
 
@@ -122,7 +146,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strictness == Strictness.FORBID_DUPLICATES)
+        if (uniquenessConstraint == UniquenessConstraint.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -149,7 +173,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strictness == Strictness.FORBID_DUPLICATES)
+        if (uniquenessConstraint == UniquenessConstraint.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -176,7 +200,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strictness == Strictness.FORBID_DUPLICATES)
+        if (uniquenessConstraint == UniquenessConstraint.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -203,7 +227,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strictness == Strictness.FORBID_DUPLICATES)
+        if (uniquenessConstraint == UniquenessConstraint.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -230,7 +254,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strictness == Strictness.FORBID_DUPLICATES)
+        if (uniquenessConstraint == UniquenessConstraint.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -262,7 +286,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strictness == Strictness.FORBID_DUPLICATES)
+        if (uniquenessConstraint == UniquenessConstraint.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -285,14 +309,16 @@ public final class PermutationFactory {
     int[] result = new int[input.length];
     boolean[] used = new boolean[input.length];
     for (int i = 0; i < input.length; i += 1) {
+      if (nullPolicy == NullPolicy.ALLERGIC && input[i] == null)
+        throw new NullPointerException("null values are not allowed when NullPolicy is ALLERGIC");
       int idx = Arrays.binarySearch(sorted, input[i]);
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strictness == Strictness.FORBID_DUPLICATES)
+        if (uniquenessConstraint == UniquenessConstraint.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
-        if (idx + offset >= sorted.length || !sorted[idx + offset].equals(input[i])) {
+        if (idx + offset >= sorted.length || !Objects.equals(sorted[idx + offset], input[i])) {
           assert direction != -1;
           offset = -1;
           direction = -1;
@@ -310,14 +336,16 @@ public final class PermutationFactory {
     int[] result = new int[input.length];
     boolean[] used = new boolean[input.length];
     for (int i = 0; i < input.length; i += 1) {
+      if (nullPolicy == NullPolicy.ALLERGIC && input[i] == null)
+        throw new NullPointerException("null values are not allowed when NullPolicy is ALLERGIC");
       int idx = Arrays.binarySearch(sorted, input[i], comp);
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strictness == Strictness.FORBID_DUPLICATES)
+        if (uniquenessConstraint == UniquenessConstraint.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
-        if (idx + offset >= sorted.length || !sorted[idx + offset].equals(input[i])) {
+        if (idx + offset >= sorted.length || !Objects.equals(sorted[idx + offset], input[i])) {
           assert direction != -1;
           offset = -1;
           direction = -1;
@@ -346,7 +374,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strictness == Strictness.FORBID_DUPLICATES)
+        if (uniquenessConstraint == UniquenessConstraint.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {

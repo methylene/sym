@@ -7,7 +7,7 @@ import org.junit.Test;
 public class PermutationFactoryLongTest {
 
   private final PermutationFactory nonstrict = PermutationFactory.builder().setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
-  private final PermutationFactory strict = PermutationFactory.builder().setStrictness(PermutationFactory.Strictness.FORBID_DUPLICATES).setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
+  private final PermutationFactory strict = PermutationFactory.builder().setUniquenessConstraint(PermutationFactory.UniquenessConstraint.FORBID_DUPLICATES).setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
 
   static long[] randomNumbers(int maxNumber, int length) {
     long[] result = new long[length];

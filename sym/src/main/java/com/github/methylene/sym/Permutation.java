@@ -20,7 +20,7 @@ public final class Permutation implements Comparable<Permutation> {
   private final int[] ranking;
 
   private static final PermutationFactory FACTORY = PermutationFactory.builder().build();
-  private static final PermutationFactory STRICT_FACTORY = PermutationFactory.builder().setStrictness(PermutationFactory.Strictness.FORBID_DUPLICATES).build();
+  private static final PermutationFactory STRICT_FACTORY = PermutationFactory.builder().setUniquenessConstraint(PermutationFactory.UniquenessConstraint.FORBID_DUPLICATES).build();
 
   private static final Permutation[] IDENTITIES = new Permutation[]{
       new Permutation(Util.sequence(0)),
@@ -36,24 +36,25 @@ public final class Permutation implements Comparable<Permutation> {
   /**
    * This returns the default non-strict factory.
    * @return the default factory
-   * @see com.github.methylene.sym.PermutationFactory#getStrictness
+   * @see com.github.methylene.sym.PermutationFactory.UniquenessConstraint
    */
   public static PermutationFactory factory() { return FACTORY; }
 
   /**
    * Returns the strict factory.
    * @return the strict factory
-   * @see com.github.methylene.sym.PermutationFactory#getStrictness
+   * @see com.github.methylene.sym.PermutationFactory.UniquenessConstraint
    */
-  public static PermutationFactory strictFactory() { return STRICT_FACTORY; }
+  public static PermutationFactory duplicateRejectingFactory() { return STRICT_FACTORY; }
 
   /**
-   * This constructor for expert only. Don't use it unless you're really sure that it's safe to skip the validation.
+   * The validation should not be skipped unless it's certain that the input is valid.
    * @param ranking ranking
-   * @param validate expert setting: if false, skip a certain constructor sanity check, to save time
-   *                 if we're already sure that the input is valid
+   * @param validate if true, perform validation on the ranking
+   * @throws java.lang.IllegalArgumentException if {@code validate} is true and the ranking is not valid
+   * @see com.github.methylene.sym.Util#validateRanking
    */
-  public Permutation(int[] ranking, boolean validate) {
+  Permutation(int[] ranking, boolean validate) {
     if (validate)
       Util.validateRanking(ranking);
     this.ranking = ranking;
@@ -65,6 +66,8 @@ public final class Permutation implements Comparable<Permutation> {
    *               <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
    *               For example, {@code ranking = new int[]{1, 2, 0}} creates the permutation
    *               that sends {@code new char[]{'a', 'b', 'c'}} to {@code new char[]{'c', 'a', 'b'}}.
+   * @throws java.lang.IllegalArgumentException if the ranking is not valid
+   * @see com.github.methylene.sym.Util#validateRanking
    */
   public Permutation(int[] ranking) {
     this(ranking, true);
@@ -72,11 +75,11 @@ public final class Permutation implements Comparable<Permutation> {
 
   /**
    * Creates a new permutation from the given array, using 1-based indexes.
-   * @param posmap1based a permutation definition in 1-based one-line notation.
-   * @return The permutation defined by {@code posmap1based}.
+   * @param ranking1based a permutation definition in 1-based one-line notation.
+   * @return The permutation defined by {@code ranking1based}.
    */
-  static public Permutation perm1(int... posmap1based) {
-    return new Permutation(Util.add(posmap1based, -1));
+  static public Permutation perm1(int... ranking1based) {
+    return new Permutation(Util.add(ranking1based, -1));
   }
 
   /**
@@ -86,7 +89,6 @@ public final class Permutation implements Comparable<Permutation> {
    * @param cycle a list of distinct, non-negative numbers
    * @return the cyclic permutation defined by {@code cycle}
    * @throws java.lang.IllegalArgumentException if {@code cycle} contains negative numbers or duplicates
-   * @see com.github.methylene.sym.Permutation#identity
    */
   static public Permutation cycle(int... cycle) {
     int maxIndex = -1;
@@ -153,8 +155,8 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * <p>Permutation composition. The following is true for all numbers
-   * {@code 0 <= i}:</p>
+   * <p>Permutation composition. The following is true for all non-negative numbers
+   * {@code i}:</p>
    * <pre><code>
    *   this.apply(other.apply(i)) == this.comp(other).apply(i)
    * </code></pre>
@@ -234,7 +236,7 @@ public final class Permutation implements Comparable<Permutation> {
    *   this.invert().comp(this.invert()) [...] comp(this.invert());
    * </code></pre>
    * ({@code -n} times) is returned.
-   * If {@code n == 0}, the identity permutation of length {@code this.length} is returned.
+   * If {@code n} is zero, the identity permutation of length {@code this.length} is returned.
    * @param n any integer
    * @return the {@code n}th power of this permutation
    */
@@ -258,11 +260,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#isIdentity
    */
   public Permutation invert() {
-    int[][] posmapWithIndex = Util.withIndex(ranking);
-    Arrays.sort(posmapWithIndex, COMPARE_2ND);
+    int[][] rankingWithIndex = Util.withIndex(ranking);
+    Arrays.sort(rankingWithIndex, COMPARE_2ND);
     int[] result = new int[ranking.length];
     for (int i = 0; i < ranking.length; i += 1)
-      result[i] = posmapWithIndex[i][0];
+      result[i] = rankingWithIndex[i][0];
     return new Permutation(result);
   }
 

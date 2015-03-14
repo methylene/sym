@@ -1,13 +1,15 @@
 package com.github.methylene.sym;
 
+import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Comparator;
 
 /**
- * <p>The various {@code *Array} inner classes add efficient {@code indexOf} and {@code contains}
- * methods to standard arrays.</p>
+ * <p>This class contains immutable array based implementations of {@link java.util.List}
+ * that have efficient {@code indexOf} and {@code contains} methods.</p>
  *
- * <p>The {@code indexOf} method is very similar to {@link java.lang.String#indexOf}.</p>
+ * <p>Per default it is not possible to construct a list that contains {@code null} values.
+ * This can be configured via the setNullPolicy switch.</p>
  */
 public class Searchable {
 
@@ -21,30 +23,28 @@ public class Searchable {
     this.factory = permutationFactory;
   }
 
-  private static final Searchable STRICT = new Searchable(Permutation.strictFactory());
-  private static final Searchable NON_STRICT = new Searchable(Permutation.factory());
+  private static final Searchable DEFAULT = new Searchable(Permutation.factory());
+  private static final Searchable UNIQUE = new Searchable(Permutation.duplicateRejectingFactory());
+  private static final Searchable ALLOW_NULL = new Searchable(PermutationFactory.builder()
+      .setNullPolicy(PermutationFactory.NullPolicy.ALLOW_NULL).build());
 
   /**
-   * Obtain the strict version of Searchable. This will refuse to create searchable versions of arrays that
+   * Obtain the uniqueness enforcing variant of Searchable. This will refuse to create lists that
    * contain duplicates, and throw an IllegalArgumentException instead.
    * @return a strict searchable
    */
-  public static Searchable strictSearchable() {
-    return STRICT;
+  public static Searchable uniqueLists() {
+    return UNIQUE;
   }
 
-  /**
-   * Obtain the default Searchable
-   * @return the default searchable
-   */
-  public static Searchable searchable() {
-    return NON_STRICT;
+  public static Searchable allowNull() {
+    return ALLOW_NULL;
   }
 
   /**
    * Common base class of the {@code *Array} variants.
    */
-  public static abstract class AArray {
+  public abstract class AArray<E> extends AbstractList<E> {
 
     protected final Permutation unsort;
 
@@ -60,6 +60,27 @@ public class Searchable {
       return unsort;
     }
 
+    /**
+     * Get the uniqueness setting of this list.
+     * If the uniqueness setting is
+     * {@link com.github.methylene.sym.PermutationFactory.UniquenessConstraint#FORBID_DUPLICATES},
+     * this list will not contain two elements that are equal, and can be used as a set.
+     * @return the uniqueness constraint
+     */
+    public PermutationFactory.UniquenessConstraint getUniquenessConstraint() {
+      return factory.getUniquenessConstraint();
+    }
+
+    /**
+     * Get the null policy of this list.
+     * If the null policy is {@link com.github.methylene.sym.PermutationFactory.NullPolicy#ALLERGIC},
+     * this list will not contain any null values.
+     * @return the null policy
+     */
+    public PermutationFactory.NullPolicy getNullPolicy() {
+      return factory.getNullPolicy();
+    }
+
   }
 
   /**
@@ -69,8 +90,8 @@ public class Searchable {
    * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
    * @see com.github.methylene.sym.Searchable#getPermutationFactory
    */
-  public static IntArray searchableArray(int[] a) {
-    return searchable().array(a);
+  public static IntList asList(int... a) {
+    return DEFAULT.newList(a);
   }
 
   /**
@@ -80,8 +101,8 @@ public class Searchable {
    * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
    * @see com.github.methylene.sym.Searchable#getPermutationFactory
    */
-  public static LongArray searchableArray(long[] a) {
-    return searchable().array(a);
+  public static LongList asList(long... a) {
+    return DEFAULT.newList(a);
   }
 
   /**
@@ -89,8 +110,8 @@ public class Searchable {
    * @param a an array
    * @return a searchable version of the input
    */
-  public static ByteArray searchableArray(byte[] a) {
-    return searchable().array(a);
+  public static ByteList asList(byte... a) {
+    return DEFAULT.newList(a);
   }
 
   /**
@@ -98,8 +119,8 @@ public class Searchable {
    * @param a an array
    * @return a searchable version of the input
    */
-  public static CharArray searchableArray(char[] a) {
-    return searchable().array(a);
+  public static CharList asList(char... a) {
+    return DEFAULT.newList(a);
   }
 
   /**
@@ -107,8 +128,8 @@ public class Searchable {
    * @param a an array
    * @return a searchable version of the input
    */
-  public static FloatArray searchableArray(float[] a) {
-    return searchable().array(a);
+  public static FloatList asList(float... a) {
+    return DEFAULT.newList(a);
   }
 
   /**
@@ -116,8 +137,8 @@ public class Searchable {
    * @param a an array
    * @return a searchable version of the input
    */
-  public static DoubleArray searchableArray(double[] a) {
-    return searchable().array(a);
+  public static DoubleList asList(double... a) {
+    return DEFAULT.newList(a);
   }
 
   /**
@@ -125,17 +146,123 @@ public class Searchable {
    * @param a an array
    * @return a searchable version of the input
    */
-  public static ShortArray searchableArray(short[] a) {
-    return searchable().array(a);
+  public static ShortList asList(short... a) {
+    return DEFAULT.newList(a);
+  }
+
+  /**
+   * Creates a searchable array from the given input, using default settings (forbid null, allow duplicates)
+   * @param a an array
+   * @return a searchable version of the input
+   */
+  public static ComparableList asList(Comparable... a) {
+    return DEFAULT.newList(a);
+  }
+
+  /**
+   * Creates a searchable array from the given input, using default settings (forbid null, allow duplicates)
+   * @param a an array
+   * @param comparator a Comparator
+   * @return a searchable version of the input
+   */
+  public static ObjectList asList(Comparator comparator, Object... a) {
+    return DEFAULT.newList(comparator, a);
   }
 
   /**
    * Creates a searchable array from the given input.
    * @param a an array
    * @return a searchable version of the input
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @see com.github.methylene.sym.Searchable#getPermutationFactory
    */
-  public static ComparableArray searchableArray(Comparable[] a) {
-    return searchable().array(a);
+  public IntList newList(int[] a) {
+    Permutation sort = factory.sort(a);
+    return new IntList(a, sort.apply(a), sort.invert());
+  }
+
+  /**
+   * Creates a searchable array from the given input.
+   * @param a an array
+   * @return a searchable version of the input
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @see com.github.methylene.sym.Searchable#getPermutationFactory
+   */
+  public LongList newList(long[] a) {
+    Permutation sort = factory.sort(a);
+    return new LongList(a, sort.apply(a), sort.invert());
+  }
+
+  /**
+   * Creates a searchable array from the given input.
+   * @param a an array
+   * @return a searchable version of the input
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @see com.github.methylene.sym.Searchable#getPermutationFactory
+   */
+  public ByteList newList(byte[] a) {
+    Permutation sort = factory.sort(a);
+    return new ByteList(a, sort.apply(a), sort.invert());
+  }
+
+  /**
+   * Creates a searchable array from the given input.
+   * @param a an array
+   * @return a searchable version of the input
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @see com.github.methylene.sym.Searchable#getPermutationFactory
+   */
+  public CharList newList(char[] a) {
+    Permutation sort = factory.sort(a);
+    return new CharList(a, sort.apply(a), sort.invert());
+  }
+
+  /**
+   * Creates a searchable array from the given input.
+   * @param a an array
+   * @return a searchable version of the input
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @see com.github.methylene.sym.Searchable#getPermutationFactory
+   */
+  public FloatList newList(float[] a) {
+    Permutation sort = factory.sort(a);
+    return new FloatList(a, sort.apply(a), sort.invert());
+  }
+
+  /**
+   * Creates a searchable array from the given input.
+   * @param a an array
+   * @return a searchable version of the input
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @see com.github.methylene.sym.Searchable#getPermutationFactory
+   */
+  public DoubleList newList(double[] a) {
+    Permutation sort = factory.sort(a);
+    return new DoubleList(a, sort.apply(a), sort.invert());
+  }
+
+  /**
+   * Creates a searchable array from the given input.
+   * @param a an array
+   * @return a searchable version of the input
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @see com.github.methylene.sym.Searchable#getPermutationFactory
+   */
+  public ShortList newList(short[] a) {
+    Permutation sort = factory.sort(a);
+    return new ShortList(a, sort.apply(a), sort.invert());
+  }
+
+  /**
+   * Creates a searchable array from the given input.
+   * @param a an array
+   * @return a searchable version of the input
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @see com.github.methylene.sym.Searchable#getPermutationFactory
+   */
+  public <E extends Comparable> ComparableList<E> newList(E[] a) {
+    Permutation sort = factory.sort(a);
+    return new ComparableList<E>(a, sort.apply(a), sort.invert());
   }
 
   /**
@@ -143,128 +270,24 @@ public class Searchable {
    * @param a an array
    * @param comparator a Comparator
    * @return a searchable version of the input
-   */
-  public static ObjectArray searchableArray(Object[] a, Comparator comparator) {
-    return searchable().array(a,comparator);
-  }
-
-  /**
-   * Creates a searchable array from the given input.
-   * @param a an array
-   * @return a searchable version of the input
    * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
    * @see com.github.methylene.sym.Searchable#getPermutationFactory
    */
-  public IntArray array(int[] a) {
-    Permutation sort = factory.sort(a);
-    return new IntArray(sort.apply(a), sort.invert());
-  }
-
-  /**
-   * Creates a searchable array from the given input.
-   * @param a an array
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see com.github.methylene.sym.Searchable#getPermutationFactory
-   */
-  public LongArray array(long[] a) {
-    Permutation sort = factory.sort(a);
-    return new LongArray(sort.apply(a), sort.invert());
-  }
-
-  /**
-   * Creates a searchable array from the given input.
-   * @param a an array
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see com.github.methylene.sym.Searchable#getPermutationFactory
-   */
-  public ByteArray array(byte[] a) {
-    Permutation sort = factory.sort(a);
-    return new ByteArray(sort.apply(a), sort.invert());
-  }
-
-  /**
-   * Creates a searchable array from the given input.
-   * @param a an array
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see com.github.methylene.sym.Searchable#getPermutationFactory
-   */
-  public CharArray array(char[] a) {
-    Permutation sort = factory.sort(a);
-    return new CharArray(sort.apply(a), sort.invert());
-  }
-
-  /**
-   * Creates a searchable array from the given input.
-   * @param a an array
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see com.github.methylene.sym.Searchable#getPermutationFactory
-   */
-  public FloatArray array(float[] a) {
-    Permutation sort = factory.sort(a);
-    return new FloatArray(sort.apply(a), sort.invert());
-  }
-
-  /**
-   * Creates a searchable array from the given input.
-   * @param a an array
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see com.github.methylene.sym.Searchable#getPermutationFactory
-   */
-  public DoubleArray array(double[] a) {
-    Permutation sort = factory.sort(a);
-    return new DoubleArray(sort.apply(a), sort.invert());
-  }
-
-  /**
-   * Creates a searchable array from the given input.
-   * @param a an array
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see com.github.methylene.sym.Searchable#getPermutationFactory
-   */
-  public ShortArray array(short[] a) {
-    Permutation sort = factory.sort(a);
-    return new ShortArray(sort.apply(a), sort.invert());
-  }
-
-  /**
-   * Creates a searchable array from the given input.
-   * @param a an array
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see com.github.methylene.sym.Searchable#getPermutationFactory
-   */
-  public ComparableArray array(Comparable[] a) {
-    Permutation sort = factory.sort(a);
-    return new ComparableArray(sort.apply(a), sort.invert());
-  }
-
-  /**
-   * Creates a searchable array from the given input.
-   * @param a an array
-   * @param comparator a Comparator
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see com.github.methylene.sym.Searchable#getPermutationFactory
-   */
-  public ObjectArray array(Object[] a, Comparator comparator) {
+  public <E> ObjectList<E> newList(Comparator<E> comparator, E[] a) {
     Permutation sort = factory.sort(a, comparator);
-    return new ObjectArray(sort.apply(a), comparator, sort.invert());
+    return new ObjectList<E>(a, sort.apply(a), comparator, sort.invert());
   }
 
   /**
    * A searchable array.
    */
-  public static final class ByteArray extends AArray {
+  public final class ByteList extends AArray<Byte> {
+    private final byte[] original;
     private final byte[] sorted;
 
-    private ByteArray(byte[] sorted, Permutation unsort) {
+    private ByteList(byte[] original, byte[] sorted, Permutation unsort) {
       super(unsort);
+      this.original = original;
       this.sorted = sorted;
     }
 
@@ -273,7 +296,7 @@ public class Searchable {
      * @return a copy of the original array
      */
     public byte[] getArray() {
-      return unsort.apply(sorted);
+      return Arrays.copyOf(original, original.length);
     }
 
     /**
@@ -288,9 +311,11 @@ public class Searchable {
      * Get the lowest of the indexes in the array where the value is {@code el}, or {@code -1} is no such index exists.
      * @param el a byte
      * @return the lowest index {@code i} so that {@code a[i] == el}, or {@code -1}
+     * @throws java.lang.ClassCastException if the argument is not a Byte
      */
-    public int indexOf(byte el) {
-      int i = Arrays.binarySearch(sorted, el);
+    @Override
+    public int indexOf(Object el) {
+      int i = Arrays.binarySearch(sorted, (Byte) el);
       return i < 0 ? -1 : unsort.apply(i);
     }
 
@@ -298,20 +323,34 @@ public class Searchable {
      * Test whether the input is contained in the array.
      * @param el a byte
      * @return true if {@code el} is contained in the array
+     * @throws java.lang.ClassCastException if the argument is not a Byte
      */
-    public boolean contains(byte el) {
+    @Override
+    public boolean contains(Object el) {
       return indexOf(el) >= 0;
+    }
+
+    @Override
+    public Byte get(int i) {
+      return original[i];
+    }
+
+    @Override
+    public int size() {
+      return original.length;
     }
   }
 
   /**
    * A searchable array.
    */
-  public static final class LongArray extends AArray {
+  public final class LongList extends AArray<Long> {
+    private final long[] original;
     private final long[] sorted;
 
-    private LongArray(long[] sorted, Permutation unsort) {
+    private LongList(long[] original, long[] sorted, Permutation unsort) {
       super(unsort);
+      this.original = original;
       this.sorted = sorted;
     }
 
@@ -320,7 +359,7 @@ public class Searchable {
      * @return a copy of the original array
      */
     public long[] getArray() {
-      return unsort.apply(sorted);
+      return Arrays.copyOf(original, original.length);
     }
 
     /**
@@ -335,9 +374,11 @@ public class Searchable {
      * Get the lowest of the indexes in the array where the value is {@code el}, or {@code -1} is no such index exists.
      * @param el a long
      * @return the lowest index {@code i} so that {@code a[i] == el}, or {@code -1}
+     * @throws java.lang.ClassCastException if the argument is not a Long
      */
-    public int indexOf(long el) {
-      int i = Arrays.binarySearch(sorted, el);
+    @Override
+    public int indexOf(Object el) {
+      int i = Arrays.binarySearch(sorted, (Long) el);
       return i < 0 ? -1 : unsort.apply(i);
     }
 
@@ -345,20 +386,34 @@ public class Searchable {
      * Test whether the input is contained in the array.
      * @param el a long
      * @return true if {@code el} is contained in the array
+     * @throws java.lang.ClassCastException if the argument is not a Long
      */
-    public boolean contains(long el) {
+    @Override
+    public boolean contains(Object el) {
       return indexOf(el) >= 0;
+    }
+
+    @Override
+    public Long get(int i) {
+      return original[i];
+    }
+
+    @Override
+    public int size() {
+      return original.length;
     }
   }
 
   /**
    * A searchable array.
    */
-  public static final class CharArray extends AArray {
+  public final class CharList extends AArray<Character> {
+    private final char[] original;
     private final char[] sorted;
 
-    private CharArray(char[] sorted, Permutation unsort) {
+    private CharList(char[] original, char[] sorted, Permutation unsort) {
       super(unsort);
+      this.original = original;
       this.sorted = sorted;
     }
 
@@ -367,7 +422,7 @@ public class Searchable {
      * @return a copy of the original array
      */
     public char[] getArray() {
-      return unsort.apply(sorted);
+      return Arrays.copyOf(original, original.length);
     }
 
     /**
@@ -382,9 +437,11 @@ public class Searchable {
      * Get the lowest of the indexes in the array where the value is {@code el}, or {@code -1} is no such index exists.
      * @param el a char
      * @return the lowest index {@code i} so that {@code a[i] == el}, or {@code -1}
+     * @throws java.lang.ClassCastException if the argument is not a Character
      */
-    public int indexOf(char el) {
-      int i = Arrays.binarySearch(sorted, el);
+    @Override
+    public int indexOf(Object el) {
+      int i = Arrays.binarySearch(sorted, (Character) el);
       return i < 0 ? -1 : unsort.apply(i);
     }
 
@@ -392,20 +449,34 @@ public class Searchable {
      * Test whether the input is contained in the array.
      * @param el a char
      * @return true if {@code el} is contained in the array
+     * @throws java.lang.ClassCastException if the argument is not a Character
      */
-    public boolean contains(char el) {
+    @Override
+    public boolean contains(Object el) {
       return indexOf(el) >= 0;
+    }
+
+    @Override
+    public Character get(int i) {
+      return original[i];
+    }
+
+    @Override
+    public int size() {
+      return original.length;
     }
   }
 
   /**
    * A searchable array.
    */
-  public static final class IntArray extends AArray {
+  public final class IntList extends AArray<Integer> {
+    private final int[] original;
     private final int[] sorted;
 
-    private IntArray(int[] sorted, Permutation unsort) {
+    private IntList(int[] original, int[] sorted, Permutation unsort) {
       super(unsort);
+      this.original = original;
       this.sorted = sorted;
     }
 
@@ -414,7 +485,7 @@ public class Searchable {
      * @return a copy of the original array
      */
     public int[] getArray() {
-      return unsort.apply(sorted);
+      return Arrays.copyOf(original, original.length);
     }
 
     /**
@@ -427,32 +498,49 @@ public class Searchable {
 
     /**
      * Get the lowest of the indexes in the array where the value is {@code el}, or {@code -1} is no such index exists.
-     * @param el an int
+     * @param el an Integer
      * @return the lowest index {@code i} so that {@code a[i] == el}, or {@code -1}
+     * @throws java.lang.ClassCastException if the argument is not an Integer
      */
-    public int indexOf(int el) {
-      int i = Arrays.binarySearch(sorted, el);
+    @Override
+    public int indexOf(Object el) {
+      int i = Arrays.binarySearch(sorted, (Integer) el);
       return i < 0 ? -1 : unsort.apply(i);
     }
 
     /**
-     * Test whether the input is contained in the array.
-     * @param el an int
-     * @return true if {@code el} is contained in the array
+     * Test whether the input is contained in this list.
+     * @param el an Integer
+     * @return true if {@code el} is contained in this list
+     * @throws java.lang.ClassCastException if the argument is not an Integer
      */
-    public boolean contains(int el) {
+    @Override
+    public boolean contains(Object el) {
       return indexOf(el) >= 0;
     }
+
+    @Override
+    public Integer get(int i) {
+      return original[i];
+    }
+
+    @Override
+    public int size() {
+      return original.length;
+    }
+
   }
 
   /**
    * A searchable array.
    */
-  public static final class FloatArray extends AArray {
+  public final class FloatList extends AArray<Float> {
+    private final float[] original;
     private final float[] sorted;
 
-    private FloatArray(float[] sorted, Permutation unsort) {
+    private FloatList(float[] original, float[] sorted, Permutation unsort) {
       super(unsort);
+      this.original = original;
       this.sorted = sorted;
     }
 
@@ -461,7 +549,7 @@ public class Searchable {
      * @return a copy of the original array
      */
     public float[] getArray() {
-      return unsort.apply(sorted);
+      return Arrays.copyOf(original, original.length);
     }
 
     /**
@@ -476,9 +564,11 @@ public class Searchable {
      * Get the lowest of the indexes in the array where the value is {@code el}, or {@code -1} is no such index exists.
      * @param el a float
      * @return the lowest index {@code i} so that {@code a[i] == el}, or {@code -1}
+     * @throws java.lang.ClassCastException if the argument is not a Float
      */
-    public int indexOf(float el) {
-      int i = Arrays.binarySearch(sorted, el);
+    @Override
+    public int indexOf(Object el) {
+      int i = Arrays.binarySearch(sorted, (Float) el);
       return i < 0 ? -1 : unsort.apply(i);
     }
 
@@ -487,19 +577,32 @@ public class Searchable {
      * @param el a float
      * @return true if {@code el} is contained in the array
      */
-    public boolean contains(float el) {
+    @Override
+    public boolean contains(Object el) {
       return indexOf(el) >= 0;
+    }
+
+    @Override
+    public Float get(int i) {
+      return original[i];
+    }
+
+    @Override
+    public int size() {
+      return original.length;
     }
   }
 
   /**
    * A searchable array.
    */
-  public static final class DoubleArray extends AArray {
+  public final class DoubleList extends AArray<Double> {
+    private final double[] original;
     private final double[] sorted;
 
-    private DoubleArray(double[] sorted, Permutation unsort) {
+    private DoubleList(double[] original, double[] sorted, Permutation unsort) {
       super(unsort);
+      this.original = original;
       this.sorted = sorted;
     }
 
@@ -508,7 +611,7 @@ public class Searchable {
      * @return a copy of the original array
      */
     public double[] getArray() {
-      return unsort.apply(sorted);
+      return Arrays.copyOf(original, original.length);
     }
 
     /**
@@ -523,9 +626,11 @@ public class Searchable {
      * Get the lowest of the indexes in the array where the value is {@code el}, or {@code -1} is no such index exists.
      * @param el a double
      * @return the lowest index {@code i} so that {@code a[i] == el}, or {@code -1}
+     * @throws java.lang.ClassCastException if the argument is not a Double
      */
-    public int indexOf(double el) {
-      int i = Arrays.binarySearch(sorted, el);
+    @Override
+    public int indexOf(Object el) {
+      int i = Arrays.binarySearch(sorted, (Double) el);
       return i < 0 ? -1 : unsort.apply(i);
     }
 
@@ -534,19 +639,32 @@ public class Searchable {
      * @param el a double
      * @return true if {@code el} is contained in the array
      */
-    public boolean contains(double el) {
+    @Override
+    public boolean contains(Object el) {
       return indexOf(el) >= 0;
+    }
+
+    @Override
+    public Double get(int i) {
+      return original[i];
+    }
+
+    @Override
+    public int size() {
+      return original.length;
     }
   }
 
   /**
    * A searchable array.
    */
-  public static final class ShortArray extends AArray {
+  public final class ShortList extends AArray<Short> {
+    private final short[] original;
     private final short[] sorted;
 
-    private ShortArray(short[] sorted, Permutation unsort) {
+    private ShortList(short[] original, short[] sorted, Permutation unsort) {
       super(unsort);
+      this.original = original;
       this.sorted = sorted;
     }
 
@@ -555,7 +673,7 @@ public class Searchable {
      * @return a copy of the original array
      */
     public short[] getArray() {
-      return unsort.apply(sorted);
+      return Arrays.copyOf(original, original.length);
     }
 
     /**
@@ -570,9 +688,11 @@ public class Searchable {
      * Get the lowest of the indexes in the array where the value is {@code el}, or {@code -1} is no such index exists.
      * @param el a short
      * @return the lowest index {@code i} so that {@code a[i] == el}, or {@code -1}
+     * @throws java.lang.ClassCastException if the argument is not a Short
      */
-    public int indexOf(short el) {
-      int i = Arrays.binarySearch(sorted, el);
+    @Override
+    public int indexOf(Object el) {
+      int i = Arrays.binarySearch(sorted, (Short) el);
       return i < 0 ? -1 : unsort.apply(i);
     }
 
@@ -581,19 +701,33 @@ public class Searchable {
      * @param el a short
      * @return true if {@code el} is contained in the array
      */
-    public boolean contains(short el) {
+    @Override
+    public boolean contains(Object el) {
       return indexOf(el) >= 0;
     }
+
+    @Override
+    public Short get(int i) {
+      return original[i];
+    }
+
+    @Override
+    public int size() {
+      return original.length;
+    }
+
   }
 
   /**
    * A searchable array.
    */
-  public static final class ComparableArray extends AArray {
+  public final class ComparableList<E extends Comparable> extends AArray<E> {
+    private final E[] original;
     private final Comparable[] sorted;
 
-    private ComparableArray(Comparable[] sorted, Permutation unsort) {
+    private ComparableList(E[] original, Comparable[] sorted, Permutation unsort) {
       super(unsort);
+      this.original = original;
       this.sorted = sorted;
     }
 
@@ -601,8 +735,8 @@ public class Searchable {
      * Get a copy of the original array.
      * @return a copy of the original array
      */
-    public Comparable[] getArray() {
-      return unsort.apply(sorted);
+    public E[] getArray() {
+      return Arrays.copyOf(original, original.length);
     }
 
     /**
@@ -618,7 +752,8 @@ public class Searchable {
      * @param el a comparable
      * @return the lowest index {@code i} so that {@code a[i].equals(el)}, or {@code -1}
      */
-    public int indexOf(Comparable el) {
+    @Override
+    public int indexOf(Object el) {
       int i = Arrays.binarySearch(sorted, el);
       return i < 0 ? -1 : unsort.apply(i);
     }
@@ -628,20 +763,34 @@ public class Searchable {
      * @param el a comparable
      * @return true if {@code el} is contained in the array
      */
-    public boolean contains(Comparable el) {
+    @Override
+    public boolean contains(Object el) {
       return indexOf(el) >= 0;
     }
+
+    @Override
+    public E get(int i) {
+      return original[i];
+    }
+
+    @Override
+    public int size() {
+      return original.length;
+    }
+
   }
 
   /**
    * A searchable array.
    */
-  public static final class ObjectArray extends AArray {
+  public final class ObjectList<E> extends AArray<E> {
+    private final E[] original;
     private final Object[] sorted;
     private final Comparator comparator;
 
-    private ObjectArray(Object[] sorted, Comparator comparator, Permutation unsort) {
+    private ObjectList(E[] original, Object[] sorted, Comparator comparator, Permutation unsort) {
       super(unsort);
+      this.original = original;
       this.sorted = sorted;
       this.comparator = comparator;
     }
@@ -650,8 +799,8 @@ public class Searchable {
      * Get a copy of the original array.
      * @return a copy of the original array
      */
-    public Object[] getArray() {
-      return unsort.apply(sorted);
+    public E[] getArray() {
+      return Arrays.copyOf(original, original.length);
     }
 
     /**
@@ -675,6 +824,7 @@ public class Searchable {
      * @param el an object
      * @return the lowest index {@code i} so that {@code a[i].equals(el)}, or {@code -1}
      */
+    @Override
     public int indexOf(Object el) {
       int i = Arrays.binarySearch(sorted, el, comparator);
       return i < 0 ? -1 : unsort.apply(i);
@@ -685,15 +835,27 @@ public class Searchable {
      * @param el a comparable
      * @return true if {@code el} is contained in the array
      */
+    @Override
     public boolean contains(Object el) {
       return indexOf(el) >= 0;
     }
+
+    @Override
+    public E get(int i) {
+      return original[i];
+    }
+
+    @Override
+    public int size() {
+      return original.length;
+    }
+
   }
 
   /**
    * Return the PermutationFactory that is used to sort and unsort all input arrays.
    * @return the permutation factory
-   * @see com.github.methylene.sym.PermutationFactory#getStrictness
+   * @see com.github.methylene.sym.PermutationFactory#getUniquenessConstraint
    * @see com.github.methylene.sym.PermutationFactory#getParanoia
    */
   public PermutationFactory getPermutationFactory() {
