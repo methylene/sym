@@ -1,6 +1,7 @@
 package com.github.methylene.sym;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -174,57 +175,64 @@ public class TestUtil {
     return true;
   }
 
-
-  static int[] duplicateIndexes(int[] input) {
+  /**
+   * Find a pair of duplicate indexes.
+   * @param input
+   * @param start the index where to start looking in the array
+   * @return A pair {@code i, j} of indexes so that {@code input[i] == input[j]}
+   * @throws java.lang.IllegalArgumentException if no duplicates were found
+   */
+  static int[] duplicateIndexes(int[] input, int start) {
     int max = 0;
-    for (int i : input)
-      max = Math.max(max, i);
+    for (int j : input)
+      max = Math.max(max, j);
     int[] test = new int[max + 1];
     Arrays.fill(test, -1);
-    int i = (int) (Math.random() * input.length);
-    for (int k = 0; k < input.length; k += 1) {
-      if (test[(int) input[i]] == -1) {
-        test[(int) input[i]] = i;
-      } else {
-        return new int[]{test[(int) input[i]], i};
-      }
-      if (k > input.length)
-        break;
-      i += 1;
-      i = i % input.length;
+    for (int _: input) {
+      if (test[input[start]] == -1)
+        test[input[start]] = start;
+      else
+        return new int[]{test[input[start]], start};
+      start = (start + 1) % input.length;
     }
-    return new int[0];
+    throw new IllegalArgumentException("no duplicates found");
+  }
+
+  static int[] duplicateIndexes(int[] input) {
+    return duplicateIndexes(input, (int) (Math.random() * input.length));
   }
 
   static int[] duplicateIndexes(Object[] input, Comparator comp) {
     Map<Object, Integer> test = new TreeMap<Object, Integer>(comp);
-    for (int i = 0; i < input.length; i += 1) {
-      if (!test.containsKey(input[i])) {
-        test.put(input[i], i);
+    int start = (int) (Math.random() * input.length);
+    for (Object _: input) {
+      if (!test.containsKey(input[start])) {
+        test.put(input[start], start);
       } else {
-        return new int[]{test.get(input[i]), i};
+        return new int[]{test.get(input[start]), start};
       }
+      start = (start + 1) % input.length;
     }
-    return new int[0];
+    throw new IllegalArgumentException("no duplicates found");
   }
 
   static int[] duplicateIndexes(long[] input) {
     int max = 0;
-    for (long i : input)
+    for (long i : input) {
+      if (i > Integer.MAX_VALUE)
+        throw new IllegalArgumentException("too large: " + i);
       max = (int) Math.max(max, i);
+    }
     int[] test = new int[max + 1];
     Arrays.fill(test, -1);
-    int i = (int) (Math.random() * input.length);
-    for (int k = 0; k < input.length; k += 1) {
-      if (test[(int) input[i]] == -1) {
-        test[(int) input[i]] = i;
+    int start = (int) (Math.random() * input.length);
+    for (long _: input) {
+      if (test[(int) input[start]] == -1) {
+        test[(int) input[start]] = start;
       } else {
-        return new int[]{test[(int) input[i]], i};
+        return new int[]{test[(int) input[start]], start};
       }
-      if (k > input.length)
-        break;
-      i += 1;
-      i = i % input.length;
+      start = (start + 1) % input.length;
     }
     return new int[0];
   }
@@ -291,6 +299,23 @@ public class TestUtil {
   public void testDuplicateIndexes() {
     int[] ints = duplicateIndexes(new int[]{1, 2, 1});
     assertTrue(Arrays.equals(new int[]{0, 2}, ints) || Arrays.equals(new int[]{2, 0}, ints));
+  }
+
+  @Test
+  public void testDuplicateIndexes2() throws Exception {
+    for (int i = 0; i < 1000; i += 1) {
+      int maxNumber = 10;
+      int[] ints = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      int[] pair = TestUtil.duplicateIndexes(ints, 0);
+      assertTrue(count(ints, ints[pair[0]]) > 1);
+      assertEquals(Util.indexOf(ints, ints[pair[0]]), pair[0]);
+    }
+  }
+
+  @Test
+  public void testDuplicateIndexes3() {
+    int[] ints = {0, 1, 4, 1, 2, 6, 5, 2, 0, 0, 6, 0};
+    assertEquals(1, duplicateIndexes(ints, 0)[0]);
   }
 
   @Test

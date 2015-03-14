@@ -5,8 +5,6 @@ import java.util.Comparator;
 
 /**
  * The various {@code *Array} inner classes add an efficient {@code indexOf} method to standard arrays.
- * If there is a choice, that is if the elements of the original array are not pairwise distinct,
- * there is no guarantee which index will be chosen.
  */
 public class Searchable {
 
@@ -39,6 +37,42 @@ public class Searchable {
       return unsort;
     }
 
+  }
+
+  public static IntArray searchableArray(int[] a) {
+    return searchable().array(a);
+  }
+
+  public static LongArray searchableArray(long[] a) {
+    return searchable().array(a);
+  }
+
+  public static ByteArray searchableArray(byte[] a) {
+    return searchable().array(a);
+  }
+
+  public static CharArray searchableArray(char[] a) {
+    return searchable().array(a);
+  }
+
+  public static FloatArray searchableArray(float[] a) {
+    return searchable().array(a);
+  }
+
+  public static DoubleArray searchableArray(double[] a) {
+    return searchable().array(a);
+  }
+
+  public static ShortArray searchableArray(short[] a) {
+    return searchable().array(a);
+  }
+
+  public static ComparableArray searchableArray(Comparable[] a) {
+    return searchable().array(a);
+  }
+
+  public static ObjectArray searchableArray(Object[] a, Comparator comparator) {
+    return searchable().array(a,comparator);
   }
 
   public IntArray array(int[] a) {
@@ -106,6 +140,9 @@ public class Searchable {
       int i = Arrays.binarySearch(sorted, el);
       return i < 0 ? -1 : unsort.apply(i);
     }
+    public boolean contains(byte el) {
+      return indexOf(el) >= 0;
+    }
   }
 
   public static final class LongArray extends AArray {
@@ -127,6 +164,9 @@ public class Searchable {
     public int indexOf(long el) {
       int i = Arrays.binarySearch(sorted, el);
       return i < 0 ? -1 : unsort.apply(i);
+    }
+    public boolean contains(long el) {
+      return indexOf(el) >= 0;
     }
   }
 
@@ -150,6 +190,9 @@ public class Searchable {
       int i = Arrays.binarySearch(sorted, el);
       return i < 0 ? -1 : unsort.apply(i);
     }
+    public boolean contains(char el) {
+      return indexOf(el) >= 0;
+    }
   }
 
   public static final class IntArray extends AArray {
@@ -171,6 +214,9 @@ public class Searchable {
     public int indexOf(int el) {
       int i = Arrays.binarySearch(sorted, el);
       return i < 0 ? -1 : unsort.apply(i);
+    }
+    public boolean contains(int el) {
+      return indexOf(el) >= 0;
     }
   }
 
@@ -194,6 +240,9 @@ public class Searchable {
       int i = Arrays.binarySearch(sorted, el);
       return i < 0 ? -1 : unsort.apply(i);
     }
+    public boolean contains(float el) {
+      return indexOf(el) >= 0;
+    }
   }
 
   public static final class DoubleArray extends AArray {
@@ -215,6 +264,9 @@ public class Searchable {
     public int indexOf(double el) {
       int i = Arrays.binarySearch(sorted, el);
       return i < 0 ? -1 : unsort.apply(i);
+    }
+    public boolean contains(double el) {
+      return indexOf(el) >= 0;
     }
   }
 
@@ -238,6 +290,9 @@ public class Searchable {
       int i = Arrays.binarySearch(sorted, el);
       return i < 0 ? -1 : unsort.apply(i);
     }
+    public boolean contains(short el) {
+      return indexOf(el) >= 0;
+    }
   }
 
   public static final class ComparableArray extends AArray {
@@ -259,6 +314,9 @@ public class Searchable {
     public int indexOf(Comparable el) {
       int i = Arrays.binarySearch(sorted, el);
       return i < 0 ? -1 : unsort.apply(i);
+    }
+    public boolean contains(Comparable el) {
+      return indexOf(el) >= 0;
     }
   }
 
@@ -287,6 +345,9 @@ public class Searchable {
     public int indexOf(Object el) {
       int i = Arrays.binarySearch(sorted, el, comparator);
       return i < 0 ? -1 : unsort.apply(i);
+    }
+    public boolean contains(Object el) {
+      return indexOf(el) >= 0;
     }
   }
 

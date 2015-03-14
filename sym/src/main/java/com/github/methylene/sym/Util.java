@@ -56,7 +56,7 @@ public class Util {
    * but may be sufficient for one-off searches.
    * @param ints an array
    * @param k a number
-   * @return the index of the first occurence of {@code k} in {@code ints}, or {@code -1} if not found
+   * @return the least number {@code i >= 0} so that {@code ints[i] = k}, or {@code -1}
    */
   public static int indexOf(int[] ints, int k) {
     for (int i = 0; i < ints.length; i += 1)
