@@ -97,12 +97,12 @@ public class Util {
   }
 
   /**
-   * Check that the input can be used as a permutation definition. Each integer from {@code 0} to
-   * {@code a.length - 1} must be contained in it exactly once.
+   * Check that the input is a <a href="">ranking</a>. Each integer from {@code 0} to
+   * {@code a.length - 1} must appear exactly once.
    * @param a an array
    * @throws java.lang.IllegalArgumentException if a is not valid
    */
-  public static void validate(int[] a) {
+  public static void validateRanking(int[] a) {
     boolean[] used = new boolean[a.length];
     for (int i : a) {
       if (i < 0 || i >= a.length)

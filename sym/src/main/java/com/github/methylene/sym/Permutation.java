@@ -13,11 +13,14 @@ import java.util.List;
  */
 public final class Permutation implements Comparable<Permutation> {
 
-  /* index - > index; this array is never modified */
-  private final int[] posmap;
+  /*
+   *  An array of N integers where each of the integers between 0 and N-1 appears exactly once.
+   *  This array is never modified.
+   */
+  private final int[] ranking;
 
   private static final PermutationFactory FACTORY = PermutationFactory.builder().build();
-  private static final PermutationFactory STRICT_FACTORY = PermutationFactory.builder().setStrict(true).build();
+  private static final PermutationFactory STRICT_FACTORY = PermutationFactory.builder().setStrictness(PermutationFactory.Strictness.FORBID_DUPLICATES).build();
 
   private static final Permutation[] IDENTITIES = new Permutation[]{
       new Permutation(Util.sequence(0)),
@@ -33,38 +36,38 @@ public final class Permutation implements Comparable<Permutation> {
   /**
    * This returns the default non-strict factory.
    * @return the default factory
-   * @see com.github.methylene.sym.PermutationFactory#isStrict
+   * @see com.github.methylene.sym.PermutationFactory#getStrictness
    */
   public static PermutationFactory factory() { return FACTORY; }
 
   /**
    * Returns the strict factory.
    * @return the strict factory
-   * @see com.github.methylene.sym.PermutationFactory#isStrict
+   * @see com.github.methylene.sym.PermutationFactory#getStrictness
    */
   public static PermutationFactory strictFactory() { return STRICT_FACTORY; }
 
   /**
-   * This constructor is for expert use only.
-   * @param posmap posmap
+   * This constructor for expert only. Don't use it unless you're really sure that it's safe to skip the validation.
+   * @param ranking ranking
    * @param validate expert setting: if false, skip a certain constructor sanity check, to save time
    *                 if we're already sure that the input is valid
    */
-  public Permutation(int[] posmap, boolean validate) {
+  public Permutation(int[] ranking, boolean validate) {
     if (validate)
-      Util.validate(posmap);
-    this.posmap = posmap;
+      Util.validateRanking(ranking);
+    this.ranking = ranking;
   }
 
   /**
    * Creates a new permutation from the given array.
-   * @param posmap a list of numbers that specifies the permutation in zero-based
+   * @param ranking a list of numbers that specifies the permutation in zero-based
    *               <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
-   *               For example, {@code posmap = new int[]{1, 2, 0}} creates the permutation
+   *               For example, {@code ranking = new int[]{1, 2, 0}} creates the permutation
    *               that sends {@code new char[]{'a', 'b', 'c'}} to {@code new char[]{'c', 'a', 'b'}}.
    */
-  public Permutation(int[] posmap) {
-    this(posmap, true);
+  public Permutation(int[] ranking) {
+    this(ranking, true);
   }
 
   /**
@@ -163,9 +166,9 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#prod
    */
   public Permutation comp(Permutation other) {
-    int length = Math.max(posmap.length, other.posmap.length);
-    int[] lhs = Util.padding(posmap, length);
-    int[] rhs = Util.padding(other.posmap, length);
+    int length = Math.max(ranking.length, other.ranking.length);
+    int[] lhs = Util.padding(ranking, length);
+    int[] rhs = Util.padding(other.ranking, length);
     int[] result = new int[length];
     for (int i = 0; i < length; i += 1)
       result[i] = lhs[rhs[i]];
@@ -185,11 +188,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException if {@code targetLength} is less than {@code this.length}
    */
   public Permutation padding(int targetLength) {
-    if (targetLength < posmap.length)
+    if (targetLength < ranking.length)
       throw new IllegalArgumentException("targetLength can not be less than current length");
-    if (targetLength == posmap.length)
+    if (targetLength == ranking.length)
       return this;
-    return new Permutation(Util.padding(posmap, targetLength));
+    return new Permutation(Util.padding(ranking, targetLength));
   }
 
   /**
@@ -237,7 +240,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public Permutation pow(int n) {
     if (n == 0)
-      return identity(posmap.length);
+      return identity(ranking.length);
     Permutation seed = n < 0 ? invert() : this;
     Permutation result = seed;
     for (int i = 1; i < Math.abs(n); i += 1)
@@ -255,10 +258,10 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#isIdentity
    */
   public Permutation invert() {
-    int[][] posmapWithIndex = Util.withIndex(posmap);
+    int[][] posmapWithIndex = Util.withIndex(ranking);
     Arrays.sort(posmapWithIndex, COMPARE_2ND);
-    int[] result = new int[posmap.length];
-    for (int i = 0; i < posmap.length; i += 1)
+    int[] result = new int[ranking.length];
+    for (int i = 0; i < ranking.length; i += 1)
       result[i] = posmapWithIndex[i][0];
     return new Permutation(result);
   }
@@ -292,7 +295,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#orbit
    */
   public int orbitLength(int i) {
-    if (i < 0 || i >= posmap.length)
+    if (i < 0 || i >= ranking.length)
       throw new IllegalArgumentException("bad index: " + i);
     int length = 1;
     int j = i;
@@ -302,7 +305,7 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   private int[] orbit(int pos, int orbitLength) {
-    if (pos < 0 || pos >= posmap.length)
+    if (pos < 0 || pos >= ranking.length)
       throw new IllegalArgumentException("wrong pos: " + pos);
     int[] result = new int[orbitLength];
     result[0] = pos;
@@ -359,7 +362,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public boolean isCycle() {
     int[] candidate = null;
-    for (int i = 0; i < posmap.length; i += 1) {
+    for (int i = 0; i < ranking.length; i += 1) {
       int orbitLength = orbitLength(i);
       if (orbitLength > 1) {
         if (candidate == null) {
@@ -387,8 +390,8 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public List<Permutation> toCycles() {
     LinkedList<int[]> orbits = new LinkedList<int[]>();
-    boolean[] done = new boolean[posmap.length];
-    for (int i = 0; i < posmap.length; i += 1) {
+    boolean[] done = new boolean[ranking.length];
+    for (int i = 0; i < ranking.length; i += 1) {
       if (!done[i]) {
         int orbitLength = orbitLength(i);
         if (orbitLength > 1) {
@@ -411,7 +414,7 @@ public final class Permutation implements Comparable<Permutation> {
     }
     ArrayList<Permutation> result = new ArrayList<Permutation>(orbits.size());
     for (int[] orbit : orbits) {
-      result.add(cycle(orbit).padding(posmap.length));
+      result.add(cycle(orbit).padding(ranking.length));
     }
     return result;
   }
@@ -426,14 +429,14 @@ public final class Permutation implements Comparable<Permutation> {
     List<Permutation> result = new ArrayList<Permutation>();
     for (Permutation cycle : toCycles()) {
       int[] orbit = null;
-      for (int i = 0; i < cycle.posmap.length; i += 1) {
+      for (int i = 0; i < cycle.ranking.length; i += 1) {
         int orbitLength = cycle.orbitLength(i);
         if (orbitLength > 1)
-          orbit = cycle.orbit(cycle.posmap[i], orbitLength);
+          orbit = cycle.orbit(cycle.ranking[i], orbitLength);
       }
       assert orbit != null;
       for (int i = 0; i < orbit.length - 1; i += 1)
-        result.add(swap(orbit[i], orbit[i + 1]).padding(posmap.length));
+        result.add(swap(orbit[i], orbit[i + 1]).padding(ranking.length));
     }
     return result;
   }
@@ -471,8 +474,8 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#reverse
    */
   public boolean isReverse() {
-    for (int i = 0; i < posmap.length; i += 1)
-      if (posmap[i] != posmap.length - i - 1)
+    for (int i = 0; i < ranking.length; i += 1)
+      if (ranking[i] != ranking.length - i - 1)
         return false;
     return true;
   }
@@ -482,8 +485,8 @@ public final class Permutation implements Comparable<Permutation> {
    * @return true if this is an identity permutation
    */
   public boolean isIdentity() {
-    for (int i = 0; i < posmap.length; i += 1)
-      if (posmap[i] != i)
+    for (int i = 0; i < ranking.length; i += 1)
+      if (ranking[i] != i)
         return false;
     return true;
   }
@@ -493,7 +496,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return the length of this permutation
    */
   public int length() {
-    return posmap.length;
+    return ranking.length;
   }
 
   /**
@@ -501,7 +504,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return a String representation of this permutation.
    */
   @Override public String toString() {
-    return Arrays.toString(posmap);
+    return Arrays.toString(ranking);
   }
 
   /**
@@ -515,35 +518,35 @@ public final class Permutation implements Comparable<Permutation> {
       return true;
     if (other == null || getClass() != other.getClass())
       return false;
-    return Arrays.equals(posmap, ((Permutation) other).posmap);
+    return Arrays.equals(ranking, ((Permutation) other).ranking);
   }
 
   @Override public int hashCode() {
-    return Arrays.hashCode(posmap);
+    return Arrays.hashCode(ranking);
   }
 
   /**
    * Standard java comparison, compatible with {@code equals} in the sense that permutations compare as {@code 0}
    * if and only they are equal.
    * @param other a permutation, not necessarily of the same length
-   * @return the result of lexicographic comparison of {@code this.posmap} and {@code other.posmap}
+   * @return the result of lexicographic comparison of {@code this.ranking} and {@code other.ranking}
    * @see com.github.methylene.sym.Permutation#equals
    */
   @Override public int compareTo(Permutation other) {
     if (this == other)
       return 0;
-    for (int i = 0; i < Math.min(this.posmap.length, other.posmap.length); i += 1)
-      if (this.posmap[i] != other.posmap[i])
-        return this.posmap[i] - other.posmap[i];
-    return other.posmap.length - this.posmap.length;
+    for (int i = 0; i < Math.min(this.ranking.length, other.ranking.length); i += 1)
+      if (this.ranking[i] != other.ranking[i])
+        return this.ranking[i] - other.ranking[i];
+    return other.ranking.length - this.ranking.length;
   }
 
   /**
    * Get a copy of the internal representation of this permutation.
    * @return A copy of the index map that represents this permutation.
    */
-  public int[] getPosmap() {
-    return Arrays.copyOf(posmap, posmap.length);
+  public int[] getRanking() {
+    return Arrays.copyOf(ranking, ranking.length);
   }
 
 
@@ -561,9 +564,9 @@ public final class Permutation implements Comparable<Permutation> {
   public int apply(int i) {
     if (i < 0)
       throw new IllegalArgumentException("negative index: " + i);
-    if (i >= posmap.length)
+    if (i >= ranking.length)
       return i;
-    return posmap[i];
+    return ranking[i];
   }
 
     /* ============== apply to arrays ============== */
@@ -577,13 +580,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public Object[] apply(Object[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     Object[] result = new Object[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -596,13 +599,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public Comparable[] apply(Comparable[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     Comparable[] result = new Comparable[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -614,13 +617,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public String[] apply(String[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     String[] result = new String[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -632,13 +635,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public byte[] apply(byte[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     byte[] result = new byte[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -650,13 +653,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public short[] apply(short[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     short[] result = new short[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -668,13 +671,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public int[] apply(int[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     int[] result = new int[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -686,13 +689,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public long[] apply(long[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     long[] result = new long[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -704,13 +707,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public float[] apply(float[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     float[] result = new float[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -722,13 +725,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public double[] apply(double[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     double[] result = new double[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -740,13 +743,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public boolean[] apply(boolean[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     boolean[] result = new boolean[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -758,13 +761,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public char[] apply(char[] input) {
-    if (input.length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + posmap.length);
+    if (input.length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
     char[] result = new char[input.length];
-    for (int i = 0; i < posmap.length; i += 1)
-      result[posmap[i]] = input[i];
-    if (input.length > posmap.length)
-      System.arraycopy(input, posmap.length, result, posmap.length, input.length - posmap.length);
+    for (int i = 0; i < ranking.length; i += 1)
+      result[ranking[i]] = input[i];
+    if (input.length > ranking.length)
+      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
 
@@ -776,8 +779,8 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public String apply(String s) {
-    if (s.length() < posmap.length)
-      throw new IllegalArgumentException("input too short: " + s.length() + ", minimum input length is " + posmap.length);
+    if (s.length() < ranking.length)
+      throw new IllegalArgumentException("input too short: " + s.length() + ", minimum input length is " + ranking.length);
     char[] dst = new char[s.length()];
     s.getChars(0, s.length(), dst, 0);
     return new String(apply(dst));
@@ -792,8 +795,8 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public <E> List<E> apply(List<E> input) {
     int length = input.size();
-    if (length < posmap.length)
-      throw new IllegalArgumentException("input too short: " + length + ", minimum input size is " + posmap.length);
+    if (length < ranking.length)
+      throw new IllegalArgumentException("input too short: " + length + ", minimum input size is " + ranking.length);
     ArrayList<E> result = new ArrayList<E>(length);
     for (int i = 0; i < length; i += 1)
       result.add(null);
@@ -812,7 +815,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(String[])
    */
   public String[] apply() {
-    return apply(Util.symbols(posmap.length));
+    return apply(Util.symbols(ranking.length));
   }
 
 }

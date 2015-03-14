@@ -1,6 +1,5 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.MyInt.COMP;
 import static org.junit.Assert.assertArrayEquals;
 import static com.github.methylene.sym.Util.randomNumbers;
 import static com.github.methylene.sym.MyInt.box;
@@ -12,8 +11,8 @@ import org.junit.Test;
 /* like PermutationFactoryTest, but use the Comparator versions of sort and from */
 public class PermutationFactoryComparatorTest {
 
-  private final PermutationFactory nonstrict = PermutationFactory.builder().setValidate(true).build();
-  private final PermutationFactory strict = PermutationFactory.builder().setStrict(true).setValidate(true).build();
+  private final PermutationFactory nonstrict = PermutationFactory.builder().setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
+  private final PermutationFactory strict = PermutationFactory.builder().setStrictness(PermutationFactory.Strictness.FORBID_DUPLICATES).setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
 
   static final int REPEAT = 1000;
 

@@ -103,6 +103,17 @@ if (i >= 0) {
 // => 3
 ````
 
+In the current snapshot version
+there is also a convenience class `Searchable` to achieve the same thing with less code.
+
+````java
+String string = "An array with an .indexOf method.";
+byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
+Searchable.ByteArray a = Searchable.searchableArray(bytes);
+System.out.println(a.indexOf((byte) '.'));
+// => 17
+````
+
 ### Composition
 
 Permutations can be composed using the `comp` method.
@@ -193,5 +204,6 @@ System.out.println(c.apply(" !Hdellloorw"));
 For more ideas, see the [javadoc](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html).
 
 <!--
-Idea: add Kendall tau distance?
+Idea: add Kendall tau distance? add rank?
+http://rosettacode.org/wiki/Permutations/Rank_of_a_permutation
 -->

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 
+import java.nio.charset.Charset;
+
 public class SearchableTest {
 
   /**
@@ -99,6 +101,14 @@ public class SearchableTest {
   public void testStrictFail() throws Exception {
     int[] ints = Util.randomNumbers(100, 105);
     Searchable.strictSearchable().array(ints);
+  }
+
+  @Test
+  public void testReadme() {
+    String string = "An array with an .indexOf method.";
+    byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
+    Searchable.ByteArray a = Searchable.searchableArray(bytes);
+    assertEquals(17, a.indexOf((byte) '.'));
   }
 
 }

@@ -15,28 +15,51 @@ import java.util.Comparator;
  */
 public final class PermutationFactory {
 
-  private final boolean strict;
-  private final boolean validate;
-
-  private PermutationFactory(boolean strict, boolean validate) {
-    this.strict = strict;
-    this.validate = validate;
+  /**
+   * Enum of possible Strictness settings. Default is nonstrict behaviour, i.e.
+   * {@link com.github.methylene.sym.PermutationFactory.Strictness#ALLOW_DUPLICATES}
+   * @see com.github.methylene.sym.PermutationFactory.Builder#setStrictness
+   */
+  public static enum Strictness {
+    ALLOW_DUPLICATES, FORBID_DUPLICATES
   }
 
   /**
-   * @see com.github.methylene.sym.PermutationFactory.Builder#setStrict
+   * Enum of possible paranoia settings. Default is not paranoid, i.e.
+   * {@link com.github.methylene.sym.PermutationFactory.Paranoia#SKIP_VALIDATION}.
+   * @see com.github.methylene.sym.PermutationFactory.Builder#setParanoia
+   */
+  static enum Paranoia {
+    SKIP_VALIDATION, ALWAYS_VALIDATE
+  }
+
+  /* The strictness level */
+  private final Strictness strictness;
+
+  /* The paranoia setting */
+  private final Paranoia paranoia;
+
+  private PermutationFactory(Strictness strictness, Paranoia paranoia) {
+    this.strictness = strictness;
+    this.paranoia = paranoia;
+  }
+
+  /**
+   * Check the strictness setting of this factory.
    * @return the strictness setting of this factory
+   * @see com.github.methylene.sym.PermutationFactory.Builder#setStrictness
    */
-  public boolean isStrict() {
-    return strict;
+  public Strictness getStrictness() {
+    return strictness;
   }
 
   /**
-   * @see com.github.methylene.sym.PermutationFactory.Builder#setStrict
-   * @return the validate setting of this factory
+   * Get the paranoia setting of this factory.
+   * @return the paranoia setting of this factory
+   * @see com.github.methylene.sym.PermutationFactory.Builder#setParanoia
    */
-  public boolean isValidate() {
-    return validate;
+  Paranoia getParanoia() {
+    return paranoia;
   }
 
   /**
@@ -49,35 +72,35 @@ public final class PermutationFactory {
   public static class Builder {
     private Builder() {}
 
-    private boolean strict;
-    private boolean validate;
+    private Strictness strictness = Strictness.ALLOW_DUPLICATES;
+    private Paranoia paranoia = Paranoia.SKIP_VALIDATION;
 
     /**
-     * When strict is set, the resulting Factory does not allow duplicate elements in input arrays,
+     * When strictness is set, the resulting Factory does not allow duplicate elements in input arrays,
      * in the {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])}
      * or {@link com.github.methylene.sym.PermutationFactory#sort(char[])} methods and their various overloads,
      * and will throw an IllegalArgumentException instead.
      * @return the current instance
      */
-    public Builder setStrict(boolean strict) {
-      this.strict = strict;
+    public Builder setStrictness(Strictness strictness) {
+      this.strictness = strictness;
       return this;
     }
 
     /**
-     * When validate is set, run an extra assertion on each Permitation returned by the
+     * When paranoia is set, run an extra assertion on each Permitation returned by the
      * from {@link com.github.methylene.sym.PermutationFactory#from(int[], int[])}
      * and {@link com.github.methylene.sym.PermutationFactory#sort(char[])} methods and their various overloads.
-     * This should only be necessary in a unit test of this class.
+     * This is package-private as it should not be necessary outside of unit tests for this class.
      * @return the current instance
      */
-    public Builder setValidate(boolean validate) {
-      this.validate = validate;
+    Builder setParanoia(Paranoia validate) {
+      this.paranoia = validate;
       return this;
     }
 
     public PermutationFactory build() {
-      return new PermutationFactory(strict, validate);
+      return new PermutationFactory(strictness, paranoia);
     }
   }
 
@@ -99,7 +122,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strict)
+        if (strictness == Strictness.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -111,7 +134,7 @@ public final class PermutationFactory {
       result[i] = idx + offset;
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -126,7 +149,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strict)
+        if (strictness == Strictness.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -138,7 +161,7 @@ public final class PermutationFactory {
       result[i] = idx + offset;
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -153,7 +176,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strict)
+        if (strictness == Strictness.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -165,7 +188,7 @@ public final class PermutationFactory {
       result[i] = idx + offset;
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -180,7 +203,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strict)
+        if (strictness == Strictness.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -192,7 +215,7 @@ public final class PermutationFactory {
       result[i] = idx + offset;
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -207,7 +230,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strict)
+        if (strictness == Strictness.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -219,7 +242,7 @@ public final class PermutationFactory {
       result[i] = idx + offset;
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -228,7 +251,7 @@ public final class PermutationFactory {
    * i.e. if the input contains duplicates.
    * @param input an array, not necessarily distinct
    * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strict} is true and {@code input} contains duplicates
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
    */
   public Permutation sort(char[] input) {
     char[] sorted = Util.sortedCopy(input);
@@ -239,7 +262,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strict)
+        if (strictness == Strictness.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -251,7 +274,7 @@ public final class PermutationFactory {
       result[i] = idx + offset;
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -266,7 +289,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strict)
+        if (strictness == Strictness.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || !sorted[idx + offset].equals(input[i])) {
@@ -278,7 +301,7 @@ public final class PermutationFactory {
       result[i] = idx + offset;
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /** @see com.github.methylene.sym.PermutationFactory#sort(char[]) */
@@ -291,7 +314,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strict)
+        if (strictness == Strictness.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || !sorted[idx + offset].equals(input[i])) {
@@ -303,7 +326,7 @@ public final class PermutationFactory {
       result[i] = idx + offset;
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -312,7 +335,7 @@ public final class PermutationFactory {
    * i.e. if the input contains duplicates.
    * @param input an array of integers
    * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strict} is true and {@code input} contains duplicates
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
    */
   public Permutation sort(int[] input) {
     int[] sorted = Util.sortedCopy(input);
@@ -323,7 +346,7 @@ public final class PermutationFactory {
       int offset = 0;
       int direction = 1;
       while (used[idx + offset]) {
-        if (strict)
+        if (strictness == Strictness.FORBID_DUPLICATES)
           throw new IllegalArgumentException("duplicate: " + input[i]);
         offset += direction;
         if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
@@ -335,7 +358,7 @@ public final class PermutationFactory {
       result[i] = idx + offset;
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -356,7 +379,7 @@ public final class PermutationFactory {
    * @param a an array
    * @param b an array that can be obtained by changing the order of the elements of {@code a}
    * @return a permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true
-   * @throws java.lang.IllegalArgumentException if {@code strict} is true and {@code a} or {@code b} contain duplicates,
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code a} or {@code b} contain duplicates,
    * or if {@code b} can not be obtained by rearranging {@code a}.
    */
   public Permutation from(int[] a, int[] b) {
@@ -392,7 +415,7 @@ public final class PermutationFactory {
         throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -436,7 +459,7 @@ public final class PermutationFactory {
         throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -479,7 +502,7 @@ public final class PermutationFactory {
         throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -522,7 +545,7 @@ public final class PermutationFactory {
         throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -565,7 +588,7 @@ public final class PermutationFactory {
         throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -608,7 +631,7 @@ public final class PermutationFactory {
         throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
   /**
@@ -654,7 +677,7 @@ public final class PermutationFactory {
         throw new IllegalArgumentException("multiplicity differs: " + a[i]);
       used[idx + offset] = true;
     }
-    return new Permutation(result, validate);
+    return new Permutation(result, paranoia == Paranoia.ALWAYS_VALIDATE);
   }
 
 }

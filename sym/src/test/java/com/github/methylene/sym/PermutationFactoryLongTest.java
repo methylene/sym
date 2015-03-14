@@ -6,8 +6,8 @@ import org.junit.Test;
 /* like PermutationFactoryTest, but use the long versions of sort and from */
 public class PermutationFactoryLongTest {
 
-  private final PermutationFactory nonstrict = PermutationFactory.builder().setValidate(true).build();
-  private final PermutationFactory strict = PermutationFactory.builder().setStrict(true).setValidate(true).build();
+  private final PermutationFactory nonstrict = PermutationFactory.builder().setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
+  private final PermutationFactory strict = PermutationFactory.builder().setStrictness(PermutationFactory.Strictness.FORBID_DUPLICATES).setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
 
   static long[] randomNumbers(int maxNumber, int length) {
     long[] result = new long[length];
