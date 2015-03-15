@@ -341,6 +341,7 @@ public final class PermutationFactory {
     for (int i = 0; i < input.length; i += 1) {
       if (nullPolicy == NullPolicy.ALLERGIC && input[i] == null)
         throw new NullPointerException("null values are not allowed when NullPolicy is ALLERGIC");
+      @SuppressWarnings("unchecked")
       int idx = Arrays.binarySearch(sorted, input[i], comp);
       int offset = 0;
       int direction = 1;
@@ -682,6 +683,7 @@ public final class PermutationFactory {
     int[] result = new int[a.length];
     boolean[] used = new boolean[b.length];
     for (int i = 0; i < a.length; i += 1) {
+      @SuppressWarnings("unchecked")
       int idx = Arrays.binarySearch(sortedB, a[i], comp);
       if (idx < 0)
         throw new IllegalArgumentException("not in b: " + a[i]);

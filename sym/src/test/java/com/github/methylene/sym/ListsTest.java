@@ -2,12 +2,17 @@ package com.github.methylene.sym;
 
 import static com.github.methylene.sym.Lists.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+import java.io.PrintStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ListsTest {
@@ -207,7 +212,7 @@ public class ListsTest {
   public void testReadme() {
     String string = "An array with an .indexOf method.";
     byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
-    List<Byte> a = Lists.asList(bytes);
+    Lists.LookupList<Byte> a = Lists.asList(bytes);
     assertEquals(17, a.indexOf((byte) '.'));
   }
 
@@ -258,9 +263,9 @@ public class ListsTest {
     long indexSum = 0;
     int repeat = 16;
     System.out.println("running performance tests...");
+    int size = 16384; // knob to turn
     for (int _ = 0; _ < repeat; _ += 1) {
       int maxNumber = 60000;
-      int size = 16384; // knob to turn
       int[] a = Util.randomNumbers(maxNumber, size);
       List<Integer> asList = Lists.asList(a);
       List<Integer> jdk = Arrays.asList(Util.box(a));
@@ -331,15 +336,24 @@ public class ListsTest {
         assertEquals(j, i);
       }
     }
-    long d = minLength(index1, index2, index3, indexJdk1, indexJdk2, lastIndex, lastIndexJdk);
-    System.out.println("== avg return value of .indexOf: " + indexSum / repeat + " ==");
-    System.out.format("index_1:      %" + d + "d%n", index1);
-    System.out.format("index_2:      %" + d + "d%n", index2);
-    System.out.format("index_3:      %" + d + "d%n", index3);
-    System.out.format("index_jdk_1:  %" + d + "d%n", indexJdk1);
-    System.out.format("index_jdk_2:  %" + d + "d%n", indexJdk2);
-    System.out.format("lastIndex:    %" + d + "d%n", lastIndex);
-    System.out.format("lastIndexJdk: %" + d + "d%n", lastIndexJdk);
+    // format and print
+    long d = Math.max(6, minLength(index1, index2, index3, indexJdk1, indexJdk2, lastIndex, lastIndexJdk));
+    String speedup = Float.toString(((index1 + index2 + index3) / 3f) / ((indexJdk1 + indexJdk2) / 2f));
+    if (speedup.length() > d) {speedup = speedup.substring(0, Long.valueOf(d).intValue());}
+    String lastIndexSpeedup = Float.toString(((float) lastIndex) / ((float) lastIndexJdk));
+    if (lastIndexSpeedup.length() > d) {lastIndexSpeedup = lastIndexSpeedup.substring(0, Long.valueOf(d).intValue());}
+    PrintStream out = System.out;
+    out.println("== list size: " + size);
+    out.println("== avg return value of .indexOf: " + indexSum / repeat);
+    out.format("index_1:            %" + d + "d%n", index1);
+    out.format("index_2:            %" + d + "d%n", index2);
+    out.format("index_3:            %" + d + "d%n", index3);
+    out.format("index_jdk_1:        %" + d + "d%n", indexJdk1);
+    out.format("index_jdk_2:        %" + d + "d%n", indexJdk2);
+    out.format("lastIndex:          %" + d + "d%n", lastIndex);
+    out.format("lastIndexJdk:       %" + d + "d%n", lastIndexJdk);
+    out.format("index_relative:     %1$" + d + "s %%%n", speedup);
+    out.format("lastIndex_relative: %1$" + d + "s %%%n", lastIndexSpeedup);
   }
 
   @Test
@@ -364,6 +378,77 @@ public class ListsTest {
     Lists.IntList integers = Lists.asList(a);
     a[0] = 5;
     assertEquals(1, integers.get(0).intValue());
+  }
+
+  @Test
+  public void testSubList() {
+    for (int _ = 0; _ < 100; _ += 1) {
+      int size = 100;
+      int[] a = Util.randomNumbers(1000, size);
+      Lists.IntList lookupList = Lists.asList(a);
+      ArrayList<Integer> jdk = new ArrayList<Integer>(a.length);
+      Collections.addAll(jdk, Util.box(a));
+      int from = (int) ((size / 2) * Math.random());
+      int to = from + (int) ((size / 2) * Math.random());
+      assertEquals(jdk.subList(from, to), lookupList.subList(from, to));
+    }
+  }
+
+  @Test
+  public void testIndexesOf() {
+    for (int _ = 0; _ < 100; _ += 1) {
+      int size = 1000;
+      int maxNumber = 100;
+      int[] a = Util.randomNumbers(maxNumber, size);
+      Lists.IntList lookupList = Lists.asList(a);
+      int el = (int) (Math.random() * maxNumber);
+      List<Integer> els = lookupList.indexesOf(el);
+      for (int i = 0; i < a.length; i += 1) {
+        if(a[i] == el) {
+          assertTrue(els.contains(i));
+        } else {
+          assertFalse(els.contains(i));
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testIndexesOfComparable() {
+    for (int _ = 0; _ < 100; _ += 1) {
+      int size = 1000;
+      int maxNumber = 100;
+      Integer[] a = Util.box(Util.randomNumbers(maxNumber, size));
+      Lists.ComparableList<Integer> lookupList = Lists.asList(a);
+      Integer el = (int) (Math.random() * maxNumber);
+      List<Integer> els = lookupList.indexesOf(el);
+      for (int i = 0; i < a.length; i += 1) {
+        if(a[i].equals(el)) {
+          assertTrue(els.contains(i));
+        } else {
+          assertFalse(els.contains(i));
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testIndexesOfComparator() {
+    for (int _ = 0; _ < 100; _ += 1) {
+      int size = 1000;
+      int maxNumber = 100;
+      MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, size));
+      Lists.ComparatorList<MyInt> lookupList = Lists.asList(MyInt.COMP, a);
+      MyInt el = new MyInt((int) (Math.random() * maxNumber));
+      List<Integer> els = lookupList.indexesOf(el);
+      for (int i = 0; i < a.length; i += 1) {
+        if(a[i].equals(el)) {
+          assertTrue(els.contains(i));
+        } else {
+          assertFalse(els.contains(i));
+        }
+      }
+    }
   }
 
 }

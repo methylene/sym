@@ -203,6 +203,7 @@ public class TestUtil {
   }
 
   static int[] duplicateIndexes(Object[] input, Comparator comp) {
+    @SuppressWarnings("unchecked")
     Map<Object, Integer> test = new TreeMap<Object, Integer>(comp);
     int start = (int) (Math.random() * input.length);
     for (Object _: input) {

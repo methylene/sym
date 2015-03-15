@@ -295,6 +295,7 @@ public class Util {
    * @param comp a comparator
    * @return a sorted copy of the input
    */
+  @SuppressWarnings("unchecked")
   public static Object[] sortedCopy(Object[] input, Comparator comp) {
     Object[] sorted = Arrays.copyOf(input, input.length);
     Arrays.sort(sorted, comp);

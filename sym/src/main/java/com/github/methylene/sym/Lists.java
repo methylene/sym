@@ -20,7 +20,6 @@ import java.util.RandomAccess;
  *   <li>Performance gains over {@code java.util.ArrayList} are more significant when the return value of
  *   {@code .indexOf} is large, if the list is big and {@code indexOf} returns {@code -1},
  *   or if the {@code equals} method of the list elements is expensive.
- *   <li>The List implementations do not implement {@link java.util.List#subList}.</li>
  *   <li>Binary search is used for quick lookup, so all values in the lists must be Comparables,
  *   or a Comparator must be provided. If nulls are allowed, ony the Comparator makes sense, otherwise
  *   {@link java.util.Arrays#binarySearch} will throw an Exception.</li>
@@ -30,6 +29,11 @@ import java.util.RandomAccess;
  * @see com.github.methylene.sym.PermutationFactory#getNullPolicy
  */
 public class Lists {
+
+  /**
+   * Marker interface for those {@link java.util.List} implementations that are backed by primitive arrays.
+   */
+  public static interface PrimitiveList {}
 
   /* The PermutationFactory that is used for sorting */
   private final PermutationFactory factory;
@@ -50,7 +54,7 @@ public class Lists {
   /**
    * Obtain the uniqueness enforcing variant of Searchable. This will refuse to create lists that
    * contain duplicates, and throw an IllegalArgumentException instead.
-   * @return a strict searchable
+   * @return a lists object that can not be used to construct lists that contain duplicate elements
    */
   public static Lists uniqueLists() {
     return UNIQUE;
@@ -63,13 +67,15 @@ public class Lists {
   public abstract class LookupList<E> extends AbstractList<E> implements RandomAccess {
 
     protected final Permutation unsort;
+    protected final Permutation sort;
 
-    protected LookupList(Permutation unsort) {
-      this.unsort = unsort;
+    protected LookupList(Permutation sort) {
+      this.sort = sort;
+      this.unsort = sort.invert();
     }
 
     /**
-     * Get the inverse of a particular permutation which sorts the input array.
+     * Get the inverse of a particular permutation which sorts this list.
      * @return the unsort permutation
      */
     public final Permutation getUnsort() {
@@ -77,38 +83,33 @@ public class Lists {
     }
 
     /**
-     * Get the uniqueness setting of this list.
-     * If the uniqueness setting is
-     * {@link com.github.methylene.sym.PermutationFactory.UniquenessConstraint#FORBID_DUPLICATES},
-     * this list will not contain two elements that are equal, and can be used as a set.
-     * @return the uniqueness constraint
+     * Get a particular permutation which sorts this list.
+     * @return the sort permutation
      */
-    public final PermutationFactory.UniquenessConstraint getUniquenessConstraint() {
-      return factory.getUniquenessConstraint();
+    public final Permutation getSort() {
+      return sort;
+    }
+
+
+    /**
+     * Get the permutation factory that was used to create this list.
+     * @return the permutation factory
+     */
+    public final PermutationFactory getPermutationFactory() {
+      return factory;
     }
 
     /**
-     * Get the null policy of this list.
-     * If the null policy is {@link com.github.methylene.sym.PermutationFactory.NullPolicy#ALLERGIC},
-     * this list will not contain any null values.
-     * @return the null policy
+     * Find all indexes {@code i} where
+     * <pre><code>
+     *   this.get(i).equals(el)
+     * </code></pre>
+     * If {@code el} is not in the list, this returns an empty list.
+     * @param el an object
+     * @return an increasing list of all indexes where the value equals {@code el}
      */
-    public final PermutationFactory.NullPolicy getNullPolicy() {
-      return factory.getNullPolicy();
-    }
+    public abstract List<Integer> indexesOf(E el);
 
-    /**
-     * The subList method is not supported by this list implementation.
-     * This method always throws an UnsupportedOperationException.
-     * @param fromIndex an int
-     * @param toIndex an int
-     * @return a list
-     * @throws java.lang.UnsupportedOperationException
-     */
-    @Override
-    public final List<E> subList(int fromIndex, int toIndex) {
-      throw new UnsupportedOperationException();
-    }
   }
 
   /**
@@ -199,107 +200,98 @@ public class Lists {
    * Creates a list from the given input.
    * @param a an array
    * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory's uniqueness policy does not allow duplicates
+   * and the input contains a duplicate element
    * @see Lists#getPermutationFactory
    */
   public IntList newList(int[] a) {
-    a = Arrays.copyOf(a, a.length);
-    Permutation sort = factory.sort(a);
-    return new IntList(a, sort.apply(a), sort.invert());
+    return new IntList(a, factory.sort(a));
   }
 
   /**
    * Creates a list from the given input.
    * @param a an array
    * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory's uniqueness policy does not allow duplicates
+   * and the input contains a duplicate element
    * @see Lists#getPermutationFactory
    */
   public LongList newList(long[] a) {
-    a = Arrays.copyOf(a, a.length);
-    Permutation sort = factory.sort(a);
-    return new LongList(a, sort.apply(a), sort.invert());
+    return new LongList(a, factory.sort(a));
   }
 
   /**
    * Creates a list from the given input.
    * @param a an array
    * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory's uniqueness policy does not allow duplicates
+   * and the input contains a duplicate element
    * @see Lists#getPermutationFactory
    */
   public ByteList newList(byte[] a) {
-    a = Arrays.copyOf(a, a.length);
-    Permutation sort = factory.sort(a);
-    return new ByteList(a, sort.apply(a), sort.invert());
+    return new ByteList(a, factory.sort(a));
   }
 
   /**
    * Creates a list from the given input.
    * @param a an array
    * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory's uniqueness policy does not allow duplicates
+   * and the input contains a duplicate element
    * @see Lists#getPermutationFactory
    */
   public CharList newList(char[] a) {
-    a = Arrays.copyOf(a, a.length);
-    Permutation sort = factory.sort(a);
-    return new CharList(a, sort.apply(a), sort.invert());
+    return new CharList(a, factory.sort(a));
   }
 
   /**
    * Creates a list from the given input.
    * @param a an array
    * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory's uniqueness policy does not allow duplicates
+   * and the input contains a duplicate element
    * @see Lists#getPermutationFactory
    */
   public FloatList newList(float[] a) {
-    a = Arrays.copyOf(a, a.length);
-    Permutation sort = factory.sort(a);
-    return new FloatList(a, sort.apply(a), sort.invert());
+    return new FloatList(a, factory.sort(a));
   }
 
   /**
    * Creates a list from the given input.
    * @param a an array
    * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory's uniqueness policy does not allow duplicates
+   * and the input contains a duplicate element
    * @see Lists#getPermutationFactory
    */
   public DoubleList newList(double[] a) {
-    a = Arrays.copyOf(a, a.length);
-    Permutation sort = factory.sort(a);
-    return new DoubleList(a, sort.apply(a), sort.invert());
+    return new DoubleList(a, factory.sort(a));
   }
 
   /**
    * Creates a list from the given input.
    * @param a an array
    * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory's uniqueness policy does not allow duplicates
+   * and the input contains a duplicate element
    * @see Lists#getPermutationFactory
    */
   public ShortList newList(short[] a) {
-    a = Arrays.copyOf(a, a.length);
-    Permutation sort = factory.sort(a);
-    return new ShortList(a, sort.apply(a), sort.invert());
+    return new ShortList(a, factory.sort(a));
   }
 
   /**
    * Creates a list from the given input.
    * @param a an array
    * @return a list
-   * @throws java.lang.IllegalArgumentException if underlying the PermutationFactory's uniqueness constraint forbids
-   * duplicates, and the input contains duplicates
-   * @throws java.lang.NullPointerException if underlying the PermutationFactory's null policy forbids null elements,
+   * @throws java.lang.IllegalArgumentException if the PermutationFactory's uniqueness policy does not allow duplicates
+   * and the input contains a duplicate element
+   * @throws java.lang.NullPointerException if  the PermutationFactory's null policy forbids null elements,
    * and the input contains a null element
    * @see Lists#getPermutationFactory
    */
   public <E extends Comparable> ComparableList<E> newList(E[] a) {
-    a = Arrays.copyOf(a, a.length);
-    Permutation sort = factory.sort(a);
-    return new ComparableList<E>(a, sort.apply(a), sort.invert());
+    return new ComparableList<E>(a, factory.sort(a));
   }
 
   /**
@@ -316,9 +308,7 @@ public class Lists {
   public <E> ComparatorList<E> newList(Comparator<E> comparator, E[] a) {
     if (comparator == null)
       throw new IllegalArgumentException("comparator can not be null");
-    a = Arrays.copyOf(a, a.length);
-    Permutation sort = factory.sort(a, comparator);
-    return new ComparatorList<E>(a, sort.apply(a), comparator, sort.invert());
+    return new ComparatorList<E>(a, comparator, factory.sort(a, comparator));
   }
 
   public static <E> ListBuilder<E> builder(Comparator<E> comparator) {
@@ -338,30 +328,12 @@ public class Lists {
   }
 
 
-  public final class ByteList extends LookupList<Byte> {
-    private final byte[] original;
+  public final class ByteList extends LookupList<Byte> implements PrimitiveList {
     private final byte[] sorted;
 
-    private ByteList(byte[] original, byte[] sorted, Permutation unsort) {
-      super(unsort);
-      this.original = original;
-      this.sorted = sorted;
-    }
-
-    /**
-     * Get a copy of the original array.
-     * @return a copy of the original array
-     */
-    public byte[] getArray() {
-      return Arrays.copyOf(original, original.length);
-    }
-
-    /**
-     * Get a sorted copy of the original array.
-     * @return a sorted copy of the original array
-     */
-    public byte[] getSortedArray() {
-      return Arrays.copyOf(sorted, sorted.length);
+    private ByteList(byte[] a, Permutation sort) {
+      super(sort);
+      this.sorted = sort.apply(a);
     }
 
     @Override
@@ -391,40 +363,54 @@ public class Lists {
 
     @Override
     public Byte get(int i) {
-      return original[i];
+      return sorted[sort.apply(i)];
     }
 
     @Override
     public int size() {
-      return original.length;
+      return sorted.length;
     }
+
+    @Override
+    public LookupList<Integer> indexesOf(Byte el) {
+      byte b = el;
+      ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      int pos = Arrays.binarySearch(sorted, b);
+      if (pos < 0) {return builder.build();}
+      int offset = 0;
+      int direction = 1;
+      int current;
+      while (sorted[current = pos + offset] == b) {
+        builder.add(unsort.apply(current));
+        if (direction == 1) {
+          if (pos + offset + direction >= sorted.length
+              || sorted[pos + offset + 1] != b) {
+            if (pos > 0) {
+              offset = -1;
+              direction = -1;
+            } else {
+              break;
+            }
+          } else {
+            offset += 1;
+          }
+        } else {
+          if (pos + offset == 0) break;
+          offset -= 1;
+        }
+      }
+      return builder.build();
+    }
+
   }
 
 
-  public final class LongList extends LookupList<Long> {
-    private final long[] original;
+  public final class LongList extends LookupList<Long> implements PrimitiveList {
     private final long[] sorted;
 
-    private LongList(long[] original, long[] sorted, Permutation unsort) {
-      super(unsort);
-      this.original = original;
-      this.sorted = sorted;
-    }
-
-    /**
-     * Get a copy of the original array.
-     * @return a copy of the original array
-     */
-    public long[] getArray() {
-      return Arrays.copyOf(original, original.length);
-    }
-
-    /**
-     * Get a sorted copy of the original array.
-     * @return a sorted copy of the original array
-     */
-    public long[] getSortedArray() {
-      return Arrays.copyOf(sorted, sorted.length);
+    private LongList(long[] a, Permutation sort) {
+      super(sort);
+      this.sorted = sort.apply(a);
     }
 
     @Override
@@ -454,40 +440,54 @@ public class Lists {
 
     @Override
     public Long get(int i) {
-      return original[i];
+      return sorted[sort.apply(i)];
     }
 
     @Override
     public int size() {
-      return original.length;
+      return sorted.length;
     }
+
+    @Override
+    public LookupList<Integer> indexesOf(Long el) {
+      long n = el;
+      ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      int pos = Arrays.binarySearch(sorted, n);
+      if (pos < 0) {return builder.build();}
+      int offset = 0;
+      int direction = 1;
+      int current;
+      while (sorted[current = pos + offset] == n) {
+        builder.add(unsort.apply(current));
+        if (direction == 1) {
+          if (pos + offset + direction >= sorted.length
+              || sorted[pos + offset + 1] != n) {
+            if (pos > 0) {
+              offset = -1;
+              direction = -1;
+            } else {
+              break;
+            }
+          } else {
+            offset += 1;
+          }
+        } else {
+          if (pos + offset == 0) break;
+          offset -= 1;
+        }
+      }
+      return builder.build();
+    }
+
   }
 
 
-  public final class CharList extends LookupList<Character> {
-    private final char[] original;
+  public final class CharList extends LookupList<Character> implements PrimitiveList {
     private final char[] sorted;
 
-    private CharList(char[] original, char[] sorted, Permutation unsort) {
-      super(unsort);
-      this.original = original;
-      this.sorted = sorted;
-    }
-
-    /**
-     * Get a copy of the original array.
-     * @return a copy of the original array
-     */
-    public char[] getArray() {
-      return Arrays.copyOf(original, original.length);
-    }
-
-    /**
-     * Get a sorted copy of the original array.
-     * @return a sorted copy of the original array
-     */
-    public char[] getSortedArray() {
-      return Arrays.copyOf(sorted, sorted.length);
+    private CharList(char[] a, Permutation sort) {
+      super(sort);
+      this.sorted = sort.apply(a);
     }
 
     @Override
@@ -517,40 +517,54 @@ public class Lists {
 
     @Override
     public Character get(int i) {
-      return original[i];
+      return sorted[sort.apply(i)];
     }
 
     @Override
     public int size() {
-      return original.length;
+      return sorted.length;
     }
+
+    @Override
+    public List<Integer> indexesOf(Character el) {
+      char c = el;
+      ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      int pos = Arrays.binarySearch(sorted, c);
+      if (pos < 0) {return builder.build();}
+      int offset = 0;
+      int direction = 1;
+      int current;
+      while (sorted[current = pos + offset] == c) {
+        builder.add(unsort.apply(current));
+        if (direction == 1) {
+          if (pos + offset + direction >= sorted.length
+              || sorted[pos + offset + 1] != c) {
+            if (pos > 0) {
+              offset = -1;
+              direction = -1;
+            } else {
+              break;
+            }
+          } else {
+            offset += 1;
+          }
+        } else {
+          if (pos + offset == 0) break;
+          offset -= 1;
+        }
+      }
+      return builder.build();
+    }
+
   }
 
 
-  public final class IntList extends LookupList<Integer> {
-    private final int[] original;
+  public final class IntList extends LookupList<Integer> implements PrimitiveList {
     private final int[] sorted;
 
-    private IntList(int[] original, int[] sorted, Permutation unsort) {
-      super(unsort);
-      this.original = original;
-      this.sorted = sorted;
-    }
-
-    /**
-     * Get a copy of the original array.
-     * @return a copy of the original array
-     */
-    public int[] getArray() {
-      return Arrays.copyOf(original, original.length);
-    }
-
-    /**
-     * Get a sorted copy of the original array.
-     * @return a sorted copy of the original array
-     */
-    public int[] getSortedArray() {
-      return Arrays.copyOf(sorted, sorted.length);
+    private IntList(int[] a, Permutation sort) {
+      super(sort);
+      this.sorted = sort.apply(a);
     }
 
     @Override
@@ -563,7 +577,7 @@ public class Lists {
     public int lastIndexOf(Object el) {
       int n = (Integer) el;
       int start = Arrays.binarySearch(sorted, n);
-      if (start < 0) {return -1;}
+      if (start < 0) {return -1;};
       int direction = start > 0 && sorted[start - 1] == n ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && sorted[peek] == n) {
@@ -580,41 +594,53 @@ public class Lists {
 
     @Override
     public Integer get(int i) {
-      return original[i];
+      return sorted[sort.apply(i)];
     }
 
     @Override
     public int size() {
-      return original.length;
+      return sorted.length;
     }
 
+    @Override
+    public List<Integer> indexesOf(Integer el) {
+      int n = el;
+      ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      int pos = Arrays.binarySearch(sorted, n);
+      if (pos < 0) {return builder.build();}
+      int offset = 0;
+      int direction = 1;
+      int current;
+      while (sorted[current = pos + offset] == n) {
+        builder.add(unsort.apply(current));
+        if (direction == 1) {
+          if (pos + offset + direction >= sorted.length
+              || sorted[pos + offset + 1] != n) {
+            if (pos > 0) {
+              offset = -1;
+              direction = -1;
+            } else {
+              break;
+            }
+          } else {
+            offset += 1;
+          }
+        } else {
+          if (pos + offset == 0) break;
+          offset -= 1;
+        }
+      }
+      return builder.build();
+    }
   }
 
 
-  public final class FloatList extends LookupList<Float> {
-    private final float[] original;
+  public final class FloatList extends LookupList<Float> implements PrimitiveList {
     private final float[] sorted;
 
-    private FloatList(float[] original, float[] sorted, Permutation unsort) {
-      super(unsort);
-      this.original = original;
-      this.sorted = sorted;
-    }
-
-    /**
-     * Get a copy of the original array.
-     * @return a copy of the original array
-     */
-    public float[] getArray() {
-      return Arrays.copyOf(original, original.length);
-    }
-
-    /**
-     * Get a sorted copy of the original array.
-     * @return a sorted copy of the original array
-     */
-    public float[] getSortedArray() {
-      return Arrays.copyOf(sorted, sorted.length);
+    private FloatList(float[] a, Permutation sort) {
+      super(sort);
+      this.sorted = sort.apply(a);
     }
 
     @Override
@@ -645,40 +671,55 @@ public class Lists {
 
     @Override
     public Float get(int i) {
-      return original[i];
+      return sorted[sort.apply(i)];
     }
 
     @Override
     public int size() {
-      return original.length;
+      return sorted.length;
     }
+
+    @Override
+    public List<Integer> indexesOf(Float el) {
+      float f = el;
+      ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      int pos = Arrays.binarySearch(sorted, f);
+      if (pos < 0) {return builder.build();}
+      int offset = 0;
+      int direction = 1;
+      int current;
+      while (sorted[current = pos + offset] == f) {
+        builder.add(unsort.apply(current));
+        if (direction == 1) {
+          if (pos + offset + direction >= sorted.length
+              || sorted[pos + offset + 1] != f) {
+            if (pos > 0) {
+              offset = -1;
+              direction = -1;
+            } else {
+              break;
+            }
+          } else {
+            offset += 1;
+          }
+        } else {
+          if (pos + offset == 0) break;
+          offset -= 1;
+        }
+      }
+      return builder.build();
+    }
+
+
   }
 
 
-  public final class DoubleList extends LookupList<Double> {
-    private final double[] original;
+  public final class DoubleList extends LookupList<Double> implements PrimitiveList {
     private final double[] sorted;
 
-    private DoubleList(double[] original, double[] sorted, Permutation unsort) {
-      super(unsort);
-      this.original = original;
-      this.sorted = sorted;
-    }
-
-    /**
-     * Get a copy of the original array.
-     * @return a copy of the original array
-     */
-    public double[] getArray() {
-      return Arrays.copyOf(original, original.length);
-    }
-
-    /**
-     * Get a sorted copy of the original array.
-     * @return a sorted copy of the original array
-     */
-    public double[] getSortedArray() {
-      return Arrays.copyOf(sorted, sorted.length);
+    private DoubleList(double[] a, Permutation sort) {
+      super(sort);
+      this.sorted = sort.apply(a);
     }
 
     @Override
@@ -709,40 +750,54 @@ public class Lists {
 
     @Override
     public Double get(int i) {
-      return original[i];
+      return sorted[sort.apply(i)];
     }
 
     @Override
     public int size() {
-      return original.length;
+      return sorted.length;
     }
+
+    @Override
+    public List<Integer> indexesOf(Double el) {
+      double d = el;
+      ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      int pos = Arrays.binarySearch(sorted, d);
+      if (pos < 0) {return builder.build();}
+      int offset = 0;
+      int direction = 1;
+      int current;
+      while (sorted[current = pos + offset] == d) {
+        builder.add(unsort.apply(current));
+        if (direction == 1) {
+          if (pos + offset + direction >= sorted.length
+              || sorted[pos + offset + 1] != d) {
+            if (pos > 0) {
+              offset = -1;
+              direction = -1;
+            } else {
+              break;
+            }
+          } else {
+            offset += 1;
+          }
+        } else {
+          if (pos + offset == 0) break;
+          offset -= 1;
+        }
+      }
+      return builder.build();
+    }
+
   }
 
 
-  public final class ShortList extends LookupList<Short> {
-    private final short[] original;
+  public final class ShortList extends LookupList<Short> implements PrimitiveList {
     private final short[] sorted;
 
-    private ShortList(short[] original, short[] sorted, Permutation unsort) {
-      super(unsort);
-      this.original = original;
-      this.sorted = sorted;
-    }
-
-    /**
-     * Get a copy of the original array.
-     * @return a copy of the original array
-     */
-    public short[] getArray() {
-      return Arrays.copyOf(original, original.length);
-    }
-
-    /**
-     * Get a sorted copy of the original array.
-     * @return a sorted copy of the original array
-     */
-    public short[] getSortedArray() {
-      return Arrays.copyOf(sorted, sorted.length);
+    private ShortList(short[] a, Permutation sort) {
+      super(sort);
+      this.sorted = sort.apply(a);
     }
 
     @Override
@@ -772,41 +827,54 @@ public class Lists {
 
     @Override
     public Short get(int i) {
-      return original[i];
+      return sorted[sort.apply(i)];
     }
 
     @Override
     public int size() {
-      return original.length;
+      return sorted.length;
+    }
+
+    @Override
+    public List<Integer> indexesOf(Short el) {
+      short n = el;
+      ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      int pos = Arrays.binarySearch(sorted, n);
+      if (pos < 0) {return builder.build();}
+      int offset = 0;
+      int direction = 1;
+      int current;
+      while (sorted[current = pos + offset] == n) {
+        builder.add(unsort.apply(current));
+        if (direction == 1) {
+          if (pos + offset + direction >= sorted.length
+              || sorted[pos + offset + 1] != n) {
+            if (pos > 0) {
+              offset = -1;
+              direction = -1;
+            } else {
+              break;
+            }
+          } else {
+            offset += 1;
+          }
+        } else {
+          if (pos + offset == 0) break;
+          offset -= 1;
+        }
+      }
+      return builder.build();
     }
 
   }
 
 
   public final class ComparableList<E extends Comparable> extends LookupList<E> {
-    private final Comparable[] original;
     private final Comparable[] sorted;
 
-    private ComparableList(Comparable[] original, Comparable[] sorted, Permutation unsort) {
-      super(unsort);
-      this.original = original;
-      this.sorted = sorted;
-    }
-
-    /**
-     * Get a copy of the original array.
-     * @return a copy of the original array
-     */
-    public Comparable[] getArray() {
-      return Arrays.copyOf(original, original.length);
-    }
-
-    /**
-     * Get a sorted copy of the original array.
-     * @return a sorted copy of the original array
-     */
-    public Comparable[] getSortedArray() {
-      return Arrays.copyOf(sorted, sorted.length);
+    private ComparableList(Comparable[] a, Permutation sort) {
+      super(sort);
+      this.sorted = sort.apply(a);
     }
 
     @Override
@@ -835,43 +903,57 @@ public class Lists {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public E get(int i) {
-      return (E) original[i];
+      return (E) sorted[sort.apply(i)];
     }
 
     @Override
     public int size() {
-      return original.length;
+      return sorted.length;
     }
+
+    @Override
+    public List<Integer> indexesOf(E el) {
+      ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      int pos = Arrays.binarySearch(sorted, el);
+      if (pos < 0) {return builder.build();}
+      int offset = 0;
+      int direction = 1;
+      int current;
+      while (Objects.equals(sorted[current = pos + offset], el)) {
+        builder.add(unsort.apply(current));
+        if (direction == 1) {
+          if (pos + offset + direction >= sorted.length
+              || !Objects.equals(sorted[pos + offset + 1], el)) {
+            if (pos > 0) {
+              offset = -1;
+              direction = -1;
+            } else {
+              break;
+            }
+          } else {
+            offset += 1;
+          }
+        } else {
+          if (pos + offset == 0) break;
+          offset -= 1;
+        }
+      }
+      return builder.build();
+    }
+
 
   }
 
   public final class ComparatorList<E> extends LookupList<E> {
-    private final Object[] original;
     private final Object[] sorted;
     private final Comparator<E> comparator;
 
-    private ComparatorList(Object[] original, Object[] sorted, Comparator<E> comparator, Permutation unsort) {
-      super(unsort);
-      this.original = original;
-      this.sorted = sorted;
+    private ComparatorList(Object[] a, Comparator<E> comparator, Permutation sort) {
+      super(sort);
+      this.sorted = sort.apply(a);
       this.comparator = comparator;
-    }
-
-    /**
-     * Get a copy of the original array.
-     * @return a copy of the original array
-     */
-    public Object[] getArray() {
-      return Arrays.copyOf(original, original.length);
-    }
-
-    /**
-     * Get a sorted copy of the original array.
-     * @return a sorted copy of the original array
-     */
-    public Object[] getSortedArray() {
-      return Arrays.copyOf(sorted, sorted.length);
     }
 
     /**
@@ -884,12 +966,14 @@ public class Lists {
 
     @Override
     public int indexOf(Object el) {
+      @SuppressWarnings("unchecked")
       int i = Arrays.binarySearch(sorted, el, (Comparator) comparator);
       return i < 0 ? -1 : unsort.apply(i);
     }
 
     @Override
     public int lastIndexOf(Object el) {
+      @SuppressWarnings("unchecked")
       int start = Arrays.binarySearch(sorted, el, (Comparator) comparator);
       if (start < 0) {return -1;}
       int direction = start > 0 && Objects.equals(sorted[start - 1], el) ? -1 : 1;
@@ -907,14 +991,46 @@ public class Lists {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public E get(int i) {
-      return (E) original[i];
+      return (E) sorted[sort.apply(i)];
     }
 
     @Override
     public int size() {
-      return original.length;
+      return sorted.length;
     }
+
+    @Override
+    public List<Integer> indexesOf(E el) {
+      ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      int pos = Arrays.binarySearch(sorted, el, (Comparator) comparator);
+      if (pos < 0) {return builder.build();}
+      int offset = 0;
+      int direction = 1;
+      int current;
+      while (Objects.equals(sorted[current = pos + offset], el)) {
+        builder.add(unsort.apply(current));
+        if (direction == 1) {
+          if (pos + offset + direction >= sorted.length
+              || !Objects.equals(sorted[pos + offset + 1], el)) {
+            if (pos > 0) {
+              offset = -1;
+              direction = -1;
+            } else {
+              break;
+            }
+          } else {
+            offset += 1;
+          }
+        } else {
+          if (pos + offset == 0) break;
+          offset -= 1;
+        }
+      }
+      return builder.build();
+    }
+
 
   }
 
@@ -960,11 +1076,7 @@ public class Lists {
     @Override
     public ComparableList<E> build() {
       Comparable[] a = Arrays.copyOf(contents, size);
-      for (int i = 0; i < a.length; i += 1)
-        if (a[i] == null)
-          throw new NullPointerException("ouch: " + i);
-      Permutation sort = factory.sort(a);
-      return new ComparableList<E>(a, sort.apply(a), sort.invert());
+      return new ComparableList<E>(a, factory.sort(a));
     }
 
     @Override
@@ -991,8 +1103,7 @@ public class Lists {
     @Override
     public ComparatorList<E> build() {
       Object[] a = Arrays.copyOf(contents, size);
-      Permutation sort = factory.sort(a, comparator);
-      return new ComparatorList<E>(a, sort.apply(a), comparator, sort.invert());
+      return new ComparatorList<E>(a, comparator, factory.sort(a, comparator));
     }
 
     @Override
