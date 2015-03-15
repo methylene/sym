@@ -1,11 +1,17 @@
 # sym
 
-## Permutations for Java
+## Permutations and lookup lists
 
 Permutations are objects that encapsulate certain operations on arrays and lists,
-such as sorting, shuffling, swapping two elements, or 
-[moving](http://methylene.github.io/sym/current/com/github/methylene/sym/Permutation.html#move%28int,%20int%29) 
-an element.
+such as sorting, shuffling, swapping two elements, or moving an element.
+
+Lookup lists are built on permutations.
+These are immutable `java.util.Lists` implementations with fast / efficient `.indexOf`, `.lastIndexOf` and `.contains` methods.
+
+Unlike the [java.util.Arrays#asList](http://docs.oracle.com/javase/7/docs/api/java/util/Arrays.html#asList%28T...%29) helper method,
+these lists can be constructed 
+[from primitive arrays](http://methylene.github.io/sym/current/com/github/methylene/sym/Lists.html#asList%28int...%29), 
+and are then backed by a copy of the original array.
 
 This library is available as a maven artifact:
 
@@ -77,7 +83,8 @@ System.out.println(Arrays.toString(rearrange.apply(lt)));
 
 ### Searching an array
 
-This example shows how to find the index of a given string in an unsorted array.
+This example motivates the lookup list `java.util.List` implementation.
+Our goal is to find the index of a string in a given string-array `a`.
 We obtain a permutation that sorts `a`
 
 ````java
@@ -103,8 +110,11 @@ if (i >= 0) {
 // => 3
 ````
 
+Note that this will always the _least_ index of x if there is a choice, due to the way
+the sort permutation is built using binarySearch. So this returns 3, not 4.
+
 In the current snapshot version
-there is also a convenience class `Searchable` to achieve the same thing with less code.
+a List can be obtained to achieve the same thing with less code.
 
 ````java
 String string = "An array with an .indexOf method.";

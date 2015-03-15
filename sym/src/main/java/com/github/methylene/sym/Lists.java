@@ -203,6 +203,7 @@ public class Lists {
    * @see Lists#getPermutationFactory
    */
   public IntList newList(int[] a) {
+    a = Arrays.copyOf(a, a.length);
     Permutation sort = factory.sort(a);
     return new IntList(a, sort.apply(a), sort.invert());
   }
@@ -215,6 +216,7 @@ public class Lists {
    * @see Lists#getPermutationFactory
    */
   public LongList newList(long[] a) {
+    a = Arrays.copyOf(a, a.length);
     Permutation sort = factory.sort(a);
     return new LongList(a, sort.apply(a), sort.invert());
   }
@@ -227,6 +229,7 @@ public class Lists {
    * @see Lists#getPermutationFactory
    */
   public ByteList newList(byte[] a) {
+    a = Arrays.copyOf(a, a.length);
     Permutation sort = factory.sort(a);
     return new ByteList(a, sort.apply(a), sort.invert());
   }
@@ -239,6 +242,7 @@ public class Lists {
    * @see Lists#getPermutationFactory
    */
   public CharList newList(char[] a) {
+    a = Arrays.copyOf(a, a.length);
     Permutation sort = factory.sort(a);
     return new CharList(a, sort.apply(a), sort.invert());
   }
@@ -251,6 +255,7 @@ public class Lists {
    * @see Lists#getPermutationFactory
    */
   public FloatList newList(float[] a) {
+    a = Arrays.copyOf(a, a.length);
     Permutation sort = factory.sort(a);
     return new FloatList(a, sort.apply(a), sort.invert());
   }
@@ -263,6 +268,7 @@ public class Lists {
    * @see Lists#getPermutationFactory
    */
   public DoubleList newList(double[] a) {
+    a = Arrays.copyOf(a, a.length);
     Permutation sort = factory.sort(a);
     return new DoubleList(a, sort.apply(a), sort.invert());
   }
@@ -275,6 +281,7 @@ public class Lists {
    * @see Lists#getPermutationFactory
    */
   public ShortList newList(short[] a) {
+    a = Arrays.copyOf(a, a.length);
     Permutation sort = factory.sort(a);
     return new ShortList(a, sort.apply(a), sort.invert());
   }
@@ -290,6 +297,7 @@ public class Lists {
    * @see Lists#getPermutationFactory
    */
   public <E extends Comparable> ComparableList<E> newList(E[] a) {
+    a = Arrays.copyOf(a, a.length);
     Permutation sort = factory.sort(a);
     return new ComparableList<E>(a, sort.apply(a), sort.invert());
   }
@@ -308,6 +316,7 @@ public class Lists {
   public <E> ComparatorList<E> newList(Comparator<E> comparator, E[] a) {
     if (comparator == null)
       throw new IllegalArgumentException("comparator can not be null");
+    a = Arrays.copyOf(a, a.length);
     Permutation sort = factory.sort(a, comparator);
     return new ComparatorList<E>(a, sort.apply(a), comparator, sort.invert());
   }
@@ -365,7 +374,7 @@ public class Lists {
     public int lastIndexOf(Object el) {
       byte b = (Byte) el;
       int start = Arrays.binarySearch(sorted, b);
-      if (start == -1) {return -1;}
+      if (start < 0) {return -1;}
       int direction = start > 0 && sorted[start - 1] == b ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && sorted[peek] == b) {
@@ -428,7 +437,7 @@ public class Lists {
     public int lastIndexOf(Object el) {
       long n = (Long) el;
       int start = Arrays.binarySearch(sorted, n);
-      if (start == -1) {return -1;}
+      if (start < 0) {return -1;}
       int direction = start > 0 && sorted[start - 1] == n ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && sorted[peek] == n) {
@@ -491,7 +500,7 @@ public class Lists {
     public int lastIndexOf(Object el) {
       char c = (Character) el;
       int start = Arrays.binarySearch(sorted, c);
-      if (start == -1) {return -1;}
+      if (start < 0) {return -1;}
       int direction = start > 0 && sorted[start - 1] == c ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && sorted[peek] == c) {
@@ -554,7 +563,7 @@ public class Lists {
     public int lastIndexOf(Object el) {
       int n = (Integer) el;
       int start = Arrays.binarySearch(sorted, n);
-      if (start == -1) {return -1;}
+      if (start < 0) {return -1;}
       int direction = start > 0 && sorted[start - 1] == n ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && sorted[peek] == n) {
@@ -618,7 +627,7 @@ public class Lists {
     public int lastIndexOf(Object el) {
       float f = (Float) el;
       int start = Arrays.binarySearch(sorted, f);
-      if (start == -1) {return -1;}
+      if (start < 0) {return -1;}
       int direction = start > 0 && sorted[start - 1] == f ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && sorted[peek] == f) {
@@ -682,7 +691,7 @@ public class Lists {
     public int lastIndexOf(Object el) {
       double d = (Double) el;
       int start = Arrays.binarySearch(sorted, d);
-      if (start == -1) {return -1;}
+      if (start < 0) {return -1;}
       int direction = start > 0 && sorted[start - 1] == d ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && sorted[peek] == d) {
@@ -746,7 +755,7 @@ public class Lists {
     public int lastIndexOf(Object el) {
       short n = (Short) el;
       int start = Arrays.binarySearch(sorted, n);
-      if (start == -1) {return -1;}
+      if (start < 0) {return -1;}
       int direction = start > 0 && sorted[start - 1] == n ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && sorted[peek] == n) {

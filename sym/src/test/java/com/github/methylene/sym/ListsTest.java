@@ -230,7 +230,7 @@ public class ListsTest {
   public void testBuilder() {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
-      Integer[] a = Util.boxedRandomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      Integer[] a = Util.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
       List<Integer> asList = Lists.asList(a);
       List<Integer> addAll = Lists.<Integer>builder().addAll(a).build();
       List<Integer> jdk = Arrays.asList(a);
@@ -261,9 +261,9 @@ public class ListsTest {
     for (int _ = 0; _ < repeat; _ += 1) {
       int maxNumber = 60000;
       int size = 16384; // knob to turn
-      Integer[] a = Util.boxedRandomNumbers(maxNumber, size);
+      int[] a = Util.randomNumbers(maxNumber, size);
       List<Integer> asList = Lists.asList(a);
-      List<Integer> jdk = Arrays.asList(a);
+      List<Integer> jdk = Arrays.asList(Util.box(a));
       Integer candidate = (int) (Math.random() * maxNumber);
       long check, time;
       int i, j;
@@ -357,5 +357,13 @@ public class ListsTest {
     }
   }
 
+  /* Make sure that changes to the array do not "write through" */
+  @Test
+  public void testModify() {
+    int[] a = {1, 2, 3};
+    Lists.IntList integers = Lists.asList(a);
+    a[0] = 5;
+    assertEquals(1, integers.get(0).intValue());
+  }
 
 }
