@@ -239,6 +239,109 @@ public class ListsTest {
     }
   }
 
+  private long minLength(long... numbers) {
+    long result = 0;
+    for (long i: numbers)
+      result = Math.max(Long.toString(i).length(), result);
+    return result;
+  }
+
+  @Test
+  public void testPerf() {
+    long index1 = 0;
+    long index2 = 0;
+    long index3 = 0;
+    long lastIndex = 0;
+    long indexJdk1 = 0;
+    long indexJdk2 = 0;
+    long lastIndexJdk = 0;
+    long indexSum = 0;
+    int repeat = 4;
+    System.out.println("running performance tests...");
+    for (int _ = 0; _ < repeat; _ += 1) {
+      int maxNumber = 60000;
+      int size = 16384; // knob to turn
+      Integer[] a = Util.boxedRandomNumbers(maxNumber, size);
+      List<Integer> asList = Lists.asList(a);
+      List<Integer> jdk = Arrays.asList(a);
+      Integer candidate = (int) (Math.random() * maxNumber);
+      long check, time;
+      int i, j;
+      if (_ % 2 == 0) {
+        check = System.nanoTime();
+        i = asList.indexOf(candidate);
+        time = System.nanoTime();
+        index1 += (time - check);
+        check = System.nanoTime();
+        j = jdk.indexOf(candidate);
+        time = System.nanoTime();
+        indexJdk1 += (time - check);
+        check = System.nanoTime();
+        j = jdk.indexOf(candidate);
+        time = System.nanoTime();
+        indexJdk2 += (time - check);
+        assertEquals(j, i);
+        indexSum += i < 0 ? size : i;
+        check = System.nanoTime();
+        i = asList.lastIndexOf(candidate);
+        time = System.nanoTime();
+        lastIndex += (time - check);
+        check = System.nanoTime();
+        j = jdk.lastIndexOf(candidate);
+        time = System.nanoTime();
+        lastIndexJdk += (time - check);
+        assertEquals(j, i);
+        check = System.nanoTime();
+        i = asList.indexOf(candidate);
+        time = System.nanoTime();
+        index2 += (time - check);
+        i = asList.indexOf((int) (Math.random() * maxNumber));
+        time = System.nanoTime();
+        index3 += (time - check);
+      } else { // same tests in different order
+        check = System.nanoTime();
+        j = jdk.indexOf(candidate);
+        time = System.nanoTime();
+        indexJdk1 += (time - check);
+        check = System.nanoTime();
+        j = jdk.indexOf(candidate);
+        time = System.nanoTime();
+        indexJdk2 += (time - check);
+        check = System.nanoTime();
+        i = asList.indexOf(candidate);
+        time = System.nanoTime();
+        index1 += (time - check);
+        assertEquals(j, i);
+        indexSum += i < 0 ? size : i;
+        check = System.nanoTime();
+        i = asList.indexOf(candidate);
+        time = System.nanoTime();
+        index2 += (time - check);
+        i = asList.indexOf((int) (Math.random() * maxNumber));
+        time = System.nanoTime();
+        index3 += (time - check);
+        check = System.nanoTime();
+        j = jdk.lastIndexOf(candidate);
+        time = System.nanoTime();
+        lastIndexJdk += (time - check);
+        check = System.nanoTime();
+        i = asList.lastIndexOf(candidate);
+        time = System.nanoTime();
+        lastIndex += (time - check);
+        assertEquals(j, i);
+      }
+    }
+    long d = minLength(index1, index2, index3, indexJdk1, indexJdk2, lastIndex, lastIndexJdk);
+    System.out.println("== avg return value of .indexOf: " + indexSum / repeat + " ==");
+    System.out.format("index_1:      %" + d + "d%n", index1);
+    System.out.format("index_2:      %" + d + "d%n", index2);
+    System.out.format("index_3:      %" + d + "d%n", index3);
+    System.out.format("index_jdk_1:  %" + d + "d%n", indexJdk1);
+    System.out.format("index_jdk_2:  %" + d + "d%n", indexJdk2);
+    System.out.format("lastIndex:    %" + d + "d%n", lastIndex);
+    System.out.format("lastIndexJdk: %" + d + "d%n", lastIndexJdk);
+  }
+
   @Test
   public void testBuilderComparatorNull() {
     for (int _ = 0; _ < 10000; _ += 1) {

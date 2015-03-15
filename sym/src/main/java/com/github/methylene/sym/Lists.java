@@ -1,10 +1,8 @@
 package com.github.methylene.sym;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -12,14 +10,21 @@ import java.util.RandomAccess;
 
 /**
  * <p>This class contains immutable array based implementations of {@link java.util.List}
- * that have efficient {@code indexOf} and {@code contains} methods.</p>
+ * that have efficient {@code indexOf}, {@code lastIndexOf} and {@code contains} methods.</p>
  *
  * <p>Per default it is not possible to construct a list that contains {@code null} values.
  * This can be configured via the setNullPolicy switch.</p>
  *
  * <p>Notes:</p>
  * <ul>
+ *   <li>Performance gains over {@code java.util.ArrayList} are more significant the larger the return value of
+ *   {@code .indexOf}, or if {@code indexOf} return {@code -1}. For lists with fewer than 20 elements,
+ *   the performance difference is negligible.</li>
  *   <li>The List implementations do not implement {@link java.util.List#subList}.</li>
+ *   <li>Binary search is used for quick lookup, so all values in the lists must be Comparables,
+ *   or a Comparator must be provided. If nulls are allowed, ony the Comparator makes sense, otherwise
+ *   {@link java.util.Arrays#binarySearch} will throw an Exception.</li>
+ *   <li>Some of the implementations below use arrays of primitives directly and avoid boxing.</li>
  * </ul>
  */
 public class Lists {
@@ -796,7 +801,7 @@ public class Lists {
     public int lastIndexOf(Object el) {
       Comparable comparable = (Comparable) el;
       int start = Arrays.binarySearch(sorted, comparable);
-      if (start == -1) {return -1;}
+      if (start < 0) {return -1;}
       int direction = start > 0 && Objects.equals(sorted[start - 1], comparable) ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && Objects.equals(sorted[peek], comparable)) {
@@ -868,7 +873,7 @@ public class Lists {
     @Override
     public int lastIndexOf(Object el) {
       int start = Arrays.binarySearch(sorted, el, (Comparator) comparator);
-      if (start == -1) {return -1;}
+      if (start < 0) {return -1;}
       int direction = start > 0 && Objects.equals(sorted[start - 1], el) ? -1 : 1;
       int peek = start + direction;
       while (peek >= 0 && peek < sorted.length && Objects.equals(sorted[peek], el)) {
