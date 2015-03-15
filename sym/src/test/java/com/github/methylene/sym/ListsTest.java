@@ -161,7 +161,7 @@ public class ListsTest {
 
   @Test(expected = NullPointerException.class)
   public void testNullComparable() throws Exception {
-    Lists.asList(new String[]{"a", null});
+    Lists.asList("a", null);
   }
 
   @Test
@@ -256,7 +256,7 @@ public class ListsTest {
     long indexJdk2 = 0;
     long lastIndexJdk = 0;
     long indexSum = 0;
-    int repeat = 4;
+    int repeat = 16;
     System.out.println("running performance tests...");
     for (int _ = 0; _ < repeat; _ += 1) {
       int maxNumber = 60000;

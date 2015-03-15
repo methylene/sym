@@ -13,22 +13,25 @@ import java.util.RandomAccess;
  * that have efficient {@code indexOf}, {@code lastIndexOf} and {@code contains} methods.</p>
  *
  * <p>Per default it is not possible to construct a list that contains {@code null} values.
- * This can be configured via the setNullPolicy switch.</p>
+ * This can be configured via the underlying {@link com.github.methylene.sym.PermutationFactory}.</p>
  *
  * <p>Notes:</p>
  * <ul>
- *   <li>Performance gains over {@code java.util.ArrayList} are more significant the larger the return value of
- *   {@code .indexOf}, or if {@code indexOf} return {@code -1}. For lists with fewer than 20 elements,
- *   the performance difference is negligible.</li>
+ *   <li>Performance gains over {@code java.util.ArrayList} are more significant when the return value of
+ *   {@code .indexOf} is large, if the list is big and {@code indexOf} returns {@code -1},
+ *   or if the {@code equals} method of the list elements is expensive.
  *   <li>The List implementations do not implement {@link java.util.List#subList}.</li>
  *   <li>Binary search is used for quick lookup, so all values in the lists must be Comparables,
  *   or a Comparator must be provided. If nulls are allowed, ony the Comparator makes sense, otherwise
  *   {@link java.util.Arrays#binarySearch} will throw an Exception.</li>
  *   <li>Some of the implementations below use arrays of primitives directly and avoid boxing.</li>
  * </ul>
+ *
+ * @see com.github.methylene.sym.PermutationFactory#getNullPolicy
  */
 public class Lists {
 
+  /* The PermutationFactory that is used for sorting */
   private final PermutationFactory factory;
 
   /**
@@ -109,67 +112,63 @@ public class Lists {
   }
 
   /**
-   * Creates a list from the given input.
+   * Creates a list from the given array.
    * @param a an array
    * @return a list
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see Lists#getPermutationFactory
    */
   public static IntList asList(int... a) {
     return DEFAULT.newList(a);
   }
 
   /**
-   * Creates a list from the given input.
+   * Creates a list from the given array.
    * @param a an array
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
-   * @see Lists#getPermutationFactory
+   * @return a list
    */
   public static LongList asList(long... a) {
     return DEFAULT.newList(a);
   }
 
   /**
-   * Creates a list from the given input.
+   * Creates a list from the given array.
    * @param a an array
-   * @return a searchable version of the input
+   * @return a list
    */
   public static ByteList asList(byte... a) {
     return DEFAULT.newList(a);
   }
 
   /**
-   * Creates a list from the given input.
+   * Creates a list from the given array.
    * @param a an array
-   * @return a searchable version of the input
+   * @return a list
    */
   public static CharList asList(char... a) {
     return DEFAULT.newList(a);
   }
 
   /**
-   * Creates a list from the given input.
+   * Creates a list from the given array.
    * @param a an array
-   * @return a searchable version of the input
+   * @return a list
    */
   public static FloatList asList(float... a) {
     return DEFAULT.newList(a);
   }
 
   /**
-   * Creates a list from the given input.
+   * Creates a list from the given array.
    * @param a an array
-   * @return a searchable version of the input
+   * @return a list
    */
   public static DoubleList asList(double... a) {
     return DEFAULT.newList(a);
   }
 
   /**
-   * Creates a list from the given input.
+   * Creates a list from the given array.
    * @param a an array
-   * @return a searchable version of the input
+   * @return a list
    */
   public static ShortList asList(short... a) {
     return DEFAULT.newList(a);
@@ -178,7 +177,8 @@ public class Lists {
   /**
    * Creates a list from the given input, using default settings (forbid null, allow duplicates)
    * @param a an array
-   * @return a searchable version of the input
+   * @return a list
+   * @throws java.lang.NullPointerException if the input contains a null element
    */
   public static <E extends Comparable> ComparableList<E> asList(E... a) {
     return DEFAULT.newList(a);
@@ -189,6 +189,7 @@ public class Lists {
    * @param a an array
    * @param comparator a Comparator
    * @return a searchable version of the input
+   * @throws java.lang.NullPointerException if the input contains a null element
    */
   public static <E> ComparatorList<E> asList(Comparator<E> comparator, E... a) {
     return DEFAULT.newList(comparator, a);
@@ -281,8 +282,11 @@ public class Lists {
   /**
    * Creates a list from the given input.
    * @param a an array
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @return a list
+   * @throws java.lang.IllegalArgumentException if underlying the PermutationFactory's uniqueness constraint forbids
+   * duplicates, and the input contains duplicates
+   * @throws java.lang.NullPointerException if underlying the PermutationFactory's null policy forbids null elements,
+   * and the input contains a null element
    * @see Lists#getPermutationFactory
    */
   public <E extends Comparable> ComparableList<E> newList(E[] a) {
@@ -294,11 +298,16 @@ public class Lists {
    * Creates a list from the given input.
    * @param a an array
    * @param comparator a Comparator
-   * @return a searchable version of the input
-   * @throws java.lang.IllegalArgumentException if the PermutationFactory is strict and the input contains duplicates
+   * @return a list
+   * @throws java.lang.IllegalArgumentException if underlying the PermutationFactory's uniqueness constraint forbids
+   * duplicates, and the input contains duplicates
+   * @throws java.lang.NullPointerException if underlying the PermutationFactory's null policy forbids null elements,
+   * and the input contains a null element
    * @see Lists#getPermutationFactory
    */
   public <E> ComparatorList<E> newList(Comparator<E> comparator, E[] a) {
+    if (comparator == null)
+      throw new IllegalArgumentException("comparator can not be null");
     Permutation sort = factory.sort(a, comparator);
     return new ComparatorList<E>(a, sort.apply(a), comparator, sort.invert());
   }
