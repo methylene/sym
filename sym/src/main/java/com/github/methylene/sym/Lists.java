@@ -3,6 +3,7 @@ package com.github.methylene.sym;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -174,7 +175,7 @@ public class Lists {
    * @param a an array
    * @return a searchable version of the input
    */
-  public static ComparableList asList(Comparable... a) {
+  public static <E extends Comparable> ComparableList<E> asList(E... a) {
     return DEFAULT.newList(a);
   }
 
@@ -184,7 +185,7 @@ public class Lists {
    * @param comparator a Comparator
    * @return a searchable version of the input
    */
-  public static ComparatorList asList(Comparator comparator, Object... a) {
+  public static <E> ComparatorList<E> asList(Comparator<E> comparator, E... a) {
     return DEFAULT.newList(comparator, a);
   }
 
@@ -297,11 +298,19 @@ public class Lists {
     return new ComparatorList<E>(a, sort.apply(a), comparator, sort.invert());
   }
 
-  public <E> ListBuilder builder(Comparator<E> comparator) {
+  public static <E> ListBuilder<E> builder(Comparator<E> comparator) {
+    return DEFAULT.newBuilder(comparator);
+  }
+
+  public static <E extends Comparable> ListBuilder<E> builder() {
+    return DEFAULT.newBuilder();
+  }
+
+  public <E> ListBuilder<E> newBuilder(Comparator<E> comparator) {
     return new ComparatorBuilder<E>(comparator);
   }
 
-  public <E extends Comparable> ListBuilder builder() {
+  public <E extends Comparable> ListBuilder<E> newBuilder() {
     return new ComparableBuilder<E>();
   }
 
@@ -886,55 +895,101 @@ public class Lists {
 
   }
 
-  abstract class ListBuilder<E> {
-    protected final ArrayList<E> arrayList = new ArrayList<E>();
+  abstract static class ListBuilder<E> {
+    protected int size = 0;
 
-    public final ListBuilder<E> add(E el) {
-      arrayList.add(el);
-      return this;
+    static int extendedCapacity(int oldCapacity, int minCapacity) {
+      if (minCapacity < 0)
+        throw new IllegalArgumentException("must not be negative");
+      int newCapacity = oldCapacity;
+      while (newCapacity < minCapacity) {
+        int next = newCapacity + (newCapacity >> 1) + 1;
+        if (next < newCapacity)
+          next = Integer.MAX_VALUE;
+        newCapacity = next;
+      }
+      return newCapacity;
     }
+
+    protected abstract void ensureCapacity(int minCapacity);
+
+    protected abstract ListBuilder<E> add(E el);
 
     public ListBuilder<E> addAll(E... els) {
-      Collections.addAll(arrayList, els);
+      ensureCapacity(size + els.length);
+      for (E el : els) {add(el); }
       return this;
     }
 
-    public ListBuilder<E> addAll(Iterable<E> els) {
-      for (E el : els)
-        arrayList.add(el);
+    public ListBuilder<E> addAll(Collection<E> els) {
+      ensureCapacity(size + els.size());
+      for (E el : els) { add(el); }
       return this;
     }
+
+    public abstract List<E> build();
+
   }
 
   public final class ComparableBuilder<E extends Comparable> extends ListBuilder<E> {
+    private Comparable[] contents = new Comparable[16];
 
+    @Override
     public ComparableList<E> build() {
-      Comparable[] a = arrayList.toArray(new Comparable[arrayList.size()]);
+      Comparable[] a = Arrays.copyOf(contents, size);
+      for (int i = 0; i < a.length; i += 1)
+        if (a[i] == null)
+          throw new NullPointerException("ouch: " + i);
       Permutation sort = factory.sort(a);
       return new ComparableList<E>(a, sort.apply(a), sort.invert());
     }
 
-  }
+    @Override
+    protected void ensureCapacity(int minCapacity) {
+      if (minCapacity > contents.length)
+        contents = Arrays.copyOf(contents, extendedCapacity(contents.length, minCapacity));
+    }
 
+    @Override
+    public ComparableBuilder<E> add(E element) {
+      ensureCapacity(size + 1);
+      contents[size++] = element;
+      return this;
+    }
+
+  }
 
   public final class ComparatorBuilder<E> extends ListBuilder<E> {
     private final Comparator<E> comparator;
+    private Object[] contents = new Object[16];
 
     private ComparatorBuilder(Comparator<E> comparator) {this.comparator = comparator;}
 
+    @Override
     public ComparatorList<E> build() {
-      Object[] a = arrayList.toArray(new Object[arrayList.size()]);
+      Object[] a = Arrays.copyOf(contents, size);
       Permutation sort = factory.sort(a, comparator);
       return new ComparatorList<E>(a, sort.apply(a), comparator, sort.invert());
+    }
+
+    @Override
+    protected void ensureCapacity(int minCapacity) {
+      if (minCapacity > contents.length)
+        contents = Arrays.copyOf(contents, extendedCapacity(contents.length, minCapacity));
+    }
+
+    @Override
+    public ComparatorBuilder<E> add(E el) {
+      ensureCapacity(size + 1);
+      contents[size++] = el;
+      return this;
     }
 
   }
 
   /**
-   * Return the PermutationFactory that is used to sort and unsort all input arrays.
+   * Get the PermutationFactory that is used to sort the input of the various builder methods.
    * @return the permutation factory
-   * @see com.github.methylene.sym.PermutationFactory#getUniquenessConstraint
-   * @see com.github.methylene.sym.PermutationFactory#getParanoia
    */
   public PermutationFactory getPermutationFactory() {
     return factory;

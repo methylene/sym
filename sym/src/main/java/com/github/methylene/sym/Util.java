@@ -206,6 +206,19 @@ public class Util {
   }
 
   /**
+   * Produce {@code length} random numbers between {@code 0} and {@code maxNumber}
+   * @param maxNumber upper bound of random numbers
+   * @param length result length
+   * @return an array of random numbers
+   */
+  public static Integer[] boxedRandomNumbers(int maxNumber, int length) {
+    Integer[] result = new Integer[length];
+    for (int i = 0; i < length; i += 1)
+      result[i] = (int) (maxNumber * Math.random());
+    return result;
+  }
+
+  /**
    * Returns a sorted copy of the input.
    * @param input an array
    * @return a sorted copy of the input

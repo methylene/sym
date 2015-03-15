@@ -3,9 +3,11 @@ package com.github.methylene.sym;
 import static com.github.methylene.sym.Lists.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 
 public class ListsTest {
@@ -208,5 +210,49 @@ public class ListsTest {
     List<Byte> a = Lists.asList(bytes);
     assertEquals(17, a.indexOf((byte) '.'));
   }
+
+
+  @Test
+  public void testExtendedCapacity() {
+    int safe = Integer.MAX_VALUE / 3;
+    for (int _ = 0; _ < 10000; _ += 1) {
+      int oldCapacity = (int) (Math.random() * Integer.MAX_VALUE);
+      int minCapacity = oldCapacity + (int) (Math.random() * (Integer.MAX_VALUE - oldCapacity));
+      int extended = Lists.ListBuilder.extendedCapacity(oldCapacity, minCapacity);
+      assertTrue(extended >= minCapacity);
+      if (minCapacity < safe) {
+        assertTrue(extended < minCapacity * 3);
+      }
+    }
+  }
+
+  @Test
+  public void testBuilder() {
+    for (int _ = 0; _ < 10000; _ += 1) {
+      int maxNumber = 10;
+      Integer[] a = Util.boxedRandomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      List<Integer> asList = Lists.asList(a);
+      List<Integer> addAll = Lists.<Integer>builder().addAll(a).build();
+      List<Integer> jdk = Arrays.asList(a);
+      assertEquals(jdk, addAll);
+      assertEquals(jdk, asList);
+    }
+  }
+
+  @Test
+  public void testBuilderComparatorNull() {
+    for (int _ = 0; _ < 10000; _ += 1) {
+      int maxNumber = 10;
+      MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
+      for (int i = 0; i < (Math.random() * a.length); i += 1)
+        a[(int) (Math.random() * a.length)] = null;
+      List<MyInt> asList = Lists.allowNull().newList(MyInt.NULL_FRIENDLY_COMP, a);
+      List<MyInt> addAll = Lists.allowNull().newBuilder(MyInt.NULL_FRIENDLY_COMP).addAll(a).build();
+      List<MyInt> jdk = Arrays.asList(a);
+      assertEquals(jdk, addAll);
+      assertEquals(jdk, asList);
+    }
+  }
+
 
 }
