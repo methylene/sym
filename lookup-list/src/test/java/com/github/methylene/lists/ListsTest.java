@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.github.methylene.sym.Util;
-import com.github.methylene.sym.PermutationFactory;
 
 import java.io.PrintStream;
 import java.nio.charset.Charset;
@@ -130,7 +129,7 @@ public class ListsTest {
     for (int _ = 0; _ < 1000; _ += 1) {
       int maxNumber = (int) (Math.random() * 100);
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-      LookupList<Integer> searchable = Lists.asList(a);
+      LookupListBase<Integer> searchable = Lists.asList(a);
       int el = (int) (maxNumber * Math.random());
       int i = searchable.indexOf(el);
       if (i == -1) {
@@ -161,7 +160,7 @@ public class ListsTest {
   public void testReadme() {
     String string = "An array with an .indexOf method.";
     byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
-    LookupList<Byte> a = Lists.asList(bytes);
+    LookupListBase<Byte> a = Lists.asList(bytes);
     assertEquals(17, a.indexOf((byte) '.'));
   }
 
@@ -309,7 +308,7 @@ public class ListsTest {
   @Test
   public void testModify() {
     int[] a = {1, 2, 3};
-    LookupList<Integer> integers = Lists.asList(a);
+    LookupListBase<Integer> integers = Lists.asList(a);
     a[0] = 5;
     assertEquals(1, integers.get(0).intValue());
   }
@@ -319,7 +318,7 @@ public class ListsTest {
     for (int _ = 0; _ < 100; _ += 1) {
       int size = 100;
       int[] a = Util.randomNumbers(1000, size);
-      LookupList<Integer> lookupList = Lists.asList(a);
+      LookupListBase<Integer> lookupList = Lists.asList(a);
       ArrayList<Integer> jdk = new ArrayList<Integer>(a.length);
       Collections.addAll(jdk, Util.box(a));
       int from = (int) ((size / 2) * Math.random());
@@ -334,7 +333,7 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       int[] a = Util.randomNumbers(maxNumber, size);
-      LookupList<Integer> lookupList = Lists.asList(a);
+      LookupListBase<Integer> lookupList = Lists.asList(a);
       int el = (int) (Math.random() * maxNumber);
       int[] els = lookupList.indexesOf(el);
       assertTrue(Util.isSorted(els));
@@ -386,6 +385,6 @@ public class ListsTest {
         }
       }
     }
-  } 
+  }
 
 }

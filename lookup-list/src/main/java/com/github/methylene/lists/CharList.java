@@ -3,12 +3,11 @@ package com.github.methylene.lists;
 import com.github.methylene.sym.Permutation;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Primitive based lookup list.
  */
-public final class CharList extends LookupList<Character> implements Lists.PrimitiveList {
+public final class CharList extends LookupListBase<Character> implements Lists.PrimitiveList {
   private final char[] sorted;
 
   CharList(char[] a, Permutation sort) {

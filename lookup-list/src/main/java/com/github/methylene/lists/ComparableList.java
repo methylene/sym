@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Comparable based lookup list.
  */
-public final class ComparableList<E extends Comparable> extends LookupList<E> {
+public final class ComparableList<E extends Comparable> extends LookupListBase<E> {
   private final Comparable[] sorted;
 
   ComparableList(Comparable[] a, Permutation sort) {

@@ -4,13 +4,12 @@ import com.github.methylene.sym.Permutation;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 
 /**
  * Comparator based lookup list.
  */
-public final class ComparatorList<E> extends LookupList<E> {
+public final class ComparatorList<E> extends LookupListBase<E> {
   private final Object[] sorted;
   private final Comparator<E> comparator;
 

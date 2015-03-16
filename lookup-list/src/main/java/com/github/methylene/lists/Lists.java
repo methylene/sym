@@ -2,7 +2,6 @@ package com.github.methylene.lists;
 
 import com.github.methylene.sym.Permutation;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -40,7 +39,7 @@ public class Lists {
    * @param a an array
    * @return a list
    */
-  public static LookupList<Integer> asList(int... a) {
+  public static LookupListBase<Integer> asList(int... a) {
     return new IntList(a, Permutation.factory().sort(a));
   }
 
