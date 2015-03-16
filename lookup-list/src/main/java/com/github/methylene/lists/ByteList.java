@@ -1,6 +1,7 @@
 package com.github.methylene.lists;
 
 import com.github.methylene.sym.Permutation;
+import static com.github.methylene.sym.PermutationFactory.*;
 
 import java.util.Arrays;
 
@@ -10,15 +11,15 @@ import java.util.Arrays;
 public final class ByteList extends LookupListBase<Byte> implements Lists.PrimitiveList {
   private final byte[] sorted;
 
-  ByteList(byte[] a, Permutation sort) {
+  ByteList(byte[] a, int[] sort) {
     super(sort);
-    this.sorted = sort.apply(a);
+    this.sorted = apply(sort, a);
   }
 
   @Override
   public int indexOf(Object el) {
     int i = Arrays.binarySearch(sorted, (Byte) el);
-    return i < 0 ? -1 : unsort.apply(i);
+    return i < 0 ? -1 : unsort[i];
   }
 
   @Override
@@ -32,7 +33,7 @@ public final class ByteList extends LookupListBase<Byte> implements Lists.Primit
       start = peek;
       peek += direction;
     }
-    return unsort.apply(start);
+    return unsort[start];
   }
 
   @Override
@@ -42,7 +43,7 @@ public final class ByteList extends LookupListBase<Byte> implements Lists.Primit
 
   @Override
   public Byte get(int i) {
-    return sorted[sort.apply(i)];
+    return sorted[sort[i]];
   }
 
   @Override
@@ -60,7 +61,7 @@ public final class ByteList extends LookupListBase<Byte> implements Lists.Primit
     int direction = 1;
     int current;
     while (sorted[current = pos + offset] == b) {
-      builder.add(unsort.apply(current));
+      builder.add(unsort[current]);
       if (direction == 1) {
         if (pos + offset + direction >= sorted.length
             || sorted[pos + offset + 1] != b) {

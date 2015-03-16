@@ -1,6 +1,8 @@
 package com.github.methylene.lists;
 
 import com.github.methylene.sym.Permutation;
+import static com.github.methylene.sym.PermutationFactory.*;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,15 +14,15 @@ import java.util.Objects;
 public final class ComparableList<E extends Comparable> extends LookupListBase<E> {
   private final Comparable[] sorted;
 
-  ComparableList(Comparable[] a, Permutation sort) {
+  ComparableList(Comparable[] a, int[] sort) {
     super(sort);
-    this.sorted = sort.apply(a);
+    this.sorted = apply(sort, a);
   }
 
   @Override
   public int indexOf(Object el) {
     int i = Arrays.binarySearch(sorted, el);
-    return i < 0 ? -1 : unsort.apply(i);
+    return i < 0 ? -1 : unsort[i];
   }
 
   @Override
@@ -34,7 +36,7 @@ public final class ComparableList<E extends Comparable> extends LookupListBase<E
       start = peek;
       peek += direction;
     }
-    return unsort.apply(start);
+    return unsort[start];
   }
 
   @Override
@@ -45,7 +47,7 @@ public final class ComparableList<E extends Comparable> extends LookupListBase<E
   @Override
   @SuppressWarnings("unchecked")
   public E get(int i) {
-    return (E) sorted[sort.apply(i)];
+    return (E) sorted[sort[i]];
   }
 
   @Override
@@ -62,7 +64,7 @@ public final class ComparableList<E extends Comparable> extends LookupListBase<E
     int direction = 1;
     int current;
     while (Objects.equals(sorted[current = pos + offset], el)) {
-      builder.add(unsort.apply(current));
+      builder.add(unsort[current]);
       if (direction == 1) {
         if (pos + offset + direction >= sorted.length
             || !Objects.equals(sorted[pos + offset + 1], el)) {
@@ -91,7 +93,7 @@ public final class ComparableList<E extends Comparable> extends LookupListBase<E
     @Override
     public List<E> build() {
       Comparable[] a = Arrays.copyOf(contents, size);
-      return new ComparableList<E>(a, Permutation.factory().sort(a));
+      return new ComparableList<E>(a, sort(a));
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.github.methylene.sym.Permutation;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
+import static com.github.methylene.sym.PermutationFactory.*;
+
 
 /**
  * Comparator based lookup list.
@@ -13,9 +15,9 @@ public final class ComparatorList<E> extends LookupListBase<E> {
   private final Object[] sorted;
   private final Comparator<E> comparator;
 
-  ComparatorList(Object[] a, Comparator<E> comparator, Permutation sort) {
+  ComparatorList(Object[] a, Comparator<E> comparator, int[] sort) {
     super(sort);
-    this.sorted = sort.apply(a);
+    this.sorted = apply(sort, a);
     this.comparator = comparator;
   }
 
@@ -31,7 +33,7 @@ public final class ComparatorList<E> extends LookupListBase<E> {
   public int indexOf(Object el) {
     @SuppressWarnings("unchecked")
     int i = Arrays.binarySearch(sorted, el, (Comparator) comparator);
-    return i < 0 ? -1 : unsort.apply(i);
+    return i < 0 ? -1 : unsort[i];
   }
 
   @Override
@@ -45,7 +47,7 @@ public final class ComparatorList<E> extends LookupListBase<E> {
       start = peek;
       peek += direction;
     }
-    return unsort.apply(start);
+    return unsort[start];
   }
 
   @Override
@@ -56,7 +58,7 @@ public final class ComparatorList<E> extends LookupListBase<E> {
   @Override
   @SuppressWarnings("unchecked")
   public E get(int i) {
-    return (E) sorted[sort.apply(i)];
+    return (E) sorted[sort[i]];
   }
 
   @Override
@@ -74,7 +76,7 @@ public final class ComparatorList<E> extends LookupListBase<E> {
     int direction = 1;
     int current;
     while (Objects.equals(sorted[current = pos + offset], el)) {
-      builder.add(unsort.apply(current));
+      builder.add(unsort[current]);
       if (direction == 1) {
         if (pos + offset + direction >= sorted.length
             || !Objects.equals(sorted[pos + offset + 1], el)) {
@@ -102,9 +104,10 @@ public final class ComparatorList<E> extends LookupListBase<E> {
     Builder(Comparator<E> comparator) {this.comparator = comparator;}
 
     @Override
+    @SuppressWarnings("unchecked")
     public ComparatorList<E> build() {
       Object[] a = Arrays.copyOf(contents, size);
-      return new ComparatorList<E>(a, comparator, Permutation.factory().sort(a, comparator));
+      return new ComparatorList<E>(a, comparator, sort(a, (Comparator) comparator));
     }
 
     @Override

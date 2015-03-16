@@ -5,13 +5,12 @@ import static com.github.methylene.sym.Permutation.cycle;
 import static com.github.methylene.sym.Permutation.identity;
 import static com.github.methylene.sym.Permutation.move;
 import static com.github.methylene.sym.Permutation.prod;
-import static com.github.methylene.sym.Permutation.duplicateRejectingFactory;
 import static com.github.methylene.sym.Util.distinctInts;
+import static com.github.methylene.sym.Util.randomNumbers;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static com.github.methylene.sym.Util.randomNumbers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,12 +27,14 @@ import java.util.List;
 public class PermutationTest {
 
   /* Check example from constructor javadoc */
-  @Test public void testAbc() {
+  @Test
+  public void testAbc() {
     Permutation p = new Permutation(new int[]{1, 2, 0});
     assertArrayEquals(new char[]{'c', 'a', 'b'}, p.apply(new char[]{'a', 'b', 'c'}));
   }
 
-  @Test public void testComp() throws Exception {
+  @Test
+  public void testComp() throws Exception {
     Permutation p = Permutation.perm1(2, 3, 1);
     assertEquals(new Permutation(new int[]{1, 2, 0}), p);
     assertArrayEquals(new String[]{"c", "a", "b"}, p.apply());
@@ -41,15 +42,17 @@ public class PermutationTest {
   }
 
   /* check defining property of composition */
-  @Test public void testComp2() throws Exception {
+  @Test
+  public void testComp2() throws Exception {
     Permutation p = Permutation.perm1(2, 3, 1);
-    Permutation p2 = duplicateRejectingFactory().sort(new int[]{4, 6, 10, -5, 195, 33, 2});
+    Permutation p2 = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
     for (int i = 0; i < p.length(); i += 1) {
       assertEquals(p2.apply(p.apply(i)), p2.comp(p).apply(i));
     }
   }
 
-  @Test public void testApply() {
+  @Test
+  public void testApply() {
     int[] a = randomNumbers(100, 200);
     Permutation p = Permutation.random((int) (a.length * Math.random()));
     for (int i = 0; i < a.length; i += 1) {
@@ -60,7 +63,8 @@ public class PermutationTest {
     }
   }
 
-  @Test public void testIterable() {
+  @Test
+  public void testIterable() {
     MyInt[] a = MyInt.box(randomNumbers(100, 200));
     Permutation p = Permutation.random((int) (Math.random() * a.length));
     List<MyInt> arrayList = new ArrayList<MyInt>(a.length);
@@ -75,29 +79,33 @@ public class PermutationTest {
     }
   }
 
-  /* no gaps are allowed in one-line notation */
-  @Test(expected = IllegalArgumentException.class) public void testInvalidGap() throws Exception {
+  /* gaps in ranking */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidGap() throws Exception {
     new Permutation(new int[]{1, 2, 0, 5});
   }
 
-  /* constructor is 0-based */
-  @Test(expected = IllegalArgumentException.class) public void testInvalidMissingZero() throws Exception {
+  /* missing zero in ranking */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidMissingZero() throws Exception {
     new Permutation(new int[]{1, 2, 3});
   }
 
-  /* no duplicates are allowed in one-line notation */
-  @Test(expected = IllegalArgumentException.class) public void testInvalidDuplicate() throws Exception {
+  /* duplicates in ranking */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidDuplicate() throws Exception {
     new Permutation(new int[]{1, 2, 0, 2, 3});
   }
 
-  /* no negative numbers allowed in one-line notation */
-  @Test(expected = IllegalArgumentException.class) public void testInvalidNegative() throws Exception {
+  /* negative number in ranking */
+  @Test(expected = IllegalArgumentException.class)
+  public void testInvalidNegative() throws Exception {
     Permutation.perm1(-1, 0, 1);
   }
 
   /* test defining property of padding */
   @Test public void testPad() {
-    Permutation p = duplicateRejectingFactory().sort(new int[]{4, 6, 10, -5, 195, 33, 2});
+    Permutation p = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
     Permutation padded = p.padding(100);
     for (int i = 0; i < 100; i += 1) {
       if (i < p.length())
@@ -151,7 +159,7 @@ public class PermutationTest {
 
   /* Check defining property of inverse */
   @Test public void testInverse2() {
-    Permutation p = duplicateRejectingFactory().sort(new int[]{4, 6, 10, -5, 195, 33, 2});
+    Permutation p = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
     for (int i = 0; i < p.length(); i += 1) {
       assertEquals(i, p.invert().apply(p.apply(i)));
     }
@@ -193,7 +201,7 @@ public class PermutationTest {
     int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
-    Permutation p = duplicateRejectingFactory().sort(x);
+    Permutation p = Permutation.sort(x);
     for (int i = 0; i < x.length; i += 1) {
       assertEquals(x[i], y[p.apply(i)]);
     }
@@ -219,7 +227,7 @@ public class PermutationTest {
   /* check example from README */
   @Test public void testSortInvert() {
     int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
-    Permutation unsort = duplicateRejectingFactory().sort(x).invert();
+    Permutation unsort = Permutation.sort(x).invert();
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
     for (int k = 0; k < y.length; k += 1) {
@@ -234,7 +242,7 @@ public class PermutationTest {
     int[] distinct = distinctInts(size, 8);
     int[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
-    Permutation p = duplicateRejectingFactory().sort(distinct);
+    Permutation p = Permutation.sort(distinct);
     for (int i = 0; i < sorted.length; i += 1) {
       distinct[i] = sorted[p.apply(i)];
     }
@@ -243,7 +251,7 @@ public class PermutationTest {
   @Test
   public void testSortInvertComparator() {
     MyInt[] x = box(new int[]{4, 6, 10, -5, 195, 33, 2});
-    Permutation unsort = duplicateRejectingFactory().sort(x, MyInt.COMP).invert();
+    Permutation unsort = Permutation.sort(x, MyInt.COMP).invert();
     MyInt[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y, MyInt.COMP);
     for (int k = 0; k < y.length; k += 1) {
@@ -277,7 +285,7 @@ public class PermutationTest {
   /* Another way of checking that duplicateRejectingFactory().sort(a).apply(a) sorts a, for distinct array a */
   @Test public void testSort1024() {
     int[] a = distinctInts(1024, 8);
-    assertArrayEquals(classicSort(a), duplicateRejectingFactory().sort(a).apply(a));
+    assertArrayEquals(classicSort(a), Permutation.sort(a).apply(a));
   }
 
   @Test
@@ -288,7 +296,7 @@ public class PermutationTest {
 
   @Test
   public void testFromQuickly() {
-    Permutation p = duplicateRejectingFactory().from(new Comparable[]{1, 2, 3}, new Comparable[]{2, 3, 1});
+    Permutation p = Permutation.from(new Comparable[]{1, 2, 3}, new Comparable[]{2, 3, 1});
     assertArrayEquals(new String[]{"b", "c", "a"}, p.apply());
   }
 
@@ -316,7 +324,7 @@ public class PermutationTest {
     } while (random.isIdentity());
     int[] b = random.apply(a);
     assertFalse(Arrays.equals(a, b));
-    assertArrayEquals(duplicateRejectingFactory().from(a, b).apply(a), b);
+    assertArrayEquals(Permutation.from(a, b).apply(a), b);
   }
 
   /* check defining property of from again, on non comparable objects, possibly with null */

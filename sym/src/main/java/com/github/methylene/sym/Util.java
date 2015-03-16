@@ -6,17 +6,19 @@ import java.util.Comparator;
 /**
  * A collection of array related utility methods.
  */
-public class Util {
+public final class Util {
+
+  private Util() {}
 
   /**
-   * Creates an array of [index, element] pairs from given array.
+   * Creates an array of [element, index] pairs from given array.
    * @param a an array
-   * @return an array of the [index, element] pairs in {@code a}
+   * @return an array of the [element, index] pairs in {@code a}
    */
   public static int[][] withIndex(int[] a) {
     int[][] result = new int[a.length][];
     for (int i = 0; i < a.length; i += 1)
-      result[i] = new int[]{i, a[i]};
+      result[i] = new int[]{a[i], i};
     return result;
   }
 
@@ -102,15 +104,16 @@ public class Util {
    * @param a an array
    * @throws java.lang.IllegalArgumentException if a is not valid
    */
-  public static void validateRanking(int[] a) {
+  public static boolean isRanking(int[] a) {
     boolean[] used = new boolean[a.length];
     for (int i : a) {
       if (i < 0 || i >= a.length)
-        throw new IllegalArgumentException("invalid: " + Arrays.toString(a));
+        return false;
       if (used[i])
-        throw new IllegalArgumentException("invalid: " + Arrays.toString(a) + ", duplicate: " + i);
+        return false;
       used[i] = true;
     }
+    return true;
   }
 
   /**

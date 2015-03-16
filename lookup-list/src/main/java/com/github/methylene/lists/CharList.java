@@ -1,6 +1,8 @@
 package com.github.methylene.lists;
 
 import com.github.methylene.sym.Permutation;
+import static com.github.methylene.sym.PermutationFactory.*;
+
 
 import java.util.Arrays;
 
@@ -10,15 +12,15 @@ import java.util.Arrays;
 public final class CharList extends LookupListBase<Character> implements Lists.PrimitiveList {
   private final char[] sorted;
 
-  CharList(char[] a, Permutation sort) {
+  CharList(char[] a, int[] sort) {
     super(sort);
-    this.sorted = sort.apply(a);
+    this.sorted = apply(sort, a);
   }
 
   @Override
   public int indexOf(Object el) {
     int i = Arrays.binarySearch(sorted, (Character) el);
-    return i < 0 ? -1 : unsort.apply(i);
+    return i < 0 ? -1 : unsort[i];
   }
 
   @Override
@@ -32,7 +34,7 @@ public final class CharList extends LookupListBase<Character> implements Lists.P
       start = peek;
       peek += direction;
     }
-    return unsort.apply(start);
+    return unsort[start];
   }
 
   @Override
@@ -42,7 +44,7 @@ public final class CharList extends LookupListBase<Character> implements Lists.P
 
   @Override
   public Character get(int i) {
-    return sorted[sort.apply(i)];
+    return sorted[sort[i]];
   }
 
   @Override
@@ -60,7 +62,7 @@ public final class CharList extends LookupListBase<Character> implements Lists.P
     int direction = 1;
     int current;
     while (sorted[current = pos + offset] == c) {
-      builder.add(unsort.apply(current));
+      builder.add(unsort[current]);
       if (direction == 1) {
         if (pos + offset + direction >= sorted.length
             || sorted[pos + offset + 1] != c) {

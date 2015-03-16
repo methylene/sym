@@ -5,13 +5,11 @@ import com.github.methylene.sym.Permutation;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import static com.github.methylene.sym.PermutationFactory.*;
 
 /**
- * <p>This class contains immutable array based implementations of {@link java.util.List}
+ * <p>This class contains immutable, null-rejecting, array based implementations of {@link java.util.List}
  * that have efficient {@code indexOf}, {@code lastIndexOf} and {@code contains} methods.</p>
- *
- * <p>Per default it is not possible to construct a list that contains {@code null} values.
- * This can be configured via the underlying {@link com.github.methylene.sym.PermutationFactory}.</p>
  *
  * <p>Notes:</p>
  * <ul>
@@ -23,8 +21,6 @@ import java.util.List;
  *   {@link java.util.Arrays#binarySearch} will throw an Exception.</li>
  *   <li>Some of the implementations below use arrays of primitives directly and avoid boxing.</li>
  * </ul>
- *
- * @see com.github.methylene.sym.PermutationFactory#getNullPolicy
  */
 public class Lists {
 
@@ -40,7 +36,7 @@ public class Lists {
    * @return a list
    */
   public static LookupListBase<Integer> asList(int... a) {
-    return new IntList(a, Permutation.factory().sort(a));
+    return new IntList(a, sort(a));
   }
 
   /**
@@ -49,7 +45,7 @@ public class Lists {
    * @return a list
    */
   public static LongList asList(long... a) {
-    return new LongList(a, Permutation.factory().sort(a));
+    return new LongList(a, sort(a));
   }
 
   /**
@@ -58,7 +54,7 @@ public class Lists {
    * @return a list
    */
   public static ByteList asList(byte... a) {
-    return new ByteList(a, Permutation.factory().sort(a));
+    return new ByteList(a, sort(a));
   }
 
   /**
@@ -67,7 +63,7 @@ public class Lists {
    * @return a list
    */
   public static CharList asList(char... a) {
-    return new CharList(a, Permutation.factory().sort(a));
+    return new CharList(a, sort(a));
   }
 
   /**
@@ -76,7 +72,7 @@ public class Lists {
    * @return a list
    */
   public static FloatList asList(float... a) {
-    return new FloatList(a, Permutation.factory().sort(a));
+    return new FloatList(a, sort(a));
   }
 
   /**
@@ -85,7 +81,7 @@ public class Lists {
    * @return a list
    */
   public static DoubleList asList(double... a) {
-    return new DoubleList(a, Permutation.factory().sort(a));
+    return new DoubleList(a, sort(a));
   }
 
   /**
@@ -94,7 +90,7 @@ public class Lists {
    * @return a list
    */
   public static ShortList asList(short... a) {
-    return new ShortList(a, Permutation.factory().sort(a));
+    return new ShortList(a, sort(a));
   }
 
   /**
@@ -103,7 +99,7 @@ public class Lists {
    * @return a list
    */
   public static <E extends Comparable> ComparableList<E> asList(E... a) {
-    return new ComparableList<E>(a, Permutation.factory().sort(a));
+    return new ComparableList<E>(a, sort(a));
   }
 
   /**
@@ -115,7 +111,7 @@ public class Lists {
   public static <E> ComparatorList<E> asList(Comparator<E> comparator, E... a) {
     if (comparator == null)
       throw new IllegalArgumentException("comparator can not be null");
-    return new ComparatorList<E>(a, comparator, Permutation.factory().sort(a, comparator));
+    return new ComparatorList<E>(a, comparator, sort(a, comparator));
   }
 
   public static <E> Builder<E> builder(Comparator<E> comparator) {

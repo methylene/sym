@@ -8,11 +8,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+import java.util.Comparator;
+
 /* like PermutationFactoryTest, but use the Comparator versions of sort and from */
 public class PermutationFactoryComparatorTest {
-
-  private final PermutationFactory nonstrict = PermutationFactory.builder().setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
-  private final PermutationFactory strict = PermutationFactory.builder().setUniquenessConstraint(PermutationFactory.UniquenessConstraint.FORBID_DUPLICATES).setParanoia(PermutationFactory.Paranoia.ALWAYS_VALIDATE).build();
 
   static final int REPEAT = 1000;
 
@@ -25,11 +24,11 @@ public class PermutationFactoryComparatorTest {
     MyInt[] a = null;
     for (int i = 0; i < REPEAT; i += 1) {
       a = box(randomNumbers(100, 200));
-      assertArrayEquals(Util.sortedCopy(a, MyInt.COMP), nonstrict.sort(a, MyInt.COMP).apply(a));
+      assertArrayEquals(Util.sortedCopy(a, MyInt.COMP), Permutation.sort(a, MyInt.COMP).apply(a));
     }
     for (int i = 0; i < REPEAT; i += 1) {
       a = box(randomNumbers(100, 200));
-      assertArrayEquals(Util.sortedCopy(a, MyInt.COMP), nonstrict.sort(a, MyInt.COMP).apply(a));
+      assertArrayEquals(Util.sortedCopy(a, MyInt.COMP), Permutation.sort(a, MyInt.COMP).apply(a));
     }
   }
 
@@ -38,26 +37,22 @@ public class PermutationFactoryComparatorTest {
     for (int i = 0; i < REPEAT; i += 1) {
       String[] a = Util.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(Util.sortedCopy(a), strict.sort(shuffled).apply(shuffled));
+      assertArrayEquals(Util.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testSortStrictFail() {
-    strict.sort(randomMyInts(100, 200), MyInt.COMP);
-  }
-
   @Test
+  @SuppressWarnings("unchecked")
   public void testFromRandom() {
     for (int i = 0; i < REPEAT; i += 1) {
       int[] a = randomNumbers(100, 200);
       Object[] b = Permutation.random(a.length).apply(box(a));
-      assertArrayEquals(b, nonstrict.from(box(a), b, MyInt.COMP).apply(box(a)));
+      assertArrayEquals(b, Permutation.from(box(a), b, (Comparator) MyInt.COMP).apply(box(a)));
     }
     for (int i = 0; i < REPEAT; i += 1) {
-      MyInt[] a = randomMyInts(100, 20);
+      Object[] a = randomMyInts(100, 20);
       Object[] b = Permutation.random(a.length).apply(a);
-      assertArrayEquals(b, nonstrict.from(a, b, MyInt.COMP).apply(a));
+      assertArrayEquals(b, Permutation.from(a, b, (Comparator) MyInt.COMP).apply(a));
     }
   }
 
@@ -66,23 +61,12 @@ public class PermutationFactoryComparatorTest {
     for (int i = 0; i < REPEAT; i += 1) {
       String[] a = Util.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(a, strict.from(shuffled, a).apply(shuffled));
+      assertArrayEquals(a, Permutation.from(shuffled, a).apply(shuffled));
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testStrictSortFail() {
-    strict.sort(randomMyInts(100, 200), MyInt.COMP);
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void testStrictFromFail() {
-    MyInt[] a = randomMyInts(100, 200);
-    Object[] b = Permutation.random(a.length).apply(a);
-    strict.from(a, b, MyInt.COMP);
-  }
-
   @Test
+  @SuppressWarnings("unchecked")
   public void testMismatch() {
 
     for (int _ = 0; _ < 1000; _ += 1) {
@@ -122,7 +106,7 @@ public class PermutationFactoryComparatorTest {
 
 
         // this should throw an exception
-        nonstrict.from(a, b, MyInt.COMP).apply(a);
+        Permutation.from(a, b, (Comparator) MyInt.COMP).apply(a);
         assertFalse("we should never get here", true);
       } catch (IllegalArgumentException __) {
         // ignore

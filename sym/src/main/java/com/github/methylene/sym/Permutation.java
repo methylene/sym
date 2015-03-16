@@ -19,44 +19,16 @@ public final class Permutation implements Comparable<Permutation> {
    */
   private final int[] ranking;
 
-  private static final PermutationFactory FACTORY = PermutationFactory.builder().build();
-  private static final PermutationFactory STRICT_FACTORY = PermutationFactory.builder().setUniquenessConstraint(PermutationFactory.UniquenessConstraint.FORBID_DUPLICATES).build();
-
   private static final Permutation[] IDENTITIES = new Permutation[]{
       new Permutation(Util.sequence(0)),
       new Permutation(Util.sequence(1))
   };
 
-  private static final Comparator<int[]> COMPARE_2ND = new Comparator<int[]>() {
-    public int compare(int[] a, int[] b) {
-      return a[1] - b[1];
-    }
-  };
 
-  /**
-   * This returns the default non-strict factory.
-   * @return the default factory
-   * @see com.github.methylene.sym.PermutationFactory.UniquenessConstraint
-   */
-  public static PermutationFactory factory() { return FACTORY; }
-
-  /**
-   * Returns the strict factory.
-   * @return the strict factory
-   * @see com.github.methylene.sym.PermutationFactory.UniquenessConstraint
-   */
-  public static PermutationFactory duplicateRejectingFactory() { return STRICT_FACTORY; }
-
-  /**
-   * The validation should not be skipped unless it's certain that the input is valid.
-   * @param ranking ranking
-   * @param validate if true, perform validation on the ranking
-   * @throws java.lang.IllegalArgumentException if {@code validate} is true and the ranking is not valid
-   * @see com.github.methylene.sym.Util#validateRanking
-   */
-  Permutation(int[] ranking, boolean validate) {
+  private Permutation(int[] ranking, boolean validate) {
     if (validate)
-      Util.validateRanking(ranking);
+      if (!Util.isRanking(ranking))
+        throw new IllegalArgumentException("input is not a ranking");
     this.ranking = ranking;
   }
 
@@ -66,8 +38,7 @@ public final class Permutation implements Comparable<Permutation> {
    *               <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
    *               For example, {@code ranking = new int[]{1, 2, 0}} creates the permutation
    *               that sends {@code new char[]{'a', 'b', 'c'}} to {@code new char[]{'c', 'a', 'b'}}.
-   * @throws java.lang.IllegalArgumentException if the ranking is not valid
-   * @see com.github.methylene.sym.Util#validateRanking
+   * @throws java.lang.IllegalArgumentException if the input is not a ranking
    */
   public Permutation(int[] ranking) {
     this(ranking, true);
@@ -139,7 +110,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return a random permutation that can be applied to an array of length {@code length}
    */
   public static Permutation random(int length) {
-    return STRICT_FACTORY.sort(distinctInts(length, 4));
+    return sort(distinctInts(length, 4));
   }
 
   /**
@@ -260,12 +231,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#isIdentity
    */
   public Permutation invert() {
-    int[][] rankingWithIndex = Util.withIndex(ranking);
-    Arrays.sort(rankingWithIndex, COMPARE_2ND);
-    int[] result = new int[ranking.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[i] = rankingWithIndex[i][0];
-    return new Permutation(result);
+    return new Permutation(PermutationFactory.invert(ranking));
   }
 
   /**
@@ -573,209 +539,137 @@ public final class Permutation implements Comparable<Permutation> {
 
     /* ============== apply to arrays ============== */
 
+
   /**
    * Rearrange an array. Each element of the return value of this method can be safely cast to the element type
    * of the input.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public Object[] apply(Object[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    Object[] result = new Object[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
+
 
   /**
    * Rearrange an array. Each element of the return value of this method can be safely cast to the element type
    * of the input.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public Comparable[] apply(Comparable[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    Comparable[] result = new Comparable[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
 
   /**
    * Rearrange an array.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public String[] apply(String[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    String[] result = new String[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
 
   /**
    * Rearrange an array.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public byte[] apply(byte[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    byte[] result = new byte[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
+
 
   /**
    * Rearrange an array.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public short[] apply(short[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    short[] result = new short[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
 
   /**
    * Rearrange an array.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public int[] apply(int[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    int[] result = new int[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
+
 
   /**
    * Rearrange an array.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public long[] apply(long[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    long[] result = new long[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
 
   /**
    * Rearrange an array.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public float[] apply(float[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    float[] result = new float[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
+
 
   /**
    * Rearrange an array.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public double[] apply(double[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    double[] result = new double[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
 
   /**
    * Rearrange an array.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public boolean[] apply(boolean[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    boolean[] result = new boolean[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
 
   /**
    * Rearrange an array.
-   * @param input an array of length {@code this.length()}
+   * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public char[] apply(char[] input) {
-    if (input.length < ranking.length)
-      throw new IllegalArgumentException("input too short: " + input.length + ", minimum input length is " + ranking.length);
-    char[] result = new char[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
+    return PermutationFactory.apply(ranking, input);
   }
 
   /**
-   * Rearrange a string. More precisely, rearrange the array that is returned from {@link String#getChars}.
-   * @param s an string of length {@code this.length()}
+   * Rearrange the return value of {@link String#getChars}.
+   * @param s a string of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code s}
    * @throws java.lang.IllegalArgumentException if {@code s.length() < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
@@ -818,6 +712,151 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public String[] apply() {
     return apply(Util.symbols(ranking.length));
+  }
+
+  /**
+   * Returns a permutation that sorts the input.
+   * @param input an array
+   * @see com.github.methylene.sym.Permutation#sort(char[])
+   */
+  public static Permutation sort(byte[] input) {
+    return new Permutation(PermutationFactory.sort(input), false);
+  }
+
+  /**
+   * Returns a permutation that sorts the input.
+   * @param input an array
+   * @see com.github.methylene.sym.Permutation#sort(char[]) */
+  public static Permutation sort(short[] input) {
+    return new Permutation(PermutationFactory.sort(input), false);
+  }
+
+  /**
+   * Returns a permutation that sorts the input.
+   * @see com.github.methylene.sym.Permutation#sort(char[])
+   */
+  public static Permutation sort(long[] input) {
+    return new Permutation(PermutationFactory.sort(input), false);
+  }
+
+  /**
+   * Returns a permutation that sorts the input.
+   * @see com.github.methylene.sym.Permutation#sort(char[])
+   */
+  public static Permutation sort(float[] input) {
+    return new Permutation(PermutationFactory.sort(input), false);
+  }
+
+
+  /**
+   * Returns a permutation that sorts the input.
+   * @see com.github.methylene.sym.Permutation#sort(char[])
+   */
+  public static Permutation sort(double[] input) {
+    return new Permutation(PermutationFactory.sort(input), false);
+  }
+
+  /**
+   * Returns a permutation that sorts the input.
+   * @see com.github.methylene.sym.Permutation#sort(char[])
+   */
+  public static <E extends Comparable> Permutation sort(E[] input) {
+    return new Permutation(PermutationFactory.sort(input), false);
+  }
+
+
+  /**
+   * Returns a certain permutation that sorts the input array.
+   * TODO describe more precisely which permutation is chosen if there is a choice
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   */
+  public static Permutation sort(char[] input) {
+    return new Permutation(PermutationFactory.sort(input), false);
+  }
+
+  /** @see com.github.methylene.sym.Permutation#sort(char[]) */
+  public static <E> Permutation sort(E[] input, Comparator<E> comp) {
+    return new Permutation(PermutationFactory.sort(input, comp), false);
+  }
+
+
+  /** @see com.github.methylene.sym.Permutation#sort(char[]) */
+  public static Permutation sort(int[] input) {
+    return new Permutation(PermutationFactory.sort(input), false);
+  }
+
+  /**
+   * Returns a permutation that sorts the input string.
+   * @param s a string
+   * @return a permutation that sorts {@code s}
+   */
+  public static Permutation sort(String s) {
+    char[] chars = new char[s.length()];
+    s.getChars(0, chars.length, chars, 0);
+    return sort(chars);
+  }
+
+  /**
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * @param a an array
+   * @param b an array that can be obtained by changing the order of the elements of {@code a}
+   * @return a permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true
+   * @throws java.lang.IllegalArgumentException if {@code b} is not a rearrangement of {@code a}.
+   */
+  public static Permutation from(int[] a, int[] b) {
+    return new Permutation(PermutationFactory.from(a, b), false);
+  }
+
+  /**
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * @throws java.lang.NullPointerException if {@code a} or {@code b} contain null
+   * @see com.github.methylene.sym.Permutation#from(int[], int[])
+   */
+  public static <E extends Comparable> Permutation from(E[] a, E[] b) {
+    return new Permutation(PermutationFactory.from(a, b), false);
+  }
+
+  /**
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * @see com.github.methylene.sym.Permutation#from(int[], int[])
+   */
+  public static Permutation from(byte[] a, byte[] b) {
+    return new Permutation(PermutationFactory.from(a, b), false);
+  }
+
+  /**
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * @see com.github.methylene.sym.Permutation#from(int[], int[])
+   */
+  public static Permutation from(long[] a, long[] b) {
+    return new Permutation(PermutationFactory.from(a, b), false);
+  }
+
+  /**
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * @see com.github.methylene.sym.Permutation#from(int[], int[])
+   */
+  public static Permutation from(float[] a, float[] b) {
+    return new Permutation(PermutationFactory.from(a, b), false);
+  }
+
+
+  /**
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * @see com.github.methylene.sym.Permutation#from(int[], int[])
+   */
+  public static Permutation from(double[] a, double[] b) {
+    return new Permutation(PermutationFactory.from(a, b), false);
+  }
+
+  /**
+   * Returns a permutation that rearranges {@code a} into {@code b}.
+   * @see com.github.methylene.sym.Permutation#from(int[], int[])
+   */
+  public static <E> Permutation from(E[] a, E[] b, Comparator<E> comp) {
+    return new Permutation(PermutationFactory.from(a, b, comp), false);
   }
 
 }

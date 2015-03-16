@@ -3,6 +3,7 @@ package com.github.methylene.lists;
 import com.github.methylene.sym.Permutation;
 
 import java.util.Arrays;
+import static com.github.methylene.sym.PermutationFactory.*;
 
 /**
  * Primitive based lookup list.
@@ -10,15 +11,15 @@ import java.util.Arrays;
 public final class FloatList extends LookupListBase<Float> implements Lists.PrimitiveList {
   private final float[] sorted;
 
-  FloatList(float[] a, Permutation sort) {
+  FloatList(float[] a, int[] sort) {
     super(sort);
-    this.sorted = sort.apply(a);
+    this.sorted = apply(sort, a);
   }
 
   @Override
   public int indexOf(Object el) {
     int i = Arrays.binarySearch(sorted, (Float) el);
-    return i < 0 ? -1 : unsort.apply(i);
+    return i < 0 ? -1 : unsort[i];
   }
 
   @Override
@@ -32,7 +33,7 @@ public final class FloatList extends LookupListBase<Float> implements Lists.Prim
       start = peek;
       peek += direction;
     }
-    return unsort.apply(start);
+    return unsort[start];
   }
 
 
@@ -43,7 +44,7 @@ public final class FloatList extends LookupListBase<Float> implements Lists.Prim
 
   @Override
   public Float get(int i) {
-    return sorted[sort.apply(i)];
+    return sorted[sort[i]];
   }
 
   @Override
@@ -61,7 +62,7 @@ public final class FloatList extends LookupListBase<Float> implements Lists.Prim
     int direction = 1;
     int current;
     while (sorted[current = pos + offset] == f) {
-      builder.add(unsort.apply(current));
+      builder.add(unsort[current]);
       if (direction == 1) {
         if (pos + offset + direction >= sorted.length
             || sorted[pos + offset + 1] != f) {

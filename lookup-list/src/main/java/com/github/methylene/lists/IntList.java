@@ -3,6 +3,7 @@ package com.github.methylene.lists;
 import com.github.methylene.sym.Permutation;
 
 import java.util.Arrays;
+import static com.github.methylene.sym.PermutationFactory.*;
 
 /**
  * Primitive based lookup list.
@@ -10,15 +11,15 @@ import java.util.Arrays;
 public final class IntList extends LookupListBase<Integer> implements Lists.PrimitiveList {
   private final int[] sorted;
 
-  IntList(int[] a, Permutation sort) {
+  IntList(int[] a, int[] sort) {
     super(sort);
-    this.sorted = sort.apply(a);
+    this.sorted = apply(sort, a);
   }
 
   @Override
   public int indexOf(Object el) {
     int i = Arrays.binarySearch(sorted, (Integer) el);
-    return i < 0 ? -1 : unsort.apply(i);
+    return i < 0 ? -1 : unsort[i];
   }
 
   @Override
@@ -32,7 +33,7 @@ public final class IntList extends LookupListBase<Integer> implements Lists.Prim
       start = peek;
       peek += direction;
     }
-    return unsort.apply(start);
+    return unsort[start];
   }
 
   @Override
@@ -42,7 +43,7 @@ public final class IntList extends LookupListBase<Integer> implements Lists.Prim
 
   @Override
   public Integer get(int i) {
-    return sorted[sort.apply(i)];
+    return sorted[sort[i]];
   }
 
   @Override
@@ -60,7 +61,7 @@ public final class IntList extends LookupListBase<Integer> implements Lists.Prim
     int direction = 1;
     int current;
     while (sorted[current = pos + offset] == n) {
-      builder.add(unsort.apply(current));
+      builder.add(unsort[current]);
       if (direction == 1) {
         if (pos + offset + direction >= sorted.length
             || sorted[pos + offset + 1] != n) {
@@ -87,7 +88,7 @@ public final class IntList extends LookupListBase<Integer> implements Lists.Prim
     @Override
     public IntList build() {
       int[] a = Arrays.copyOf(contents, size);
-      return new IntList(a, Permutation.factory().sort(a));
+      return new IntList(a, sort(a));
     }
 
     @Override
