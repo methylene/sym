@@ -1,11 +1,15 @@
-package com.github.methylene.sym;
+package com.github.methylene.lists;
 
-import static com.github.methylene.sym.Lists.asList;
+import static com.github.methylene.lists.Lists.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+
+import com.github.methylene.sym.Util;
+import com.github.methylene.sym.Permutation;
+import com.github.methylene.sym.PermutationFactory;
 
 import java.io.PrintStream;
 import java.nio.charset.Charset;

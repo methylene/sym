@@ -1,4 +1,7 @@
-package com.github.methylene.sym;
+package com.github.methylene.lists;
+
+import com.github.methylene.sym.Permutation;
+import com.github.methylene.sym.PermutationFactory;
 
 import java.util.AbstractList;
 import java.util.Arrays;
@@ -1004,6 +1007,7 @@ public class Lists {
     @Override
     public List<Integer> indexesOf(E el) {
       ComparableBuilder<Integer> builder = new ComparableBuilder<Integer>();
+      @SuppressWarnings("unchecked")
       int pos = Arrays.binarySearch(sorted, el, (Comparator) comparator);
       if (pos < 0) {return builder.build();}
       int offset = 0;
