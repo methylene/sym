@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.github.methylene</groupId>
+  <artifactId>sym-modules</artifactId>
+  <version>0.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <description>
+    This is just a convenience for building all projects in the right order.
+    It is not intended to be released.
+    The subprojects can be built independently of this.
+  </description>
+  
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <cascading.version>2.6.2</cascading.version>
+  </properties>
+
+  <modules>
+    <module>../sym</module>
+    <module>../lookup-list</module>
+  </modules>
+
+</project>

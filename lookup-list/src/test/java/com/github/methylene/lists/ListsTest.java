@@ -8,14 +8,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.github.methylene.sym.Util;
-import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.PermutationFactory;
 
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,27 +126,11 @@ public class ListsTest {
   }
 
   @Test
-  public void testStrictRandom() throws Exception {
-    for (int _ = 0; _ < 1000; _ += 1) {
-      int maxNumber = (int) (Math.random() * 100);
-      int[] a = Util.distinctInts(maxNumber, (int) (Math.random() * 10 + 2));
-      Lists.IntList searchable = Lists.uniqueLists().newList(a);
-      int el = (int) (maxNumber * Math.random());
-      int i = searchable.indexOf(el);
-      if (i == -1)
-        for (int j : a)
-          assertNotEquals(j, el);
-      else
-        assertEquals(a[i], el);
-    }
-  }
-
-  @Test
   public void testRandom() throws Exception {
     for (int _ = 0; _ < 1000; _ += 1) {
       int maxNumber = (int) (Math.random() * 100);
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-      Lists.IntList searchable = Lists.asList(a);
+      LookupList<Integer> searchable = Lists.asList(a);
       int el = (int) (maxNumber * Math.random());
       int i = searchable.indexOf(el);
       if (i == -1) {
@@ -162,64 +144,26 @@ public class ListsTest {
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testStrictFail() throws Exception {
-    int[] ints = Util.randomNumbers(100, 105);
-    Lists.uniqueLists().newList(ints);
-  }
 
   @Test(expected = NullPointerException.class)
   public void testNullComparable() throws Exception {
     Lists.asList("a", null);
   }
 
-  @Test
-  public void testAllowNull() throws Exception {
-    MyInt[] boxes = MyInt.box(Util.randomNumbers(100, 1000));
-    boxes[181] = null;
-    boxes[278] = null;
-    Lists.ComparatorList list = Lists.allowNull().newList(MyInt.NULL_FRIENDLY_COMP, boxes);
-    assertEquals(181, list.indexOf(null));
-  }
 
   @Test(expected = NullPointerException.class)
-  public void testDisallowNull() throws Exception {
+  public void testNull() throws Exception {
     Lists.asList(1, 2, null);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testAllowNullForbidDuplicates() throws Exception {
-    Lists lists = new Lists(PermutationFactory.builder()
-        .setNullPolicy(PermutationFactory.NullPolicy.ALLOW_NULL)
-        .setUniquenessConstraint(PermutationFactory.UniquenessConstraint.FORBID_DUPLICATES).build());
-    int size = 100;
-    MyInt[] ints = MyInt.box(Util.distinctInts(size, 4));
-    int rand = Util.randomNumbers(size / 2, 1)[0];
-    ints[rand] = null;
-    ints[2 * rand] = null;
-    lists.newList(MyInt.NULL_FRIENDLY_COMP, ints);
-  }
-
-  @Test
-  public void testAllowNullForbidDuplicatesSuccess() throws Exception {
-    Lists lists = new Lists(PermutationFactory.builder()
-        .setNullPolicy(PermutationFactory.NullPolicy.ALLOW_NULL)
-        .setUniquenessConstraint(PermutationFactory.UniquenessConstraint.FORBID_DUPLICATES).build());
-    int size = 100;
-    MyInt[] ints = MyInt.box(Util.distinctInts(size, 4));
-    int rand = Util.randomNumbers(size / 2, 1)[0];
-    ints[rand] = null; // one null is fine
-    assertEquals(rand, lists.newList(MyInt.NULL_FRIENDLY_COMP, ints).indexOf(null));
-  }
 
   @Test
   public void testReadme() {
     String string = "An array with an .indexOf method.";
     byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
-    Lists.LookupList<Byte> a = Lists.asList(bytes);
+    LookupList<Byte> a = Lists.asList(bytes);
     assertEquals(17, a.indexOf((byte) '.'));
   }
-
 
   @Test
   public void testExtendedCapacity() {
@@ -227,7 +171,7 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int oldCapacity = (int) (Math.random() * Integer.MAX_VALUE);
       int minCapacity = oldCapacity + (int) (Math.random() * (Integer.MAX_VALUE - oldCapacity));
-      int extended = Lists.ListBuilder.extendedCapacity(oldCapacity, minCapacity);
+      int extended = Lists.Builder.extendedCapacity(oldCapacity, minCapacity);
       assertTrue(extended >= minCapacity);
       if (minCapacity < safe) {
         assertTrue(extended < minCapacity * 3);
@@ -360,26 +304,12 @@ public class ListsTest {
     out.format("lastIndex_relative: %1$" + d + "s %%%n", lastIndexSpeedup);
   }
 
-  @Test
-  public void testBuilderComparatorNull() {
-    for (int _ = 0; _ < 10000; _ += 1) {
-      int maxNumber = 10;
-      MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
-      for (int i = 0; i < (Math.random() * a.length); i += 1)
-        a[(int) (Math.random() * a.length)] = null;
-      List<MyInt> asList = Lists.allowNull().newList(MyInt.NULL_FRIENDLY_COMP, a);
-      List<MyInt> addAll = Lists.allowNull().newBuilder(MyInt.NULL_FRIENDLY_COMP).addAll(a).build();
-      List<MyInt> jdk = Arrays.asList(a);
-      assertEquals(jdk, addAll);
-      assertEquals(jdk, asList);
-    }
-  }
 
   /* Make sure that changes to the array do not "write through" */
   @Test
   public void testModify() {
     int[] a = {1, 2, 3};
-    Lists.IntList integers = Lists.asList(a);
+    LookupList<Integer> integers = Lists.asList(a);
     a[0] = 5;
     assertEquals(1, integers.get(0).intValue());
   }
@@ -389,7 +319,7 @@ public class ListsTest {
     for (int _ = 0; _ < 100; _ += 1) {
       int size = 100;
       int[] a = Util.randomNumbers(1000, size);
-      Lists.IntList lookupList = Lists.asList(a);
+      LookupList<Integer> lookupList = Lists.asList(a);
       ArrayList<Integer> jdk = new ArrayList<Integer>(a.length);
       Collections.addAll(jdk, Util.box(a));
       int from = (int) ((size / 2) * Math.random());
@@ -404,14 +334,15 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       int[] a = Util.randomNumbers(maxNumber, size);
-      Lists.IntList lookupList = Lists.asList(a);
+      LookupList<Integer> lookupList = Lists.asList(a);
       int el = (int) (Math.random() * maxNumber);
-      List<Integer> els = lookupList.indexesOf(el);
+      int[] els = lookupList.indexesOf(el);
+      assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if(a[i] == el) {
-          assertTrue(els.contains(i));
+          assertTrue(Arrays.binarySearch(els, i) >= 0);
         } else {
-          assertFalse(els.contains(i));
+          assertTrue(Arrays.binarySearch(els, i) < 0);
         }
       }
     }
@@ -423,14 +354,15 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       Integer[] a = Util.box(Util.randomNumbers(maxNumber, size));
-      Lists.ComparableList<Integer> lookupList = Lists.asList(a);
+      ComparableList<Integer> lookupList = Lists.asList(a);
       Integer el = (int) (Math.random() * maxNumber);
-      List<Integer> els = lookupList.indexesOf(el);
+      int[] els = lookupList.indexesOf(el);
+      assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if(a[i].equals(el)) {
-          assertTrue(els.contains(i));
+          assertTrue(Arrays.binarySearch(els, i) >= 0);
         } else {
-          assertFalse(els.contains(i));
+          assertTrue(Arrays.binarySearch(els, i) < 0);
         }
       }
     }
@@ -442,17 +374,18 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, size));
-      Lists.ComparatorList<MyInt> lookupList = Lists.asList(MyInt.COMP, a);
+      ComparatorList<MyInt> lookupList = Lists.asList(MyInt.COMP, a);
       MyInt el = new MyInt((int) (Math.random() * maxNumber));
-      List<Integer> els = lookupList.indexesOf(el);
+      int[] els = lookupList.indexesOf(el);
+      assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if(a[i].equals(el)) {
-          assertTrue(els.contains(i));
+          assertTrue(Arrays.binarySearch(els, i) >= 0);
         } else {
-          assertFalse(els.contains(i));
+          assertTrue(Arrays.binarySearch(els, i) < 0);
         }
       }
     }
-  }
+  } 
 
 }

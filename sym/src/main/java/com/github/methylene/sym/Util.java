@@ -313,4 +313,114 @@ public class Util {
     return sorted;
   }
 
+  /**
+   * Test if input is sorted
+   * @param input an array
+   * @return true if the {@code array} is sorted
+   */
+  public static boolean isSorted(int[] input) {
+    if (input.length == 0) {return true;}
+    int test = input[0];
+    for (int i: input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
+   * @param input an array
+   * @return true if the {@code array} is sorted
+   */
+  public static boolean isSorted(char[] input) {
+    if (input.length == 0) {return true;}
+    int test = input[0];
+    for (int i: input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
+   * @param input an array
+   * @return true if the {@code array} is sorted
+   */
+  public static boolean isSorted(float[] input) {
+    if (input.length == 0) {return true;}
+    float test = input[0];
+    for (float i: input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
+   * @param input an array
+   * @return true if the {@code array} is sorted
+   */
+  public static boolean isSorted(double[] input) {
+    if (input.length == 0) {return true;}
+    double test = input[0];
+    for (double i: input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
+   * @param input an array
+   * @return true if the {@code array} is sorted
+   */
+  public static boolean isSorted(long[] input) {
+    if (input.length == 0) {return true;}
+    long test = input[0];
+    for (long i: input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
+   * @param input an array
+   * @return true if the {@code array} is sorted
+   * @throws java.lang.NullPointerException if the input contains null
+   */
+  public static <E extends Comparable<E>> boolean isSorted(E[] input) {
+    if (input.length == 0) {return true;}
+    E test = input[0];
+    if (test == null) {throw new NullPointerException("null is not allowed");}
+    for (E i: input) {
+      if (i.compareTo(test) < 0) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
+   * @param input an array
+   * @param comparator a comparator
+   * @return true if the {@code array} is sorted
+   * @throws java.lang.NullPointerException if the input contains null
+   */
+  public static <E> boolean isSorted(Comparator<E> comparator, E[] input) {
+    if (input.length == 0) {return true;}
+    E test = input[0];
+    if (test == null) {throw new NullPointerException("null is not allowed");}
+    for (E i: input) {
+      if (comparator.compare(i, test) < 0) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
 }
