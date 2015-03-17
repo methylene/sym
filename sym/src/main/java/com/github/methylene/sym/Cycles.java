@@ -60,7 +60,7 @@ public class Cycles {
       int orbitLength = orbitLength(ranking, i);
       if (orbitLength > 1) {
         if (candidate == null) {
-          candidate = Util.sortedCopy(Cycles.orbit(ranking, i, orbitLength));
+          candidate = Util.sortedCopy(orbit(ranking, i, orbitLength));
         } else {
           if (Arrays.binarySearch(candidate, i) < 0) {
             return false;
@@ -77,9 +77,9 @@ public class Cycles {
     boolean[] done = new boolean[ranking.length];
     for (int i = 0; i < ranking.length; i += 1) {
       if (!done[i]) {
-        int orbitLength = Cycles.orbitLength(ranking, i);
+        int orbitLength = orbitLength(ranking, i);
         if (orbitLength > 1) {
-          int[] candidate = Cycles.orbit(ranking, i, orbitLength);
+          int[] candidate = orbit(ranking, i, orbitLength);
           for (int k : candidate)
             done[k] = true;
           boolean goodCandidate = true;
@@ -99,12 +99,11 @@ public class Cycles {
   }
 
   public static List<int[]> toTranspositions(int[] ranking) {
-    List<int[]> orbits = Cycles.toOrbits(ranking);
-    List<int[]> rankings = new ArrayList<int[]>(orbits.size());
-    for (int[] orbit : orbits)
+    List<int[]> transpositions = new ArrayList<int[]>(ranking.length);
+    for (int[] orbit : toOrbits(ranking))
       for (int i = 0; i < orbit.length - 1; i += 1)
-        rankings.add(Cycles.cycle(orbit[i], orbit[i + 1]));
-    return rankings;
+        transpositions.add(new int[]{ orbit[i], orbit[i + 1] });
+    return transpositions;
   }
 
 

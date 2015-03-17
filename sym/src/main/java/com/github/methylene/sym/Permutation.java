@@ -314,10 +314,10 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public List<Permutation> toTranspositions() {
     List<int[]> transpositions = Cycles.toTranspositions(ranking);
-    List<Permutation> result = new ArrayList<Permutation>(transpositions.size());
-    for (int[] cycle : transpositions)
-      result.add(new Permutation(cycle));
-    return result;
+    List<Permutation> permutations = new ArrayList<Permutation>(transpositions.size());
+    for (int[] transposition : transpositions)
+      permutations.add(new Permutation(Cycles.cycle(transposition)));
+    return permutations;
   }
 
 
