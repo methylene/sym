@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Primitive based lookup list.
  */
-public final class FloatList extends LookupListBase<Float> implements Lists.PrimitiveList {
+public final class FloatList extends LookupList<Float> {
   private final float[] sorted;
 
   FloatList(float[] a, int[] sort) {

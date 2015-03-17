@@ -10,7 +10,7 @@ import java.util.Objects;
 /**
  * Comparable based lookup list.
  */
-public final class ComparableList<E extends Comparable> extends LookupListBase<E> {
+public final class ComparableList<E extends Comparable> extends LookupList<E> {
   private final Comparable[] sorted;
 
   ComparableList(Comparable[] a, int[] sort) {
@@ -84,7 +84,7 @@ public final class ComparableList<E extends Comparable> extends LookupListBase<E
     return builder.get();
   }
 
-  public static final class Builder<E extends Comparable> extends Lists.Builder<E> {
+  public static final class Builder<E extends Comparable> extends ListBuilder<E> {
     private Comparable[] contents = new Comparable[16];
 
     Builder() {}

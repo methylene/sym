@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Primitive based lookup list.
  */
-public final class ByteList extends LookupListBase<Byte> implements Lists.PrimitiveList {
+public final class ByteList extends LookupList<Byte> {
   private final byte[] sorted;
 
   ByteList(byte[] a, int[] sort) {

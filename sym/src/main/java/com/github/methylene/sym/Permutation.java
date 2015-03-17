@@ -23,7 +23,7 @@ public final class Permutation implements Comparable<Permutation> {
 
 
   private Permutation(int[] ranking, boolean validate) {
-    this.ranking = validate ? Util.checkRanking(ranking) : ranking;
+    this.ranking = validate ? Rankings.checkRanking(ranking) : ranking;
   }
 
   /**

@@ -63,7 +63,7 @@ public class TestRankingsLong {
     long[] a = randomNumbers(100, 110);
     long[] b = Permutation.random(a.length).apply(a);
 
-    int[] dupes = TestUtil.duplicateIndexes(b);
+    int[] dupes = Util.duplicateIndexes(b);
 
     for (int j = 0; j < b.length; j += 1) {
       if (b[dupes[0]] != b[j]) {

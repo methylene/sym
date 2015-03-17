@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * Comparator based lookup list.
  */
-public final class ComparatorList<E> extends LookupListBase<E> {
+public final class ComparatorList<E> extends LookupList<E> {
   private final Object[] sorted;
   private final Comparator<E> comparator;
 
@@ -97,7 +97,7 @@ public final class ComparatorList<E> extends LookupListBase<E> {
     return builder.get();
   }
 
-  public static final class Builder<E> extends Lists.Builder<E> {
+  public static final class Builder<E> extends ListBuilder<E> {
     private final Comparator<E> comparator;
     private Object[] contents = new Object[16];
 

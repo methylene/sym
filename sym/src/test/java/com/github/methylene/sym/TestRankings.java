@@ -63,8 +63,8 @@ public class TestRankings {
         int[] a = randomNumbers(100, 110);
         int[] b = Permutation.random(a.length).apply(a);
 
-        int[] bdupes = TestUtil.duplicateIndexes(b);
-        int[] adupes = TestUtil.duplicateIndexes(a);
+        int[] bdupes = Util.duplicateIndexes(b);
+        int[] adupes = Util.duplicateIndexes(a);
 
         int changed = -1;
         // subtly mess things up by changing b,

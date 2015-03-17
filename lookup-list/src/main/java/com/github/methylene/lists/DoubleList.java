@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Primitive based lookup list.
  */
-public final class DoubleList extends LookupListBase<Double> implements Lists.PrimitiveList {
+public final class DoubleList extends LookupList<Double> {
   private final double[] sorted;
 
   DoubleList(double[] a, int[] sort) {

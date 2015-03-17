@@ -74,8 +74,8 @@ public class TestRankingsComparator {
         MyInt[] a = randomMyInts(100, 110);
         Object[] b = Permutation.random(a.length).apply(a);
 
-        int[] bdupes = TestUtil.duplicateIndexes(b, MyInt.COMP);
-        int[] adupes = TestUtil.duplicateIndexes(a, MyInt.COMP);
+        int[] bdupes = Util.duplicateIndexes(b, MyInt.COMP);
+        int[] adupes = Util.duplicateIndexes(a, MyInt.COMP);
 
         MyInt changed = null;
         // subtly mess things up by changing b,

@@ -8,7 +8,7 @@ import java.util.Arrays;
 /**
  * Primitive based lookup list.
  */
-public final class IntList extends LookupListBase<Integer> implements Lists.PrimitiveList {
+public final class IntList extends LookupList<Integer> {
   private final int[] sorted;
 
   IntList(int[] a, int[] sort) {
@@ -82,7 +82,7 @@ public final class IntList extends LookupListBase<Integer> implements Lists.Prim
     return builder.get();
   }
 
-  public static final class Builder extends Lists.Builder<Integer> {
+  public static final class Builder extends ListBuilder<Integer> {
     private int[] contents = new int[16];
 
     @Override

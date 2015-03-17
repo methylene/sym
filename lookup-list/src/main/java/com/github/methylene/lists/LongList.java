@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Primitive based lookup list.
  */
-public final class LongList extends LookupListBase<Long> implements Lists.PrimitiveList {
+public final class LongList extends LookupList<Long> {
   private final long[] sorted;
 
   LongList(long[] a, int[] sort) {

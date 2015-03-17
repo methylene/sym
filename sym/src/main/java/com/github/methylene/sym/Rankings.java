@@ -15,6 +15,38 @@ public final class Rankings {
     }
   };
 
+
+  /**
+   * Check that the input is a <a href="">ranking</a>. Each integer from {@code 0} to
+   * {@code a.length - 1} must appear exactly once.
+   * @param a an array
+   * @throws java.lang.IllegalArgumentException if a is not valid
+   */
+  public static boolean isRanking(int[] a) {
+    boolean[] used = new boolean[a.length];
+    for (int i : a) {
+      if (i < 0 || i >= a.length)
+        return false;
+      if (used[i])
+        return false;
+      used[i] = true;
+    }
+    return true;
+  }
+
+  /**
+   * Check the precondition of being a ranking.
+   * @param a an array
+   * @return the input
+   * @throws java.lang.IllegalArgumentException if {@code a} is not a ranking
+   * @see com.github.methylene.sym.Rankings#isRanking
+   */
+  public static int[] checkRanking(int[] a) {
+    if (!isRanking(a))
+      throw new IllegalArgumentException("argument is not a ranking");
+    return a;
+  }
+
   public static int[] invert(int[] ranking) {
     int[][] rankingWithIndex = Util.withIndex(ranking);
     Arrays.sort(rankingWithIndex, COMPARE_FIRST);
@@ -38,6 +70,8 @@ public final class Rankings {
       result[i] = lhs[rhs[i]];
     return result;
   }
+
+
 
 
   /* ================= sort ================= */

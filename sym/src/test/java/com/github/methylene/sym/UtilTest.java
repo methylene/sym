@@ -83,7 +83,7 @@ public class UtilTest {
   @Test public void testCommutatorEven() throws Exception {
     for (int i = 3; i < 7; i += 1) {
       List<Permutation> sym = sym(i);
-      assertEquals(factorial(i), sym.size());
+      assertEquals(Util.factorial(i), sym.size());
       assertEquals(0, signatureSum(sym));
       assertEquals(sym.size() / 2, signatureSum(commutator(sym)));
     }
@@ -94,6 +94,42 @@ public class UtilTest {
       int[] ints = Util.distinctInts((int) (Math.random() * 1024), (int) (Math.random() * 10) + 2);
       assertTrue(TestUtil.isDistinct(ints));
     }
+  }
+
+
+  @Test
+  public void testDuplicateIndexes() {
+    int[] ints = Util.duplicateIndexes(new int[]{1, 2, 1});
+    assertTrue(Arrays.equals(new int[]{0, 2}, ints) || Arrays.equals(new int[]{2, 0}, ints));
+  }
+
+  @Test
+  public void testDuplicateIndexes2() throws Exception {
+    for (int i = 0; i < 1000; i += 1) {
+      int maxNumber = 10;
+      int[] ints = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      int[] pair = Util.duplicateIndexes(ints, 0);
+      assertTrue(count(ints, ints[pair[0]]) > 1);
+      assertEquals(Util.indexOf(ints, ints[pair[0]]), pair[0]);
+    }
+  }
+
+  @Test
+  public void testDuplicateIndexes3() {
+    int[] ints = {0, 1, 4, 1, 2, 6, 5, 2, 0, 0, 6, 0};
+    assertEquals(1, Util.duplicateIndexes(ints, 0)[0]);
+  }
+
+  @Test
+  public void testFactorial() {
+    assertEquals(1, Util.factorial(0));
+    assertEquals(1, Util.factorial(1));
+    assertEquals(2, Util.factorial(2));
+    assertEquals(6, Util.factorial(3));
+    assertEquals(24, Util.factorial(4));
+    assertEquals(120, Util.factorial(5));
+    assertEquals(19, Util.factorial(19) / Util.factorial(18));
+    assertEquals(20, Util.factorial(20) / Util.factorial(19));
   }
 
 }

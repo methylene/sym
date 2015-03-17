@@ -7,7 +7,7 @@ import java.util.Arrays;
 /**
  * Primitive based lookup list.
  */
-public final class CharList extends LookupListBase<Character> implements Lists.PrimitiveList {
+public final class CharList extends LookupList<Character> {
   private final char[] sorted;
 
   CharList(char[] a, int[] sort) {

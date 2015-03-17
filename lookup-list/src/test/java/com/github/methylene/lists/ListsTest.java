@@ -1,13 +1,10 @@
 package com.github.methylene.lists;
 
-import static com.github.methylene.lists.Lists.asList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-
 import com.github.methylene.sym.Util;
+import org.junit.Test;
 
 import java.io.PrintStream;
 import java.nio.charset.Charset;
@@ -39,11 +36,11 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-      int[] pair = TestUtil.duplicateIndexes(a);
+      int[] pair = Util.duplicateIndexes(a);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       int el = a[pair[0]];
-      int i = Lists.asList(a).indexOf(el);
+      int i = LookupList.asList(a).indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -54,7 +51,7 @@ public class ListsTest {
    * This test asserts that lastIndexOf returns the greatest possible index.
    * That is, if
    * <pre><code>
-   *   int i = Lists.asList(a).lastIndexOf(el);
+   *   int i = LookupList.asList(a).lastIndexOf(el);
    * </code></pre>
    * and
    * <pre><code>
@@ -71,11 +68,11 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-      int[] pair = TestUtil.duplicateIndexes(a);
+      int[] pair = Util.duplicateIndexes(a);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       int el = a[pair[0]];
-      int i = Lists.asList(a).lastIndexOf(el);
+      int i = LookupList.asList(a).lastIndexOf(el);
       assertEquals(a[i], el);
       for (int j = i + 1; j < a.length; j += 1)
         assertNotEquals(a[j], el);
@@ -92,11 +89,11 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
-      int[] pair = TestUtil.duplicateIndexes(a, MyInt.COMP);
+      int[] pair = Util.duplicateIndexes(a, MyInt.COMP);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       MyInt el = a[pair[0]];
-      int i = asList(MyInt.COMP, a).indexOf(el);
+      int i = LookupList.asList(MyInt.COMP, a).indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -113,11 +110,11 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
-      int[] pair = TestUtil.duplicateIndexes(a, MyInt.COMP);
+      int[] pair = Util.duplicateIndexes(a, MyInt.COMP);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       MyInt el = a[pair[0]];
-      int i = asList(MyInt.COMP, a).lastIndexOf(el);
+      int i = LookupList.asList(MyInt.COMP, a).lastIndexOf(el);
       assertEquals(a[i], el);
       for (int j = i + 1; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -129,7 +126,7 @@ public class ListsTest {
     for (int _ = 0; _ < 1000; _ += 1) {
       int maxNumber = (int) (Math.random() * 100);
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-      LookupListBase<Integer> searchable = Lists.asList(a);
+      LookupList<Integer> searchable = LookupList.asList(a);
       int el = (int) (maxNumber * Math.random());
       int i = searchable.indexOf(el);
       if (i == -1) {
@@ -146,13 +143,13 @@ public class ListsTest {
 
   @Test(expected = NullPointerException.class)
   public void testNullComparable() throws Exception {
-    Lists.asList("a", null);
+    LookupList.asList("a", null);
   }
 
 
   @Test(expected = NullPointerException.class)
   public void testNull() throws Exception {
-    Lists.asList(1, 2, null);
+    LookupList.asList(1, 2, null);
   }
 
 
@@ -160,7 +157,7 @@ public class ListsTest {
   public void testReadme() {
     String string = "An array with an .indexOf method.";
     byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
-    LookupListBase<Byte> a = Lists.asList(bytes);
+    LookupList<Byte> a = LookupList.asList(bytes);
     assertEquals(17, a.indexOf((byte) '.'));
   }
 
@@ -170,7 +167,7 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int oldCapacity = (int) (Math.random() * Integer.MAX_VALUE);
       int minCapacity = oldCapacity + (int) (Math.random() * (Integer.MAX_VALUE - oldCapacity));
-      int extended = Lists.Builder.extendedCapacity(oldCapacity, minCapacity);
+      int extended = ListBuilder.extendedCapacity(oldCapacity, minCapacity);
       assertTrue(extended >= minCapacity);
       if (minCapacity < safe) {
         assertTrue(extended < minCapacity * 3);
@@ -183,8 +180,8 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       Integer[] a = Util.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
-      List<Integer> asList = Lists.asList(a);
-      List<Integer> addAll = Lists.<Integer>builder().addAll(a).build();
+      List<Integer> asList = LookupList.asList(a);
+      List<Integer> addAll = LookupList.<Integer>builder().addAll(a).build();
       List<Integer> jdk = Arrays.asList(a);
       assertEquals(jdk, addAll);
       assertEquals(jdk, asList);
@@ -214,7 +211,7 @@ public class ListsTest {
     for (int _ = 0; _ < repeat; _ += 1) {
       int maxNumber = 60000;
       int[] a = Util.randomNumbers(maxNumber, size);
-      List<Integer> asList = Lists.asList(a);
+      List<Integer> asList = LookupList.asList(a);
       List<Integer> jdk = Arrays.asList(Util.box(a));
       Integer candidate = (int) (Math.random() * maxNumber);
       long check, time;
@@ -308,7 +305,7 @@ public class ListsTest {
   @Test
   public void testModify() {
     int[] a = {1, 2, 3};
-    LookupListBase<Integer> integers = Lists.asList(a);
+    LookupList<Integer> integers = LookupList.asList(a);
     a[0] = 5;
     assertEquals(1, integers.get(0).intValue());
   }
@@ -318,7 +315,7 @@ public class ListsTest {
     for (int _ = 0; _ < 100; _ += 1) {
       int size = 100;
       int[] a = Util.randomNumbers(1000, size);
-      LookupListBase<Integer> lookupList = Lists.asList(a);
+      LookupList<Integer> lookupList = LookupList.asList(a);
       ArrayList<Integer> jdk = new ArrayList<Integer>(a.length);
       Collections.addAll(jdk, Util.box(a));
       int from = (int) ((size / 2) * Math.random());
@@ -333,7 +330,7 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       int[] a = Util.randomNumbers(maxNumber, size);
-      LookupListBase<Integer> lookupList = Lists.asList(a);
+      LookupList<Integer> lookupList = LookupList.asList(a);
       int el = (int) (Math.random() * maxNumber);
       int[] els = lookupList.indexesOf(el);
       assertTrue(Util.isSorted(els));
@@ -353,7 +350,7 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       Integer[] a = Util.box(Util.randomNumbers(maxNumber, size));
-      ComparableList<Integer> lookupList = Lists.asList(a);
+      ComparableList<Integer> lookupList = LookupList.asList(a);
       Integer el = (int) (Math.random() * maxNumber);
       int[] els = lookupList.indexesOf(el);
       assertTrue(Util.isSorted(els));
@@ -373,7 +370,7 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, size));
-      ComparatorList<MyInt> lookupList = Lists.asList(MyInt.COMP, a);
+      ComparatorList<MyInt> lookupList = LookupList.asList(MyInt.COMP, a);
       MyInt el = new MyInt((int) (Math.random() * maxNumber));
       int[] els = lookupList.indexesOf(el);
       assertTrue(Util.isSorted(els));

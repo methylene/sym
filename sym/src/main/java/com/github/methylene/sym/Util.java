@@ -2,6 +2,8 @@ package com.github.methylene.sym;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A collection of array related utility methods.
@@ -68,6 +70,21 @@ public final class Util {
   }
 
   /**
+   * Calculates the factorial.
+   * @param n a nonnegative number
+   * @return the factorial of {@code n}
+   * @throws java.lang.IllegalArgumentException if n is negative
+   */
+  public static long factorial(int n) {
+    if (n < 0) {throw new IllegalArgumentException("negative number is not allowed");}
+    if (n > 20) {throw new IllegalArgumentException("preventing long overflow");}
+    long seed = 1;
+    for (int i = 1; i <= n; i += 1)
+      seed = seed * i;
+    return seed;
+  }
+
+  /**
    * Add a fixed number to each element of given array.
    * @param a an array of numbers
    * @param k a number
@@ -98,35 +115,68 @@ public final class Util {
     return result;
   }
 
-  /**
-   * Check that the input is a <a href="">ranking</a>. Each integer from {@code 0} to
-   * {@code a.length - 1} must appear exactly once.
-   * @param a an array
-   * @throws java.lang.IllegalArgumentException if a is not valid
-   */
-  public static boolean isRanking(int[] a) {
-    boolean[] used = new boolean[a.length];
-    for (int i : a) {
-      if (i < 0 || i >= a.length)
-        return false;
-      if (used[i])
-        return false;
-      used[i] = true;
-    }
-    return true;
-  }
 
   /**
-   * Check the precondition of being a ranking.
-   * @param a an array
-   * @return the input
-   * @throws java.lang.IllegalArgumentException if {@code a} is not a ranking
-   * @see com.github.methylene.sym.Util#isRanking
+   * Find a pair of duplicate indexes.
+   * @param input
+   * @param start the index where to start looking in the array
+   * @return A pair {@code i, j} of indexes so that {@code input[i] == input[j]}
+   * @throws java.lang.IllegalArgumentException if no duplicates were found
    */
-  public static int[] checkRanking(int[] a) {
-    if (!isRanking(a))
-      throw new IllegalArgumentException("argument is not a ranking");
-    return a;
+  public static int[] duplicateIndexes(int[] input, int start) {
+    int max = 0;
+    for (int j : input)
+      max = Math.max(max, j);
+    int[] test = new int[max + 1];
+    Arrays.fill(test, -1);
+    for (int _: input) {
+      if (test[input[start]] == -1)
+        test[input[start]] = start;
+      else
+        return new int[]{test[input[start]], start};
+      start = (start + 1) % input.length;
+    }
+    throw new IllegalArgumentException("no duplicates found");
+  }
+
+  public static int[] duplicateIndexes(int[] input) {
+    return duplicateIndexes(input, (int) (Math.random() * input.length));
+  }
+
+  public static int[] duplicateIndexes(Object[] input, Comparator comp) {
+    @SuppressWarnings("unchecked")
+    Map<Object, Integer> test = new TreeMap<Object, Integer>(comp);
+    int start = (int) (Math.random() * input.length);
+    for (Object _: input) {
+      if (!test.containsKey(input[start])) {
+        test.put(input[start], start);
+      } else {
+        return new int[]{test.get(input[start]), start};
+      }
+      start = (start + 1) % input.length;
+    }
+    throw new IllegalArgumentException("no duplicates found");
+  }
+
+  public static int[] duplicateIndexes(long[] input) {
+    int max = 0;
+    for (long i : input) {
+      if (i > Integer.MAX_VALUE)
+        throw new IllegalArgumentException("too large: " + i);
+      max = (int) Math.max(max, i);
+    }
+    int[] test = new int[max + 1];
+    Arrays.fill(test, -1);
+    int start = (int) (Math.random() * input.length);
+    for (long _: input) {
+      if (test[(int) input[start]] == -1) {
+        test[(int) input[start]] = start;
+      } else {
+        return new int[]{test[(int) input[start]], start};
+      }
+      start = (start + 1) % input.length;
+    }
+    return new int[0];
   }
 
   /**
