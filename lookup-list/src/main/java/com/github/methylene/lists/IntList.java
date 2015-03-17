@@ -1,9 +1,9 @@
 package com.github.methylene.lists;
 
-import com.github.methylene.sym.Permutation;
+import static com.github.methylene.sym.Rankings.apply;
+import static com.github.methylene.sym.Rankings.sort;
 
 import java.util.Arrays;
-import static com.github.methylene.sym.PermutationFactory.*;
 
 /**
  * Primitive based lookup list.

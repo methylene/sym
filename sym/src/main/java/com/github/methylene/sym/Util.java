@@ -117,6 +117,19 @@ public final class Util {
   }
 
   /**
+   * Check the precondition of being a ranking.
+   * @param a an array
+   * @return the input
+   * @throws java.lang.IllegalArgumentException if {@code a} is not a ranking
+   * @see com.github.methylene.sym.Util#isRanking
+   */
+  public static int[] checkRanking(int[] a) {
+    if (!isRanking(a))
+      throw new IllegalArgumentException("argument is not a ranking");
+    return a;
+  }
+
+  /**
    * Produce an array of distinct random numbers.
    * @param size      length of array to generate
    * @param maxFactor controls the size of random numbers that are generated. All generated numbers will be

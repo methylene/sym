@@ -1,11 +1,10 @@
 package com.github.methylene.lists;
 
-import com.github.methylene.sym.Permutation;
+import static com.github.methylene.sym.Rankings.sort;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import static com.github.methylene.sym.PermutationFactory.*;
 
 /**
  * <p>This class contains immutable, null-rejecting, array based implementations of {@link java.util.List}

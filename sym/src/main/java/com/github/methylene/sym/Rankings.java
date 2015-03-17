@@ -1,11 +1,13 @@
 package com.github.methylene.sym;
 
+import static com.github.methylene.sym.Util.distinctInts;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
-public final class PermutationFactory {
+public final class Rankings {
 
-  private PermutationFactory() {}
+  private Rankings() {}
 
   private static final Comparator<int[]> COMPARE_FIRST = new Comparator<int[]>() {
     public int compare(int[] a, int[] b) {
@@ -20,6 +22,21 @@ public final class PermutationFactory {
     for (int i = 0; i < ranking.length; i += 1)
       inverted[i] = rankingWithIndex[i][1];
     return inverted;
+  }
+
+
+  public static int[] random(int length) {
+    return sort(distinctInts(length, 4));
+  }
+
+  public static int[] comp(int[] ranking, int[] other) {
+    int length = Math.max(ranking.length, other.length);
+    int[] lhs = Util.padding(ranking, length);
+    int[] rhs = Util.padding(other, length);
+    int[] result = new int[length];
+    for (int i = 0; i < length; i += 1)
+      result[i] = lhs[rhs[i]];
+    return result;
   }
 
 

@@ -1,10 +1,8 @@
 package com.github.methylene.lists;
 
-import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.PermutationFactory;
+import static com.github.methylene.sym.Rankings.invert;
 
 import java.util.AbstractList;
-import java.util.List;
 import java.util.RandomAccess;
 
 /**
@@ -19,7 +17,7 @@ public abstract class LookupListBase<E> extends AbstractList<E> implements Looku
 
   protected LookupListBase(int[] sort) {
     this.sort = sort;
-    this.unsort = PermutationFactory.invert(sort);
+    this.unsort = invert(sort);
   }
 
   public abstract int[] indexesOf(E el);

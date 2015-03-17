@@ -1,7 +1,6 @@
 package com.github.methylene.lists;
 
-import com.github.methylene.sym.Permutation;
-import static com.github.methylene.sym.PermutationFactory.*;
+import static com.github.methylene.sym.Rankings.apply;
 
 import java.util.Arrays;
 

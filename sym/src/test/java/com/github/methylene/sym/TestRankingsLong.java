@@ -4,7 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import org.junit.Test;
 
 /* like PermutationFactoryTest, but use the long versions of sort and from */
-public class PermutationFactoryLongTest {
+public class TestRankingsLong {
 
   static long[] randomNumbers(int maxNumber, int length) {
     long[] result = new long[length];

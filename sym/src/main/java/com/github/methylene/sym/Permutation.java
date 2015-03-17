@@ -1,11 +1,8 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Util.distinctInts;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -26,10 +23,7 @@ public final class Permutation implements Comparable<Permutation> {
 
 
   private Permutation(int[] ranking, boolean validate) {
-    if (validate)
-      if (!Util.isRanking(ranking))
-        throw new IllegalArgumentException("input is not a ranking");
-    this.ranking = ranking;
+    this.ranking = validate ? Util.checkRanking(ranking) : ranking;
   }
 
   /**
@@ -49,7 +43,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @param ranking1based a permutation definition in 1-based one-line notation.
    * @return The permutation defined by {@code ranking1based}.
    */
-  static public Permutation perm1(int... ranking1based) {
+  public static Permutation perm1(int... ranking1based) {
     return new Permutation(Util.add(ranking1based, -1));
   }
 
@@ -61,24 +55,8 @@ public final class Permutation implements Comparable<Permutation> {
    * @return the cyclic permutation defined by {@code cycle}
    * @throws java.lang.IllegalArgumentException if {@code cycle} contains negative numbers or duplicates
    */
-  static public Permutation cycle(int... cycle) {
-    int maxIndex = -1;
-    for (int index : cycle) {
-      if (index < 0)
-        throw new IllegalArgumentException("negative index: " + index);
-      maxIndex = Math.max(maxIndex, index);
-    }
-    int length = maxIndex + 1;
-    boolean[] cycleIndexes = new boolean[length];
-    for (int i : cycle) {
-      if (cycleIndexes[i])
-        throw new IllegalArgumentException("duplicate index: " + i);
-      cycleIndexes[i] = true;
-    }
-    int[] result = new int[length];
-    for (int i = 0; i < length; i += 1)
-      result[i] = !cycleIndexes[i] ? i : cycle[(Util.indexOf(cycle, i) + 1) % cycle.length];
-    return new Permutation(result);
+  public static Permutation cycle(int... cycle) {
+    return new Permutation(Cycles.cycle(cycle));
   }
 
 
@@ -110,7 +88,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return a random permutation that can be applied to an array of length {@code length}
    */
   public static Permutation random(int length) {
-    return sort(distinctInts(length, 4));
+    return new Permutation(Rankings.random(length));
   }
 
   /**
@@ -139,13 +117,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#prod
    */
   public Permutation comp(Permutation other) {
-    int length = Math.max(ranking.length, other.ranking.length);
-    int[] lhs = Util.padding(ranking, length);
-    int[] rhs = Util.padding(other.ranking, length);
-    int[] result = new int[length];
-    for (int i = 0; i < length; i += 1)
-      result[i] = lhs[rhs[i]];
-    return new Permutation(result);
+    return new Permutation(Rankings.comp(this.ranking, other.ranking));
   }
 
   /**
@@ -231,7 +203,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#isIdentity
    */
   public Permutation invert() {
-    return new Permutation(PermutationFactory.invert(ranking));
+    return new Permutation(Rankings.invert(ranking));
   }
 
   /**
@@ -254,6 +226,7 @@ public final class Permutation implements Comparable<Permutation> {
     return cycle(Util.sequence(insert, delete, true));
   }
 
+
   /**
    * Calculate the number of times this must be applied to given index until
    * it is in its original position again, also know as the orbit length of the index.
@@ -263,26 +236,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#orbit
    */
   public int orbitLength(int i) {
-    if (i < 0 || i >= ranking.length)
-      throw new IllegalArgumentException("bad index: " + i);
-    int length = 1;
-    int j = i;
-    while ((j = apply(j)) != i)
-      length += 1;
-    return length;
-  }
-
-  private int[] orbit(int pos, int orbitLength) {
-    if (pos < 0 || pos >= ranking.length)
-      throw new IllegalArgumentException("wrong pos: " + pos);
-    int[] result = new int[orbitLength];
-    result[0] = pos;
-    int j = pos;
-    for (int k = 1; k < result.length; k += 1) {
-      j = apply(j);
-      result[k] = j;
-    }
-    return result;
+    return Cycles.orbitLength(ranking, i);
   }
 
   /**
@@ -297,7 +251,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException if {@code i < 0} or {@code i >= this.length}.
    */
   public int[] orbit(int i) {
-    return orbit(i, orbitLength(i));
+    return Cycles.orbit(ranking, i, orbitLength(i));
   }
 
   /**
@@ -329,20 +283,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#orbit
    */
   public boolean isCycle() {
-    int[] candidate = null;
-    for (int i = 0; i < ranking.length; i += 1) {
-      int orbitLength = orbitLength(i);
-      if (orbitLength > 1) {
-        if (candidate == null) {
-          candidate = Util.sortedCopy(orbit(i, orbitLength));
-        } else {
-          if (Arrays.binarySearch(candidate, i) < 0) {
-            return false;
-          }
-        }
-      }
-    }
-    return true;
+    return Cycles.isCycle(ranking);
   }
 
   /**
@@ -357,35 +298,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#isCycle
    */
   public List<Permutation> toCycles() {
-    LinkedList<int[]> orbits = new LinkedList<int[]>();
-    boolean[] done = new boolean[ranking.length];
-    for (int i = 0; i < ranking.length; i += 1) {
-      if (!done[i]) {
-        int orbitLength = orbitLength(i);
-        if (orbitLength > 1) {
-          int[] candidate = orbit(i, orbitLength);
-          for (int k : candidate)
-            done[k] = true;
-          boolean goodCandidate = true;
-          for (int[] orbit : orbits) {
-            if (orbit.length == candidate.length) {
-              if (Util.indexOf(orbit, candidate[0]) != -1) {
-                goodCandidate = false;
-                break;
-              }
-            }
-          }
-          if (goodCandidate)
-            orbits.push(candidate);
-        }
-      }
-    }
+    List<int[]> orbits = Cycles.toOrbits(ranking);
     ArrayList<Permutation> result = new ArrayList<Permutation>(orbits.size());
-    for (int[] orbit : orbits) {
+    for (int[] orbit : orbits)
       result.add(cycle(orbit).padding(ranking.length));
-    }
     return result;
   }
+
 
   /**
    * Write this permutation as a product of transpositions.
@@ -394,20 +313,13 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#swap
    */
   public List<Permutation> toTranspositions() {
-    List<Permutation> result = new ArrayList<Permutation>();
-    for (Permutation cycle : toCycles()) {
-      int[] orbit = null;
-      for (int i = 0; i < cycle.ranking.length; i += 1) {
-        int orbitLength = cycle.orbitLength(i);
-        if (orbitLength > 1)
-          orbit = cycle.orbit(cycle.ranking[i], orbitLength);
-      }
-      assert orbit != null;
-      for (int i = 0; i < orbit.length - 1; i += 1)
-        result.add(swap(orbit[i], orbit[i + 1]).padding(ranking.length));
-    }
+    List<int[]> transpositions = Cycles.toTranspositions(ranking);
+    List<Permutation> result = new ArrayList<Permutation>(transpositions.size());
+    for (int[] cycle : transpositions)
+      result.add(new Permutation(cycle));
     return result;
   }
+
 
   /**
    * Calculate the <a href="http://en.wikipedia.org/wiki/Parity_of_a_permutation">signature</a> of this permutation.
@@ -549,7 +461,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public Object[] apply(Object[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
 
@@ -562,7 +474,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public Comparable[] apply(Comparable[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
   /**
@@ -573,7 +485,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public String[] apply(String[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
   /**
@@ -584,7 +496,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public byte[] apply(byte[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
 
@@ -596,7 +508,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public short[] apply(short[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
   /**
@@ -607,7 +519,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public int[] apply(int[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
 
@@ -619,7 +531,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public long[] apply(long[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
   /**
@@ -630,7 +542,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public float[] apply(float[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
 
@@ -642,7 +554,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public double[] apply(double[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
   /**
@@ -653,7 +565,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public boolean[] apply(boolean[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
   /**
@@ -664,7 +576,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public char[] apply(char[] input) {
-    return PermutationFactory.apply(ranking, input);
+    return Rankings.apply(ranking, input);
   }
 
   /**
@@ -720,7 +632,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#sort(char[])
    */
   public static Permutation sort(byte[] input) {
-    return new Permutation(PermutationFactory.sort(input), false);
+    return new Permutation(Rankings.sort(input), false);
   }
 
   /**
@@ -728,7 +640,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @param input an array
    * @see com.github.methylene.sym.Permutation#sort(char[]) */
   public static Permutation sort(short[] input) {
-    return new Permutation(PermutationFactory.sort(input), false);
+    return new Permutation(Rankings.sort(input), false);
   }
 
   /**
@@ -736,7 +648,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#sort(char[])
    */
   public static Permutation sort(long[] input) {
-    return new Permutation(PermutationFactory.sort(input), false);
+    return new Permutation(Rankings.sort(input), false);
   }
 
   /**
@@ -744,7 +656,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#sort(char[])
    */
   public static Permutation sort(float[] input) {
-    return new Permutation(PermutationFactory.sort(input), false);
+    return new Permutation(Rankings.sort(input), false);
   }
 
 
@@ -753,7 +665,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#sort(char[])
    */
   public static Permutation sort(double[] input) {
-    return new Permutation(PermutationFactory.sort(input), false);
+    return new Permutation(Rankings.sort(input), false);
   }
 
   /**
@@ -761,7 +673,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#sort(char[])
    */
   public static <E extends Comparable> Permutation sort(E[] input) {
-    return new Permutation(PermutationFactory.sort(input), false);
+    return new Permutation(Rankings.sort(input), false);
   }
 
 
@@ -773,18 +685,18 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
    */
   public static Permutation sort(char[] input) {
-    return new Permutation(PermutationFactory.sort(input), false);
+    return new Permutation(Rankings.sort(input), false);
   }
 
   /** @see com.github.methylene.sym.Permutation#sort(char[]) */
   public static <E> Permutation sort(E[] input, Comparator<E> comp) {
-    return new Permutation(PermutationFactory.sort(input, comp), false);
+    return new Permutation(Rankings.sort(input, comp), false);
   }
 
 
   /** @see com.github.methylene.sym.Permutation#sort(char[]) */
   public static Permutation sort(int[] input) {
-    return new Permutation(PermutationFactory.sort(input), false);
+    return new Permutation(Rankings.sort(input), false);
   }
 
   /**
@@ -806,7 +718,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException if {@code b} is not a rearrangement of {@code a}.
    */
   public static Permutation from(int[] a, int[] b) {
-    return new Permutation(PermutationFactory.from(a, b), false);
+    return new Permutation(Rankings.from(a, b), false);
   }
 
   /**
@@ -815,7 +727,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static <E extends Comparable> Permutation from(E[] a, E[] b) {
-    return new Permutation(PermutationFactory.from(a, b), false);
+    return new Permutation(Rankings.from(a, b), false);
   }
 
   /**
@@ -823,7 +735,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static Permutation from(byte[] a, byte[] b) {
-    return new Permutation(PermutationFactory.from(a, b), false);
+    return new Permutation(Rankings.from(a, b), false);
   }
 
   /**
@@ -831,7 +743,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static Permutation from(long[] a, long[] b) {
-    return new Permutation(PermutationFactory.from(a, b), false);
+    return new Permutation(Rankings.from(a, b), false);
   }
 
   /**
@@ -839,7 +751,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static Permutation from(float[] a, float[] b) {
-    return new Permutation(PermutationFactory.from(a, b), false);
+    return new Permutation(Rankings.from(a, b), false);
   }
 
 
@@ -848,7 +760,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static Permutation from(double[] a, double[] b) {
-    return new Permutation(PermutationFactory.from(a, b), false);
+    return new Permutation(Rankings.from(a, b), false);
   }
 
   /**
@@ -856,7 +768,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static <E> Permutation from(E[] a, E[] b, Comparator<E> comp) {
-    return new Permutation(PermutationFactory.from(a, b, comp), false);
+    return new Permutation(Rankings.from(a, b, comp), false);
   }
 
 }
