@@ -55,39 +55,56 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
   }
 
   @Override
-  public int[] indexesOf(E el) {
-    int pos = Arrays.binarySearch(sorted, el);
-    if (pos < 0) {return emptyIntArray;}
-    IntList.Builder builder = new IntList.Builder();
+  public int[] indexOf(E el, int size) {
+    final int pos = Arrays.binarySearch(sorted, el);
+    if (pos < 0)
+      return emptyIntArray;
+    final boolean varsize = size < 0;
+    final Object builder = varsize ? new IntList.Builder() : new int[size];
     int offset = 0;
-    int direction = 1;
     int current;
-    while (Objects.equals(sorted[current = pos + offset], el)) {
-      builder.add(unsort[current]);
-      if (direction == 1) {
-        if (pos + offset + direction >= sorted.length
-            || !Objects.equals(sorted[pos + offset + 1], el)) {
-          if (pos > 0) {
+    int i = 0;
+    while (el.equals(sorted[current = pos + offset])
+        && (varsize || i < size)) {
+      if (varsize)
+        ((IntList.Builder) builder).add(unsort[current]);
+      else
+        ((int[]) builder)[i] = unsort[current];
+      i++;
+      if (offset >= 0) {
+        int next = current + 1;
+        if (next >= sorted.length
+            || !el.equals(sorted[next])) {
+          if (pos > 0)
             offset = -1;
-            direction = -1;
-          } else {
+          else
             break;
-          }
         } else {
-          offset += 1;
+          offset++;
         }
       } else {
-        if (pos + offset == 0) break;
-        offset -= 1;
+        if (current == 0)
+          break;
+        offset--;
       }
     }
-    return builder.get();
+    return varsize ? ((IntList.Builder) builder).get() :
+        i == size ? (int[]) builder :
+            Arrays.copyOf((int[]) builder, i);
   }
 
   public static final class Builder<E extends Comparable> extends ListBuilder<E> {
-    private Comparable[] contents = new Comparable[16];
+    private Comparable[] contents;
 
-    Builder() {}
+    Builder(int initialCapacity) {
+      if (initialCapacity < 0)
+        throw new IllegalArgumentException("initial capacity can not be negative");
+      this.contents = new Comparable[initialCapacity];
+    }
+
+    Builder() {
+      this(DEFAULT_INITIAL_CAPACITY);
+    }
 
     @Override
     public List<E> build() {

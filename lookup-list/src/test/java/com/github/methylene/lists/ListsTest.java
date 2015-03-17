@@ -332,11 +332,39 @@ public class ListsTest {
       int[] a = Util.randomNumbers(maxNumber, size);
       LookupList<Integer> lookupList = LookupList.asList(a);
       int el = (int) (Math.random() * maxNumber);
-      int[] els = lookupList.indexesOf(el);
+      int[] els = lookupList.indexOf(el, -1);
       assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if(a[i] == el) {
           assertTrue(Arrays.binarySearch(els, i) >= 0);
+        } else {
+          assertTrue(Arrays.binarySearch(els, i) < 0);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testIndexOfLimit() {
+    for (int _ = 0; _ < 100; _ += 1) {
+      int size = 1000;
+      int maxNumber = 100;
+      int[] a = Util.randomNumbers(maxNumber, size);
+      IntList lookupList = (IntList) LookupList.asList(a);
+      int el = (int) (Math.random() * maxNumber);
+      int limit = (int) (10 * Math.random());
+      int[] els = lookupList.indexOf(el, limit);
+      assertTrue(els.length <= limit);
+      assertTrue(Util.isSorted(els));
+      int seen = 0;
+      for (int i = 0; i < a.length; i += 1) {
+        if(a[i] == el) {
+          if (seen < limit) {
+            assertTrue(Arrays.binarySearch(els, i) >= 0);
+          } else {
+            assertTrue(Arrays.binarySearch(els, i) < 0);
+          }
+          seen++;
         } else {
           assertTrue(Arrays.binarySearch(els, i) < 0);
         }
@@ -352,7 +380,7 @@ public class ListsTest {
       Integer[] a = Util.box(Util.randomNumbers(maxNumber, size));
       ComparableList<Integer> lookupList = LookupList.asList(a);
       Integer el = (int) (Math.random() * maxNumber);
-      int[] els = lookupList.indexesOf(el);
+      int[] els = lookupList.indexOf(el, -1);
       assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if(a[i].equals(el)) {
@@ -372,7 +400,7 @@ public class ListsTest {
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, size));
       ComparatorList<MyInt> lookupList = LookupList.asList(MyInt.COMP, a);
       MyInt el = new MyInt((int) (Math.random() * maxNumber));
-      int[] els = lookupList.indexesOf(el);
+      int[] els = lookupList.indexOf(el, -1);
       assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if(a[i].equals(el)) {

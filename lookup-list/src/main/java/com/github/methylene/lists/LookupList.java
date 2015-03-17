@@ -33,18 +33,18 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   }
 
   /**
-   * Find all indexes in sequence {@code i} where
+   * Find at most {@code size} indexes {@code i} where
    * <pre><code>
    *   this.get(i).equals(el)
    * </code></pre>
-   * The return value will always be sorted.
+   * The returned array will always be sorted.
+   * If {@code size < 0}, all such indexes are found and returned.
    * If {@code el} is not in the list, this returns an empty array.
    * @param el an object
-   * @return an increasing list of all indexes where the value equals {@code el}
+   * @param size a number
+   * @return the array of all indexes where the value equals {@code el}
    */
-  public abstract int[] indexesOf(E el);
-
-
+  public abstract int[] indexOf(E el, int size);
 
   /**
    * Creates a primitive list from the given input.

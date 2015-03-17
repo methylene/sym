@@ -26,7 +26,8 @@ public final class IntList extends LookupList<Integer> {
   public int lastIndexOf(Object el) {
     int n = (Integer) el;
     int start = Arrays.binarySearch(sorted, n);
-    if (start < 0) {return -1;};
+    if (start < 0) {return -1;}
+    ;
     int direction = start > 0 && sorted[start - 1] == n ? -1 : 1;
     int peek = start + direction;
     while (peek >= 0 && peek < sorted.length && sorted[peek] == n) {
@@ -52,38 +53,59 @@ public final class IntList extends LookupList<Integer> {
   }
 
   @Override
-  public int[] indexesOf(Integer el) {
-    int n = el;
-    int pos = Arrays.binarySearch(sorted, n);
-    if (pos < 0) {return emptyIntArray;}
-    Builder builder = new Builder();
+  @SuppressWarnings("unchecked")
+  public int[] indexOf(Integer el, int size) {
+    final int n = el;
+    final int pos = Arrays.binarySearch(sorted, n);
+    if (pos < 0)
+      return emptyIntArray;
+    final boolean varsize = size < 0;
+    final Object builder = varsize ? new Builder() : new int[size];
     int offset = 0;
-    int direction = 1;
     int current;
-    while (sorted[current = pos + offset] == n) {
-      builder.add(unsort[current]);
-      if (direction == 1) {
-        if (pos + offset + direction >= sorted.length
-            || sorted[pos + offset + 1] != n) {
-          if (pos > 0) {
+    int i = 0;
+    while (sorted[current = pos + offset] == n
+        && (varsize || i < size)) {
+      if (varsize)
+        ((Builder) builder).add(unsort[current]);
+      else
+        ((int[]) builder)[i] = unsort[current];
+      i++;
+      if (offset >= 0) {
+        int next = current + 1;
+        if (next >= sorted.length
+            || sorted[next] != n) {
+          if (pos > 0)
             offset = -1;
-            direction = -1;
-          } else {
+          else
             break;
-          }
         } else {
-          offset += 1;
+          offset++;
         }
       } else {
-        if (pos + offset == 0) break;
-        offset -= 1;
+        if (current == 0)
+          break;
+        offset--;
       }
     }
-    return builder.get();
+    return varsize ? ((Builder) builder).get() :
+        i == size ? (int[]) builder :
+            Arrays.copyOf((int[]) builder, i);
   }
 
   public static final class Builder extends ListBuilder<Integer> {
-    private int[] contents = new int[16];
+
+    private int[] contents;
+
+    Builder(int initialCapacity) {
+      if (initialCapacity < 0)
+        throw new IllegalArgumentException("initial capacity can not be negative");
+      this.contents = new int[initialCapacity];
+    }
+
+    Builder() {
+      this(DEFAULT_INITIAL_CAPACITY);
+    }
 
     @Override
     public IntList build() {

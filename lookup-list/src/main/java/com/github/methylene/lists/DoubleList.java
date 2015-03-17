@@ -52,34 +52,43 @@ public final class DoubleList extends LookupList<Double> {
   }
 
   @Override
-  public int[] indexesOf(Double el) {
-    double d = el;
-    int pos = Arrays.binarySearch(sorted, d);
-    if (pos < 0) {return emptyIntArray;}
-    IntList.Builder builder = new IntList.Builder();
+  public int[] indexOf(Double el, int size) {
+    final double d = el;
+    final int pos = Arrays.binarySearch(sorted, d);
+    if (pos < 0)
+      return emptyIntArray;
+    final boolean varsize = size < 0;
+    final Object builder = varsize ? new IntList.Builder() : new int[size];
     int offset = 0;
-    int direction = 1;
     int current;
-    while (sorted[current = pos + offset] == d) {
-      builder.add(unsort[current]);
-      if (direction == 1) {
-        if (pos + offset + direction >= sorted.length
-            || sorted[pos + offset + 1] != d) {
-          if (pos > 0) {
+    int i = 0;
+    while (sorted[current = pos + offset] == d
+        && (varsize || i < size)) {
+      if (varsize)
+        ((IntList.Builder) builder).add(unsort[current]);
+      else
+        ((int[]) builder)[i] = unsort[current];
+      i++;
+      if (offset >= 0) {
+        int next = current + 1;
+        if (next >= sorted.length
+            || sorted[next] != d) {
+          if (pos > 0)
             offset = -1;
-            direction = -1;
-          } else {
+          else
             break;
-          }
         } else {
-          offset += 1;
+          offset++;
         }
       } else {
-        if (pos + offset == 0) break;
-        offset -= 1;
+        if (current == 0)
+          break;
+        offset--;
       }
     }
-    return builder.get();
+    return varsize ? ((IntList.Builder) builder).get() :
+        i == size ? (int[]) builder :
+            Arrays.copyOf((int[]) builder, i);
   }
 
 }
