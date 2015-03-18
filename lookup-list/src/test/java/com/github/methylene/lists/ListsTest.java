@@ -412,12 +412,13 @@ public class ListsTest {
     }
   }
 
-  <E> E findDuplicate(LookupList<E> list) {
-    for (E el : list) {
-      if (list.indexOf(el, 2).length == 2) {
-        return el;
-      }
+  public <E> int[] findDuplicate(LookupList<E> list) {
+    for (int i = 0; i < list.size(); i++) {
+      int[] indexes = list.indexOf(list.get(i), 2);
+      if (indexes.length == 2)
+        return indexes;
     }
+    // all elements unique
     return null;
   }
 
@@ -437,12 +438,12 @@ public class ListsTest {
   public void testFindDuplicate() {
     for (int _ = 0; _ < 100; _++) {
       int[] a = Util.randomNumbers(100, 50);
-      Integer duplicate = findDuplicate(LookupList.asList(a));
+      int[] duplicate = findDuplicate(LookupList.asList(a));
       if (duplicate == null) {
         for (int i: a)
           assertEquals(0, count(a, i));
       } else {
-        assertTrue(count(a, duplicate) > 1);
+        assertTrue(count(a, a[duplicate[0]]) > 1);
       }
     }
   }
@@ -451,12 +452,12 @@ public class ListsTest {
   public void testFindDuplicateComparable() {
     for (int _ = 0; _ < 100; _++) {
       Integer[] a = Util.box(Util.randomNumbers(100, 50));
-      Integer duplicate = findDuplicate(LookupList.asList(a));
+      int[] duplicate = findDuplicate(LookupList.asList(a));
       if (duplicate == null) {
         for (Integer i: a)
           assertEquals(0, count(a, i));
       } else {
-        assertTrue(count(a, duplicate) > 1);
+        assertTrue(count(a, a[duplicate[0]]) > 1);
       }
     }
   }
@@ -465,12 +466,12 @@ public class ListsTest {
   public void testFindDuplicateComparator() {
     for (int _ = 0; _ < 100; _++) {
       MyInt[] a = MyInt.box(Util.randomNumbers(100, 50));
-      MyInt duplicate = findDuplicate(LookupList.asList(MyInt.COMP, a));
+      int[] duplicate = findDuplicate(LookupList.asList(MyInt.COMP, a));
       if (duplicate == null) {
         for (MyInt i: a)
           assertEquals(0, count(a, i));
       } else {
-        assertTrue(count(a, duplicate) > 1);
+        assertTrue(count(a, a[duplicate[0]]) > 1);
       }
     }
   }
