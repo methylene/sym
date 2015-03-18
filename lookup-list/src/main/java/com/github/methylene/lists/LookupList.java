@@ -12,13 +12,16 @@ import java.util.RandomAccess;
  * that have efficient search methods: {@code indexOf}, {@code lastIndexOf} and {@code contains}.</p>
  *
  * <p>These lists are similar to {@link java.util.ArrayList} in that they store an array internally,
- * but in this case, the array is sorted. This means that the list can only contain things that can be compared:
- * Primitives or Comparables. Building a list from arbitrary objects is only possible if a suitable Comparator
- * is also provided.</p>
+ * but in this case, the array is sorted, so binary search can be used.
+ * This means that the list can only contain things that can be compared:
+ * primitives or Comparables. Building a list from arbitrary objects is also possible if a suitable Comparator
+ * is provided.</p>
  *
- * <p>As a rule of thumb, performance gains over the search methods of ArrayList are getting significant
- * as soon as the return value of {@code .indexOf} is larger than about 20, or if the list has more
- * than 20 elements and {@code indexOf} returns {@code -1}.</p>
+ * <p>Instances of this list are slower to create, because of the sorting step, and use more memory than other lists.
+ * For each element in the list, an extra 8 bytes (2 int) are needed to store its original position.</p>
+ *
+ * <p>The speedup of the search methods depends on the size of the list and the cost of the {@code equals} method of
+ * its elements. If the list is not very small, the {@code indexOf} methods will often save many calls to {@code equals}.</p>
  */
 public abstract class LookupList<E> extends AbstractList<E> implements RandomAccess {
 
@@ -38,7 +41,18 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    *   this.get(i).equals(el)
    * </code></pre>
    * The returned array will always be sorted.
-   * If {@code size < 0}, all such indexes are found and returned.
+   * For example, this method could be used to find duplicates in the list as follows:
+   * <pre><code>
+   *   public <E> E findDuplicate(LookupList<E> list) {
+   *     for (E el: list) {
+   *       if (list.indexOf(el, 2).length == 2) {
+   *         return el;
+   *       }
+   *     }
+   *     return null;
+   *   }
+   * </code></pre>
+   * If {@code size < 0}, all indexes are returned.
    * If {@code el} is not in the list, this returns an empty array.
    * @param el an object
    * @param size a number
@@ -137,7 +151,6 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   public static <E extends Comparable> ListBuilder<E> builder() {
     return new ComparableList.Builder<E>();
   }
-
 
 
 }
