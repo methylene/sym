@@ -427,16 +427,50 @@ public class ListsTest {
     return cnt;
   }
 
+  int count(Object[] a, Object i) {
+    int cnt = 0;
+    for (Object x: a) if (x.equals(i)) cnt++;
+    return cnt;
+  }
+
   @Test
-  public void testDuplicate() {
+  public void testFindDuplicate() {
     for (int _ = 0; _ < 100; _++) {
-      int[] chars = Util.randomNumbers(100, 50);
-      Integer duplicate = findDuplicate(LookupList.asList(chars));
+      int[] a = Util.randomNumbers(100, 50);
+      Integer duplicate = findDuplicate(LookupList.asList(a));
       if (duplicate == null) {
-        for (int i: chars)
-          assertEquals(0, count(chars, i));
+        for (int i: a)
+          assertEquals(0, count(a, i));
       } else {
-        assertTrue(count(chars, duplicate) > 1);
+        assertTrue(count(a, duplicate) > 1);
+      }
+    }
+  }
+
+  @Test
+  public void testFindDuplicateComparable() {
+    for (int _ = 0; _ < 100; _++) {
+      Integer[] a = Util.box(Util.randomNumbers(100, 50));
+      Integer duplicate = findDuplicate(LookupList.asList(a));
+      if (duplicate == null) {
+        for (Integer i: a)
+          assertEquals(0, count(a, i));
+      } else {
+        assertTrue(count(a, duplicate) > 1);
+      }
+    }
+  }
+
+  @Test
+  public void testFindDuplicateComparator() {
+    for (int _ = 0; _ < 100; _++) {
+      MyInt[] a = MyInt.box(Util.randomNumbers(100, 50));
+      MyInt duplicate = findDuplicate(LookupList.asList(MyInt.COMP, a));
+      if (duplicate == null) {
+        for (MyInt i: a)
+          assertEquals(0, count(a, i));
+      } else {
+        assertTrue(count(a, duplicate) > 1);
       }
     }
   }

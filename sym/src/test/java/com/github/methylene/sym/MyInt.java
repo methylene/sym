@@ -1,7 +1,7 @@
 package com.github.methylene.sym;
 
 /**
- * Example class that needs a Comparator as it is not directly Comparable
+ * Example class that has a Comparator but is not directly Comparable
  */
 public class MyInt {
 
@@ -11,18 +11,7 @@ public class MyInt {
     }
   }
 
-  public static class MyNullFriendlyComparator implements java.util.Comparator<MyInt> {
-    @Override public int compare(MyInt a, MyInt b) {
-      if (a == null)
-        return b == null ? 0 : -1;
-      if (b == null)
-        return 1;
-      return a.n - b.n;
-    }
-  }
-
   public static final java.util.Comparator<MyInt> COMP = new MyComparator();
-  public static final java.util.Comparator<MyInt> NULL_FRIENDLY_COMP = new MyNullFriendlyComparator();
 
   static MyInt[] box(int[] a) {
     MyInt[] result = new MyInt[a.length];
