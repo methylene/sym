@@ -190,7 +190,7 @@ public class ListsTest {
 
   private long minLength(long... numbers) {
     long result = 0;
-    for (long i: numbers)
+    for (long i : numbers)
       result = Math.max(Long.toString(i).length(), result);
     return result;
   }
@@ -335,7 +335,7 @@ public class ListsTest {
       int[] els = lookupList.indexOf(el, -1);
       assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
-        if(a[i] == el) {
+        if (a[i] == el) {
           assertTrue(Arrays.binarySearch(els, i) >= 0);
         } else {
           assertTrue(Arrays.binarySearch(els, i) < 0);
@@ -358,7 +358,7 @@ public class ListsTest {
       assertTrue(Util.isSorted(els));
       int seen = 0;
       for (int i = 0; i < a.length; i += 1) {
-        if(a[i] == el) {
+        if (a[i] == el) {
           if (seen < limit) {
             assertTrue(Arrays.binarySearch(els, i) >= 0);
           } else {
@@ -383,7 +383,7 @@ public class ListsTest {
       int[] els = lookupList.indexOf(el, -1);
       assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
-        if(a[i].equals(el)) {
+        if (a[i].equals(el)) {
           assertTrue(Arrays.binarySearch(els, i) >= 0);
         } else {
           assertTrue(Arrays.binarySearch(els, i) < 0);
@@ -403,11 +403,40 @@ public class ListsTest {
       int[] els = lookupList.indexOf(el, -1);
       assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
-        if(a[i].equals(el)) {
+        if (a[i].equals(el)) {
           assertTrue(Arrays.binarySearch(els, i) >= 0);
         } else {
           assertTrue(Arrays.binarySearch(els, i) < 0);
         }
+      }
+    }
+  }
+
+  <E> E findDuplicate(LookupList<E> list) {
+    for (E el : list) {
+      if (list.indexOf(el, 2).length == 2) {
+        return el;
+      }
+    }
+    return null;
+  }
+
+  int count(int[] a, int i) {
+    int cnt = 0;
+    for (int x: a) if (x == i) cnt++;
+    return cnt;
+  }
+
+  @Test
+  public void testDuplicate() {
+    for (int _ = 0; _ < 100; _++) {
+      int[] chars = Util.randomNumbers(100, 50);
+      Integer duplicate = findDuplicate(LookupList.asList(chars));
+      if (duplicate == null) {
+        for (int i: chars)
+          assertEquals(0, count(chars, i));
+      } else {
+        assertTrue(count(chars, duplicate) > 1);
       }
     }
   }
