@@ -379,6 +379,14 @@ public final class Util {
     return sorted;
   }
 
+  static void throwLength() {
+    throw new IllegalArgumentException("length mismatch");
+  }
+
+  static void throwMultiplicity() {
+    throw new IllegalArgumentException("can not rearrange first input into second");
+  }
+
   /**
    * Test if input is sorted
    * @param input an array

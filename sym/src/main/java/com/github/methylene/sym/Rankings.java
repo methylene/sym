@@ -5,6 +5,9 @@ import static com.github.methylene.sym.Util.distinctInts;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import static com.github.methylene.sym.Util.throwLength;
+import static com.github.methylene.sym.Util.throwMultiplicity;
+
 public final class Rankings {
 
   private Rankings() {}
@@ -35,7 +38,7 @@ public final class Rankings {
   }
 
   /**
-   * Check the precondition of being a ranking.
+   * Ensure that the input is a ranking.
    * @param a an array
    * @return the input
    * @throws java.lang.IllegalArgumentException if {@code a} is not a ranking
@@ -71,6 +74,43 @@ public final class Rankings {
     return result;
   }
 
+  /* ================= map ================= */
+
+  /**
+   * Map an index {@code i} in {@code a} to an unused position in {@code sorted} where the value is the same.
+   * The first position to be tried is {@code idx = binarySearch(b, a[i])}. If that is used, {@code j = idx + 1} is tried.
+   * If that is also used, {@code j = idx + 2} and so on until an unused position is found or {@code sorted[j] != a[i]}.
+   * After that, {@code j = idx - 1} is tried, then {@code idx -2} and so on.
+   * @param a an array
+   * @param i a position in {@code a}
+   * @param sorted a sorted copy of {@code a}
+   * @param used an array of forbidden positions
+   * @return an index {@code j} in {@code sorted} so that {@code a[i] = sorted[j]} and {@code !used[j]}
+   */
+  public static int map(int el, int idx, int[] sorted, boolean[] used) {
+    int current;
+    int offset = 0;
+    while (used[current = idx + offset])
+      if (offset >= 0) {
+        int next = current + 1;
+        if (next >= sorted.length
+            || sorted[next] != el)
+          if (idx > 0)
+            offset = -1;
+          else
+            throwMultiplicity();
+        else
+          offset++;
+      } else {
+        int next = current - 1;
+        if (next < 0 || sorted[next] != el)
+          throwMultiplicity();
+        offset--;
+      }
+    return current;
+  }
+
+
 
 
 
@@ -83,13 +123,14 @@ public final class Rankings {
     for (int i = 0; i < input.length; i += 1) {
       int idx = Arrays.binarySearch(sorted, input[i]);
       int offset = 0;
-      int direction = 1;
-      while (used[idx + offset]) {
-        offset += direction;
-        if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
-          assert direction != -1;
-          offset = -1;
-          direction = -1;
+      int current;
+      while (used[current = idx + offset]) {
+        if (offset >= 0) {
+          offset += 1;
+          if (current >= sorted.length || sorted[current] != input[i])
+            offset = -1;
+        } else {
+          offset -= 1;
         }
       }
       ranking[i] = idx + offset;
@@ -97,8 +138,6 @@ public final class Rankings {
     }
     return ranking;
   }
-
-
 
 
   public static int[] sort(short[] input) {
@@ -262,24 +301,15 @@ public final class Rankings {
   }
 
 
-  public static int[] sort(int[] input) {
-    int[] sorted = Util.sortedCopy(input);
-    int[] ranking = new int[input.length];
-    boolean[] used = new boolean[input.length];
-    for (int i = 0; i < input.length; i += 1) {
-      int idx = Arrays.binarySearch(sorted, input[i]);
-      int offset = 0;
-      int direction = 1;
-      while (used[idx + offset]) {
-        offset += direction;
-        if (idx + offset >= sorted.length || sorted[idx + offset] != input[i]) {
-          assert direction != -1;
-          offset = -1;
-          direction = -1;
-        }
-      }
-      ranking[i] = idx + offset;
-      used[idx + offset] = true;
+
+  public static int[] sort(int[] a) {
+    int[] sorted = Util.sortedCopy(a);
+    int[] ranking = new int[a.length];
+    boolean[] used = new boolean[a.length];
+    for (int i = 0; i < a.length; i += 1) {
+      final int mapped = map(a[i], Arrays.binarySearch(sorted, a[i]), sorted, used);
+      ranking[i] = mapped;
+      used[mapped] = true;
     }
     return ranking;
   }
@@ -289,37 +319,22 @@ public final class Rankings {
   /* ================= from ================= */
 
   public static int[] from(int[] a, int[] b) {
-    if (a.length != b.length) {throw new IllegalArgumentException("arguments must have equal length");}
-    int[] sortB = sort(b);
-    int[] sortedB = apply(sortB, b);
-    int[] unsortB = invert(sortB);
-    int[] ranking = new int[a.length];
-    boolean[] used = new boolean[b.length];
+    if (a.length != b.length)
+      throwLength();
+    final int[] sort = sort(b);
+    final int[] sorted = apply(sort, b);
+    final int[] unsort = invert(sort);
+    final int[] ranking = new int[a.length];
+    final boolean[] used = new boolean[b.length];
     for (int i = 0; i < a.length; i += 1) {
-      int idx = Arrays.binarySearch(sortedB, a[i]);
-      if (idx < 0) {throw new IllegalArgumentException("not in b: " + a[i]);}
-      int offset = 0;
-      int direction = 1;
-      while (used[idx + offset]) {
-        offset += direction;
-        if (direction == 1) {
-          if (idx + offset >= sortedB.length
-              || sortedB[idx + offset] != a[i]) {
-            if (idx > 0) {
-              offset = -1;
-              direction = -1;
-            } else {
-              throw new IllegalArgumentException("multiplicity differs: " + a[i]);
-            }
-          }
-        } else if (idx + offset < 0 || sortedB[idx + offset] != a[i]) {
-          throw new IllegalArgumentException("multiplicity differs: " + a[i]);
-        }
-      }
-      ranking[i] = unsortB[idx + offset];
+      final int idx = Arrays.binarySearch(sorted, a[i]);
+      if (idx < 0)
+        throwMultiplicity();
+      final int mapped = map(a[i], Arrays.binarySearch(sorted, a[i]), sorted, used);
+      ranking[i] = unsort[mapped];
       if (a[i] != b[ranking[i]])
-        throw new IllegalArgumentException("multiplicity differs: " + a[i]);
-      used[idx + offset] = true;
+        throwMultiplicity();
+      used[mapped] = true;
     }
     return ranking;
   }
@@ -439,7 +454,6 @@ public final class Rankings {
     }
     return ranking;
   }
-
 
 
   public static int[] from(float[] a, float[] b) {
@@ -666,7 +680,6 @@ public final class Rankings {
       System.arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
-
 
 
   public static boolean[] apply(int[] ranking, boolean[] input) {
