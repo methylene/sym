@@ -1,45 +1,70 @@
 package com.github.methylene.sym;
 
+import static com.github.methylene.sym.Util.duplicateFailure;
+import static com.github.methylene.sym.Util.indexFailure;
+import static com.github.methylene.sym.Util.indexOf;
+import static com.github.methylene.sym.Util.lengthFailure;
+import static com.github.methylene.sym.Util.negativeFailure;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Cycles {
+/**
+ * A collection of methods that return cycles or operate on cycles.
+ */
+public final class Cycles {
 
+  private Cycles() {}
+
+  /**
+   * Get the indexes that are moved by the cycle.
+   * @param cycle a cycle in cycle notation
+   * @return the indexes that are moved by the cycle
+   * @throws java.lang.IllegalArgumentException if the input does not define a cycle
+   */
+  public static boolean[] movedIndexes(int[] cycle) {
+    if (cycle.length == 0)
+      return new boolean[0];
+    boolean[] moved = new boolean[Util.max(cycle) + 1];
+    for (int el : cycle) {
+      if (el < 0)
+        negativeFailure();
+      if (moved[el])
+        duplicateFailure();
+      moved[el] = true;
+    }
+    return moved;
+  }
+
+  /**
+   * Create a ranking from a cycle in cycle notation.
+   * @param cycle a cycle in cycle notation
+   * @return the cycle as a ranking
+   * @throws java.lang.IllegalArgumentException if the input does not define a cycle
+   */
   static public int[] cycle(int... cycle) {
-    int maxIndex = -1;
-    for (int index : cycle) {
-      if (index < 0)
-        throw new IllegalArgumentException("negative index: " + index);
-      maxIndex = Math.max(maxIndex, index);
-    }
-    int length = maxIndex + 1;
-    boolean[] cycleIndexes = new boolean[length];
-    for (int i : cycle) {
-      if (cycleIndexes[i])
-        throw new IllegalArgumentException("duplicate index: " + i);
-      cycleIndexes[i] = true;
-    }
-    int[] result = new int[length];
-    for (int i = 0; i < length; i += 1)
-      result[i] = !cycleIndexes[i] ? i : cycle[(Util.indexOf(cycle, i) + 1) % cycle.length];
-    return result;
+    boolean[] moved = movedIndexes(cycle);
+    int[] ranking = new int[moved.length];
+    for (int i = 0; i < moved.length; i += 1)
+      ranking[i] = moved[i] ? cycle[(indexOf(cycle, i) + 1) % cycle.length] : i;
+    return ranking;
   }
 
   public static int orbitLength(int[] ranking, int i) {
     if (i < 0 || i >= ranking.length)
-      throw new IllegalArgumentException("bad index: " + i);
+      lengthFailure();
     int length = 1;
     int j = i;
     while ((j = ranking[j]) != i)
-      length += 1;
+      length++;
     return length;
   }
 
   public static int[] orbit(int[] ranking, int pos, int orbitLength) {
     if (pos < 0 || pos >= ranking.length)
-      throw new IllegalArgumentException("wrong pos: " + pos);
+      indexFailure();
     int[] result = new int[orbitLength];
     result[0] = pos;
     int j = pos;
@@ -54,7 +79,7 @@ public class Cycles {
     return orbit(ranking, i, orbitLength(ranking, i));
   }
 
-  public static boolean isCycle(int[] ranking) {
+  public static boolean isCyclicRanking(int[] ranking) {
     int[] candidate = null;
     for (int i = 0; i < ranking.length; i += 1) {
       int orbitLength = orbitLength(ranking, i);

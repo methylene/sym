@@ -283,7 +283,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#orbit
    */
   public boolean isCycle() {
-    return Cycles.isCycle(ranking);
+    return Cycles.isCyclicRanking(ranking);
   }
 
   /**

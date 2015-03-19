@@ -8,6 +8,11 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class TestRankings {
 
   @Test
@@ -99,6 +104,21 @@ public class TestRankings {
         assertFalse("we should never get here", true);
       } catch (IllegalArgumentException __) {
         // ignore
+      }
+    }
+  }
+
+  @Test
+  public void testSort() {
+    for (int _ = 0; _ < 100; _++) {
+      int[] a = Util.randomNumbers(100, (int) (Math.random() * 1000));
+      int[] sort = Rankings.sort(a);
+      int[] sorted = Rankings.apply(sort, a);
+      int[] unsort = Rankings.invert(sort);
+      int[] hopefullyIdentity = Rankings.comp(sort, unsort);
+      assertTrue(Util.isSorted(hopefullyIdentity));
+      for (int el: a) {
+        assertEquals(Util.indexOf(a, el), unsort[Arrays.binarySearch(sorted, el)]);
       }
     }
   }

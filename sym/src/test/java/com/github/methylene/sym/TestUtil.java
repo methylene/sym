@@ -218,7 +218,7 @@ public class TestUtil {
     int max = 0;
     for (int i: input) {
       if (i < 0)
-        throw new IllegalArgumentException("negative numbers are not allowed");
+        Util.negativeFailure();
       max = Math.max(max, i);
     }
     boolean[] test = new boolean[max + 1];

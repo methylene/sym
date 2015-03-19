@@ -5,6 +5,7 @@ import static com.github.methylene.sym.Rankings.sort;
 
 import java.util.AbstractList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.RandomAccess;
 
 /**
@@ -34,6 +35,26 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
     this.sort = sort;
     this.unsort = invert(sort);
   }
+
+  public static final class Partition<E> {
+    public E getKey() {
+      return key;
+    }
+
+    public int[] getIndexes() {
+      return indexes;
+    }
+
+    private final E key;
+    private final int[] indexes;
+    public Partition(E key, int[] indexes) {
+      this.key = key;
+      this.indexes = indexes;
+    }
+
+  }
+
+  public abstract List<Partition> getPartitions();
 
   /**
    * Find at most {@code size} indexes {@code i} where

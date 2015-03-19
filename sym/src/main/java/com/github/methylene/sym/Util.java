@@ -1,5 +1,7 @@
 package com.github.methylene.sym;
 
+import static java.lang.Math.max;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
@@ -56,15 +58,15 @@ public final class Util {
   }
 
   /**
-   * Find element in array using exhaustive search. This is not very fast,
-   * but may be sufficient for one-off searches.
-   * @param ints an array
-   * @param k a number
-   * @return the least number {@code i >= 0} so that {@code ints[i] = k}, or {@code -1}
+   * Find element in array by comparing each element in sequence, starting at index {@code 0}.
+   * @param a an array
+   * @param el a number
+   * @return the least non-negative number {@code i} so that {@code a[i] = el}, or {@code -1} if {@code el} is not
+   * found in {@code a}.
    */
-  public static int indexOf(int[] ints, int k) {
-    for (int i = 0; i < ints.length; i += 1)
-      if (ints[i] == k)
+  public static int indexOf(int[] a, int el) {
+    for (int i = 0; i < a.length; i += 1)
+      if (a[i] == el)
         return i;
     return -1;
   }
@@ -95,6 +97,20 @@ public final class Util {
     for (int i = 0; i < a.length; i += 1)
       result[i] = a[i] + k;
     return result;
+  }
+
+  /**
+   * Calculate the maximum of the numbers in the input.
+   * @param a an array
+   * @return the maximum of all numbers in {@code a}
+   */
+  public static int max(int[] a) {
+    if (a.length == 0)
+      throw new IllegalArgumentException("argument must not be empty");
+    int maxIndex = a[0];
+    for (int index : a)
+      maxIndex = Math.max(maxIndex, index);
+    return maxIndex;
   }
 
   /**
@@ -379,12 +395,28 @@ public final class Util {
     return sorted;
   }
 
-  static void throwLength() {
+  static void lengthFailure() {
     throw new IllegalArgumentException("length mismatch");
   }
 
-  static void throwMultiplicity() {
-    throw new IllegalArgumentException("can not rearrange first input into second");
+  static void indexFailure() {
+    throw new IllegalArgumentException("index out of bounds");
+  }
+
+  static void slotFailure() {
+    throw new IllegalArgumentException("could not find a free spot");
+  }
+
+  static void negativeFailure() {
+    throw new IllegalArgumentException("negative number not allowed");
+  }
+
+  static void nullFailure() {
+    throw new IllegalArgumentException("null values are not allowed");
+  }
+
+  static void duplicateFailure() {
+    throw new IllegalArgumentException("repeated values are not allowed");
   }
 
   /**
