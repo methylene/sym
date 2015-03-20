@@ -110,7 +110,7 @@ public class UtilTest {
       int[] ints = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       int[] pair = Util.duplicateIndexes(ints, 0);
       assertTrue(count(ints, ints[pair[0]]) > 1);
-      assertEquals(Util.indexOf(ints, ints[pair[0]]), pair[0]);
+      assertEquals(Util.indexOf(ints, ints[pair[0]], 0), pair[0]);
     }
   }
 

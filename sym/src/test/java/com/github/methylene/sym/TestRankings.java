@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertEquals;
+import static com.github.methylene.sym.Rankings.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -112,15 +113,31 @@ public class TestRankings {
   public void testSort() {
     for (int _ = 0; _ < 100; _++) {
       int[] a = Util.randomNumbers(100, (int) (Math.random() * 1000));
-      int[] sort = Rankings.sort(a);
-      int[] sorted = Rankings.apply(sort, a);
-      int[] unsort = Rankings.invert(sort);
-      int[] hopefullyIdentity = Rankings.comp(sort, unsort);
+      int[] sort = sort(a);
+      int[] sorted = apply(sort, a);
+      int[] unsort = invert(sort);
+      int[] hopefullyIdentity = comp(sort, unsort);
       assertTrue(Util.isSorted(hopefullyIdentity));
+      assertTrue(Util.isSorted(sorted));
       for (int el: a) {
-        assertEquals(Util.indexOf(a, el), unsort[Arrays.binarySearch(sorted, el)]);
+        assertEquals(Util.indexOf(a, el, 0), unsort[Arrays.binarySearch(sorted, el)]);
       }
     }
+  }
+
+  @Test
+  public void testNextOffset() {
+    int[] sorted = {0, 0, 1, 3, 3, 3, 4, 4};
+    assertEquals(1, nextOffset(0, 0, sorted));
+    assertEquals(-1, nextOffset(1, 0, sorted));
+    assertEquals(1, nextOffset(3, 0, sorted));
+    assertEquals(2, nextOffset(3, 1, sorted));
+    assertEquals(1, nextOffset(4, 0, sorted));
+    assertEquals(-1, nextOffset(4, 1, sorted));
+    assertEquals(-1, nextOffset(5, 0, sorted));
+    assertEquals(-2, nextOffset(5, -1, sorted));
+    assertEquals(1, nextOffset(6, 0, sorted));
+    assertEquals(-1, nextOffset(7, 0, sorted));
   }
 
 }

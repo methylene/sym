@@ -1,8 +1,9 @@
 package com.github.methylene.sym;
 
+import static com.github.methylene.sym.Util.checkEqualLength;
 import static com.github.methylene.sym.Util.distinctInts;
+import static com.github.methylene.sym.Util.exceptionalBinarySearch;
 import static com.github.methylene.sym.Util.lengthFailure;
-import static com.github.methylene.sym.Util.nullFailure;
 import static com.github.methylene.sym.Util.padding;
 import static com.github.methylene.sym.Util.slotFailure;
 import static com.github.methylene.sym.Util.sortedCopy;
@@ -51,7 +52,7 @@ public final class Rankings {
    * @param a an array
    * @return the input array
    * @throws java.lang.IllegalArgumentException if {@code a} is not a ranking
-   * @see com.github.methylene.sym.Rankings#isRanking
+   * @see #isRanking
    */
   public static int[] checkRanking(int[] a) {
     if (!isRanking(a))
@@ -85,309 +86,187 @@ public final class Rankings {
 
   /* ================= map ================= */
 
-  /**
-   * Find the next free position in {@code sorted} where the value is {@code el}.
-   * The first position to be tried is {@code idx}. If that is used, {@code j = idx + 1} is tried.
-   * If that is also used, {@code j = idx + 2} and so on until an unused position is found or {@code sorted[j] != a[i]}.
-   * After that, {@code j = idx - 1} is tried, then {@code idx - 2} and so on. If no free position can be found,
-   * an Exception is thrown.
-   * @param el an element of sorted
-   * @param idx a position to start looking at
-   * @param sorted a sorted array
-   * @param used an array that tells us which positions are already taken
-   * @return an index {@code j} in {@code sorted} so that {@code a[i] = sorted[j]} and {@code !used[j]}
-   * @throws java.lang.IllegalArgumentException if no such index can be found
-   */
-  public static int findSlot(int el, int idx, int[] sorted, boolean[] used) {
-    int current;
-    int offset = 0;
-    while (used[current = idx + offset])
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length || sorted[next] != el)
-          if (idx > 0)
-            offset = -1;
-          else
-            slotFailure();
-        else
-          offset++;
-      } else {
-        int next = current - 1;
-        if (next < 0 || sorted[next] != el)
+  public static int nextOffset(final int idx, int offset, final int[] sorted) {
+    if (offset >= 0) {
+      int next = idx + ++offset;
+      if (next >= sorted.length || sorted[next] != sorted[idx])
+        if (idx == 0 || sorted[idx - 1] != sorted[idx])
           slotFailure();
-        offset--;
-      }
-    return current;
-  }
-
-
-  @Override public int hashCode() {
-    return super.hashCode();
-  }
-
-  /**
-   * Find the next free position in {@code sorted} where the value is {@code el}.
-   * The first position to be tried is {@code idx}. If that is used, {@code j = idx + 1} is tried.
-   * If that is also used, {@code j = idx + 2} and so on until an unused position is found or {@code sorted[j] != a[i]}.
-   * After that, {@code j = idx - 1} is tried, then {@code idx - 2} and so on. If no free position can be found,
-   * an Exception is thrown.
-   * @param el an element of sorted
-   * @param idx a position to start looking at
-   * @param sorted a sorted array
-   * @param used an array that tells us which positions are already taken
-   * @return an index {@code j} in {@code sorted} so that {@code a[i] = sorted[j]} and {@code !used[j]}
-   * @throws java.lang.IllegalArgumentException if no such index can be found
-   */
-  public static int findSlot(byte el, int idx, byte[] sorted, boolean[] used) {
-    int current;
-    int offset = 0;
-    while (used[current = idx + offset])
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length || sorted[next] != el)
-          if (idx > 0)
-            offset = -1;
-          else
-            slotFailure();
         else
-          offset++;
-      } else {
-        int next = current - 1;
-        if (next < 0 || sorted[next] != el)
-          slotFailure();
-        offset--;
-      }
-    return current;
+          return -1;
+    } else {
+      int next = idx + --offset;
+      if (next < 0 || sorted[next] != sorted[idx])
+        slotFailure();
+    }
+    return offset;
   }
 
-  /**
-   * Find the next free position in {@code sorted} where the value is {@code el}.
-   * The first position to be tried is {@code idx}. If that is used, {@code j = idx + 1} is tried.
-   * If that is also used, {@code j = idx + 2} and so on until an unused position is found or {@code sorted[j] != a[i]}.
-   * After that, {@code j = idx - 1} is tried, then {@code idx - 2} and so on. If no free position can be found,
-   * an Exception is thrown.
-   * @param el an element of sorted
-   * @param idx a position to start looking at
-   * @param sorted a sorted array
-   * @param used an array that tells us which positions are already taken
-   * @return an index {@code j} in {@code sorted} so that {@code a[i] = sorted[j]} and {@code !used[j]}
-   * @throws java.lang.IllegalArgumentException if no such index can be found
-   */
-  public static int findSlot(short el, int idx, short[] sorted, boolean[] used) {
-    if (idx < 0)
-      slotFailure();
-    int current;
-    int offset = 0;
-    while (used[current = idx + offset])
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length || sorted[next] != el)
-          if (idx > 0)
-            offset = -1;
-          else
-            slotFailure();
+  public static int nextOffset(final int idx, int offset, final byte[] sorted) {
+    if (offset >= 0) {
+      int next = idx + ++offset;
+      if (next >= sorted.length || sorted[next] != sorted[idx])
+        if (idx == 0 || sorted[idx - 1] != sorted[idx])
+          slotFailure();
         else
-          offset++;
-      } else {
-        int next = current - 1;
-        if (next < 0 || sorted[next] != el)
-          slotFailure();
-        offset--;
-      }
-    return current;
+          return -1;
+    } else {
+      int next = idx + --offset;
+      if (next < 0 || sorted[next] != sorted[idx])
+        slotFailure();
+    }
+    return offset;
   }
 
-  /**
-   * Find the next free position in {@code sorted} where the value is {@code el}.
-   * The first position to be tried is {@code idx}. If that is used, {@code j = idx + 1} is tried.
-   * If that is also used, {@code j = idx + 2} and so on until an unused position is found or {@code sorted[j] != a[i]}.
-   * After that, {@code j = idx - 1} is tried, then {@code idx - 2} and so on. If no free position can be found,
-   * an Exception is thrown.
-   * @param el an element of sorted
-   * @param idx a position to start looking at
-   * @param sorted a sorted array
-   * @param used an array that tells us which positions are already taken
-   * @return an index {@code j} in {@code sorted} so that {@code a[i] = sorted[j]} and {@code !used[j]}
-   * @throws java.lang.IllegalArgumentException if no such index can be found
-   */
-  public static int findSlot(long el, int idx, long[] sorted, boolean[] used) {
-    if (idx < 0)
-      slotFailure();
-    int current;
-    int offset = 0;
-    while (used[current = idx + offset])
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length || sorted[next] != el)
-          if (idx > 0)
-            offset = -1;
-          else
-            slotFailure();
+  public static int nextOffset(final int idx, int offset, final short[] sorted) {
+    if (offset >= 0) {
+      int next = idx + ++offset;
+      if (next >= sorted.length || sorted[next] != sorted[idx])
+        if (idx == 0 || sorted[idx - 1] != sorted[idx])
+          slotFailure();
         else
-          offset++;
-      } else {
-        int next = current - 1;
-        if (next < 0 || sorted[next] != el)
-          slotFailure();
-        offset--;
-      }
-    return current;
+          return -1;
+    } else {
+      int next = idx + --offset;
+      if (next < 0 || sorted[next] != sorted[idx])
+        slotFailure();
+    }
+    return offset;
   }
 
-  /**
-   * Find the next free position in {@code sorted} where the value is {@code el}.
-   * The first position to be tried is {@code idx}. If that is used, {@code j = idx + 1} is tried.
-   * If that is also used, {@code j = idx + 2} and so on until an unused position is found or {@code sorted[j] != a[i]}.
-   * After that, {@code j = idx - 1} is tried, then {@code idx - 2} and so on. If no free position can be found,
-   * an Exception is thrown.
-   * @param el an element of sorted
-   * @param idx a position to start looking at
-   * @param sorted a sorted array
-   * @param used an array that tells us which positions are already taken
-   * @return an index {@code j} in {@code sorted} so that {@code a[i] = sorted[j]} and {@code !used[j]}
-   * @throws java.lang.IllegalArgumentException if no such index can be found
-   */
-  public static int findSlot(char el, int idx, char[] sorted, boolean[] used) {
-    if (idx < 0)
-      slotFailure();
-    int current;
-    int offset = 0;
-    while (used[current = idx + offset])
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length || sorted[next] != el)
-          if (idx > 0)
-            offset = -1;
-          else
-            slotFailure();
+  public static int nextOffset(final int idx, int offset, final long[] sorted) {
+    if (offset >= 0) {
+      int next = idx + ++offset;
+      if (next >= sorted.length || sorted[next] != sorted[idx])
+        if (idx == 0 || sorted[idx - 1] != sorted[idx])
+          slotFailure();
         else
-          offset++;
-      } else {
-        int next = current - 1;
-        if (next < 0 || sorted[next] != el)
-          slotFailure();
-        offset--;
-      }
-    return current;
+          return -1;
+    } else {
+      int next = idx + --offset;
+      if (next < 0 || sorted[next] != sorted[idx])
+        slotFailure();
+    }
+    return offset;
   }
 
-  /**
-   * Find the next free position in {@code sorted} where the value is {@code el}.
-   * The first position to be tried is {@code idx}. If that is used, {@code j = idx + 1} is tried.
-   * If that is also used, {@code j = idx + 2} and so on until an unused position is found or {@code sorted[j] != a[i]}.
-   * After that, {@code j = idx - 1} is tried, then {@code idx - 2} and so on. If no free position can be found,
-   * an Exception is thrown.
-   * @param el an element of sorted
-   * @param idx a position to start looking at
-   * @param sorted a sorted array
-   * @param used an array that tells us which positions are already taken
-   * @return an index {@code j} in {@code sorted} so that {@code a[i] = sorted[j]} and {@code !used[j]}
-   * @throws java.lang.IllegalArgumentException if no such index can be found
-   */
-  public static int findSlot(float el, int idx, float[] sorted, boolean[] used) {
-    if (idx < 0)
-      slotFailure();
-    int current;
-    int offset = 0;
-    while (used[current = idx + offset])
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length || sorted[next] != el)
-          if (idx > 0)
-            offset = -1;
-          else
-            slotFailure();
+  public static int nextOffset(final int idx, int offset, final float[] sorted) {
+    if (offset >= 0) {
+      int next = idx + ++offset;
+      if (next >= sorted.length || sorted[next] != sorted[idx])
+        if (idx == 0 || sorted[idx - 1] != sorted[idx])
+          slotFailure();
         else
-          offset++;
-      } else {
-        int next = current - 1;
-        if (next < 0 || sorted[next] != el)
-          slotFailure();
-        offset--;
-      }
-    return current;
+          return -1;
+    } else {
+      int next = idx + --offset;
+      if (next < 0 || sorted[next] != sorted[idx])
+        slotFailure();
+    }
+    return offset;
   }
 
-  /**
-   * Find the next free position in {@code sorted} where the value is {@code el}.
-   * The first position to be tried is {@code idx}. If that is used, {@code j = idx + 1} is tried.
-   * If that is also used, {@code j = idx + 2} and so on until an unused position is found or {@code sorted[j] != a[i]}.
-   * After that, {@code j = idx - 1} is tried, then {@code idx - 2} and so on. If no free position can be found,
-   * an Exception is thrown.
-   * @param el an element of sorted
-   * @param idx a position to start looking at
-   * @param sorted a sorted array
-   * @param used an array that tells us which positions are already taken
-   * @return an index {@code j} in {@code sorted} so that {@code a[i] = sorted[j]} and {@code !used[j]}
-   * @throws java.lang.IllegalArgumentException if no such index can be found
-   */
-  public static int findSlot(double el, int idx, double[] sorted, boolean[] used) {
-    if (idx < 0)
-      slotFailure();
-    int current;
-    int offset = 0;
-    while (used[current = idx + offset])
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length || sorted[next] != el)
-          if (idx > 0)
-            offset = -1;
-          else
-            slotFailure();
+  public static int nextOffset(final int idx, int offset, final double[] sorted) {
+    if (offset >= 0) {
+      int next = idx + ++offset;
+      if (next >= sorted.length || sorted[next] != sorted[idx])
+        if (idx == 0 || sorted[idx - 1] != sorted[idx])
+          slotFailure();
         else
-          offset++;
-      } else {
-        int next = current - 1;
-        if (next < 0 || sorted[next] != el)
-          slotFailure();
-        offset--;
-      }
-    return current;
+          return -1;
+    } else {
+      int next = idx + --offset;
+      if (next < 0 || sorted[next] != sorted[idx])
+        slotFailure();
+    }
+    return offset;
   }
 
-  /**
-   * Find the next free position in {@code sorted} where the value is {@code el}.
-   * The first position to be tried is {@code idx}. If that is used, {@code j = idx + 1} is tried.
-   * If that is also used, {@code j = idx + 2} and so on until an unused position is found or {@code sorted[j] != a[i]}.
-   * After that, {@code j = idx - 1} is tried, then {@code idx - 2} and so on. If no free position can be found,
-   * an Exception is thrown.
-   * @param el an element of sorted
-   * @param idx a position to start looking at
-   * @param sorted a sorted array
-   * @param used an array that tells us which positions are already taken
-   * @return an index {@code j} in {@code sorted} so that {@code a[i] = sorted[j]} and {@code !used[j]}
-   * @throws java.lang.IllegalArgumentException if no such index can be found
-   */
-  public static int findSlot(Object el, int idx, Object[] sorted, boolean[] used) {
-    if (idx < 0)
-      slotFailure();
-    if (el == null)
-      nullFailure();
-    int current;
-    int offset = 0;
-    while (used[current = idx + offset])
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length || !sorted[next].equals(el))
-          if (idx > 0)
-            offset = -1;
-          else
-            slotFailure();
+  public static int nextOffset(final int idx, int offset, final char[] sorted) {
+    if (offset >= 0) {
+      int next = idx + ++offset;
+      if (next >= sorted.length || sorted[next] != sorted[idx])
+        if (idx == 0 || sorted[idx - 1] != sorted[idx])
+          slotFailure();
         else
-          offset++;
-      } else {
-        int next = current - 1;
-        if (next < 0 || !sorted[next].equals(el))
-          slotFailure();
-        offset--;
-      }
-    return current;
+          return -1;
+    } else {
+      int next = idx + --offset;
+      if (next < 0 || sorted[next] != sorted[idx])
+        slotFailure();
+    }
+    return offset;
   }
 
-
+  public static int nextOffset(final int idx, int offset, final Object[] sorted) {
+    if (offset >= 0) {
+      int next = idx + ++offset;
+      if (next >= sorted.length || !sorted[next].equals(sorted[idx]))
+        if (idx == 0 || !sorted[idx - 1].equals(sorted[idx]))
+          slotFailure();
+        else
+          return -1;
+    } else {
+      int next = idx + --offset;
+      if (next < 0 || !sorted[next].equals(sorted[idx]))
+        slotFailure();
+    }
+    return offset;
+  }
 
   /* ================= sort ================= */
 
+  /**
+   * Encode an int as a non-zero int
+   * @param i an int
+   * @return {@code i + 1} if {@code i} is non-negative, otherwise {@code i}
+   * @see #unshift
+   */
+  public static int shift(int i) {
+    return i >= 0 ? i + 1 : i;
+  }
+
+  /**
+   * Undo the shift
+   * @param i a non-zero int
+   * @return {@code i - 1} if {@code i} is positive, otherwise {@code i}
+   * @see #shift
+   */
+  public static int unshift(int i) {
+    return i > 0 ? i - 1 : i;
+  }
+
+  static int nextOffsetShifting(final int idx, int shiftedOffset, final int[] sorted) {
+    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+  }
+
+  static int nextOffsetShifting(final int idx, int shiftedOffset, final byte[] sorted) {
+    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+  }
+
+  static int nextOffsetShifting(final int idx, int shiftedOffset, final short[] sorted) {
+    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+  }
+
+  static int nextOffsetShifting(final int idx, int shiftedOffset, final long[] sorted) {
+    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+  }
+
+  static int nextOffsetShifting(final int idx, int shiftedOffset, final char[] sorted) {
+    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+  }
+
+  static int nextOffsetShifting(final int idx, int shiftedOffset, final float[] sorted) {
+    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+  }
+
+  static int nextOffsetShifting(final int idx, int shiftedOffset, final double[] sorted) {
+    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+  }
+
+  static int nextOffsetShifting(final int idx, int shiftedOffset, final Object[] sorted) {
+    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+  }
 
   /**
    * Produce a ranking that sorts the input when applied to it. For each index {@code i < a.length}, the return value
@@ -397,10 +276,11 @@ public final class Rankings {
    *   int[] sort = sort(a);
    *   int[] sorted = apply(sort, a);
    *   int[] unsort = invert(sort);
+   *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el) == unsort[Arrays.binarySearch(sorted, el)]
+   *   Util.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
@@ -410,11 +290,12 @@ public final class Rankings {
   public static int[] sort(int[] a) {
     int[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
-    boolean[] used = new boolean[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      final int slot = findSlot(a[i], binarySearch(sorted, a[i]), sorted, used);
-      ranking[i] = slot;
-      used[slot] = true;
+    int[] offsets = new int[a.length];
+    for (int i = 0; i < a.length; i++) {
+      int idx = binarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = idx + offset;
+      offsets[idx] = shift(offset);
     }
     return ranking;
   }
@@ -422,11 +303,12 @@ public final class Rankings {
   public static int[] sort(byte[] a) {
     byte[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
-    boolean[] used = new boolean[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      final int slot = findSlot(a[i], binarySearch(sorted, a[i]), sorted, used);
-      ranking[i] = slot;
-      used[slot] = true;
+    int[] offsets = new int[a.length];
+    for (int i = 0; i < a.length; i++) {
+      int idx = binarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = idx + offset;
+      offsets[idx] = shift(offset);
     }
     return ranking;
   }
@@ -435,11 +317,12 @@ public final class Rankings {
   public static int[] sort(short[] a) {
     short[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
-    boolean[] used = new boolean[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      final int slot = findSlot(a[i], binarySearch(sorted, a[i]), sorted, used);
-      ranking[i] = slot;
-      used[slot] = true;
+    int[] offsets = new int[a.length];
+    for (int i = 0; i < a.length; i++) {
+      int idx = binarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = idx + offset;
+      offsets[idx] = shift(offset);
     }
     return ranking;
   }
@@ -448,11 +331,12 @@ public final class Rankings {
   public static int[] sort(long[] a) {
     long[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
-    boolean[] used = new boolean[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      final int slot = findSlot(a[i], binarySearch(sorted, a[i]), sorted, used);
-      ranking[i] = slot;
-      used[slot] = true;
+    int[] offsets = new int[a.length];
+    for (int i = 0; i < a.length; i++) {
+      int idx = binarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = idx + offset;
+      offsets[idx] = shift(offset);
     }
     return ranking;
   }
@@ -461,11 +345,12 @@ public final class Rankings {
   public static int[] sort(float[] a) {
     float[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
-    boolean[] used = new boolean[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      final int slot = findSlot(a[i], binarySearch(sorted, a[i]), sorted, used);
-      ranking[i] = slot;
-      used[slot] = true;
+    int[] offsets = new int[a.length];
+    for (int i = 0; i < a.length; i++) {
+      int idx = binarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = idx + offset;
+      offsets[idx] = shift(offset);
     }
     return ranking;
   }
@@ -473,11 +358,12 @@ public final class Rankings {
   public static int[] sort(double[] a) {
     double[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
-    boolean[] used = new boolean[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      final int slot = findSlot(a[i], binarySearch(sorted, a[i]), sorted, used);
-      ranking[i] = slot;
-      used[slot] = true;
+    int[] offsets = new int[a.length];
+    for (int i = 0; i < a.length; i++) {
+      int idx = binarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = idx + offset;
+      offsets[idx] = shift(offset);
     }
     return ranking;
   }
@@ -486,11 +372,12 @@ public final class Rankings {
   public static int[] sort(char[] a) {
     char[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
-    boolean[] used = new boolean[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      final int slot = findSlot(a[i], binarySearch(sorted, a[i]), sorted, used);
-      ranking[i] = slot;
-      used[slot] = true;
+    int[] offsets = new int[a.length];
+    for (int i = 0; i < a.length; i++) {
+      int idx = binarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = idx + offset;
+      offsets[idx] = shift(offset);
     }
     return ranking;
   }
@@ -498,11 +385,12 @@ public final class Rankings {
   public static <E extends Comparable> int[] sort(E[] a) {
     Comparable[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
-    boolean[] used = new boolean[a.length];
-    for (int i = 0; i < a.length; i += 1) {
-      final int slot = findSlot(a[i], binarySearch(sorted, a[i]), sorted, used);
-      ranking[i] = slot;
-      used[slot] = true;
+    int[] offsets = new int[a.length];
+    for (int i = 0; i < a.length; i++) {
+      int idx = binarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = idx + offset;
+      offsets[idx] = shift(offset);
     }
     return ranking;
   }
@@ -511,169 +399,149 @@ public final class Rankings {
   public static <E> int[] sort(E[] a, Comparator<E> comp) {
     Object[] sorted = sortedCopy(a, comp);
     int[] ranking = new int[a.length];
-    boolean[] used = new boolean[a.length];
-    for (int i = 0; i < a.length; i += 1) {
+    int[] offsets = new int[a.length];
+    for (int i = 0; i < a.length; i++) {
       @SuppressWarnings("unchecked")
-      final int slot = findSlot(a[i], binarySearch(sorted, a[i], (Comparator) comp), sorted, used);
-      ranking[i] = slot;
-      used[slot] = true;
+      int idx = binarySearch(sorted, a[i], (Comparator) comp);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = idx + offset;
+      offsets[idx] = shift(offset);
     }
     return ranking;
   }
 
 
+
   /* ================= from ================= */
 
   public static int[] from(int[] a, int[] b) {
-    if (a.length != b.length)
-      lengthFailure();
-    final int[] sort = sort(b);
-    final int[] sorted = apply(sort, b);
-    final int[] unsort = invert(sort);
-    final int[] ranking = new int[a.length];
-    final boolean[] used = new boolean[b.length];
+    checkEqualLength(a, b);
+    int[] sort = sort(b);
+    int[] unsort = invert(sort);
+    int[] sorted = apply(sort, b);
+    int[] ranking = new int[a.length];
+    int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      final int idx = binarySearch(sorted, a[i]);
-      if (idx < 0)
-        slotFailure();
-      final int slot = findSlot(a[i], idx, sorted, used);
-      ranking[i] = unsort[slot];
+      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = unsort[idx + offset];
+      offsets[idx] = shift(offset);
       if (a[i] != b[ranking[i]])
         slotFailure();
-      used[slot] = true;
     }
     return ranking;
   }
 
 
   public static <E extends Comparable> int[] from(E[] a, E[] b) {
-    if (a.length != b.length)
-      lengthFailure();
-    final int[] sort = sort(b);
-    final Comparable[] sorted = apply(sort, b);
-    final int[] unsort = invert(sort);
-    final int[] ranking = new int[a.length];
-    final boolean[] used = new boolean[b.length];
+    checkEqualLength(a, b);
+    int[] sort = sort(b);
+    int[] unsort = invert(sort);
+    Comparable[] sorted = apply(sort, b);
+    int[] ranking = new int[a.length];
+    int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      final int idx = binarySearch(sorted, a[i]);
-      if (idx < 0)
-        slotFailure();
-      final int slot = findSlot(a[i], idx, sorted, used);
-      ranking[i] = unsort[slot];
+      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = unsort[idx + offset];
+      offsets[idx] = shift(offset);
       if (!a[i].equals(b[ranking[i]]))
         slotFailure();
-      used[slot] = true;
     }
     return ranking;
   }
 
 
   public static int[] from(byte[] a, byte[] b) {
-    if (a.length != b.length)
-      lengthFailure();
-    final int[] sort = sort(b);
-    final byte[] sorted = apply(sort, b);
-    final int[] unsort = invert(sort);
-    final int[] ranking = new int[a.length];
-    final boolean[] used = new boolean[b.length];
+    checkEqualLength(a, b);
+    int[] sort = sort(b);
+    int[] unsort = invert(sort);
+    byte[] sorted = apply(sort, b);
+    int[] ranking = new int[a.length];
+    int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      final int idx = binarySearch(sorted, a[i]);
-      if (idx < 0)
-        slotFailure();
-      final int slot = findSlot(a[i], idx, sorted, used);
-      ranking[i] = unsort[slot];
+      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = unsort[idx + offset];
+      offsets[idx] = shift(offset);
       if (a[i] != b[ranking[i]])
         slotFailure();
-      used[slot] = true;
     }
     return ranking;
   }
 
 
   public static int[] from(long[] a, long[] b) {
-    if (a.length != b.length)
-      lengthFailure();
-    final int[] sort = sort(b);
-    final long[] sorted = apply(sort, b);
-    final int[] unsort = invert(sort);
-    final int[] ranking = new int[a.length];
-    final boolean[] used = new boolean[b.length];
+    checkEqualLength(a, b);
+    int[] sort = sort(b);
+    int[] unsort = invert(sort);
+    long[] sorted = apply(sort, b);
+    int[] ranking = new int[a.length];
+    int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      final int idx = binarySearch(sorted, a[i]);
-      if (idx < 0)
-        slotFailure();
-      final int slot = findSlot(a[i], idx, sorted, used);
-      ranking[i] = unsort[slot];
+      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = unsort[idx + offset];
+      offsets[idx] = shift(offset);
       if (a[i] != b[ranking[i]])
         slotFailure();
-      used[slot] = true;
     }
     return ranking;
   }
 
 
   public static int[] from(float[] a, float[] b) {
-    if (a.length != b.length)
-      lengthFailure();
-    final int[] sort = sort(b);
-    final float[] sorted = apply(sort, b);
-    final int[] unsort = invert(sort);
-    final int[] ranking = new int[a.length];
-    final boolean[] used = new boolean[b.length];
+    checkEqualLength(a, b);
+    int[] sort = sort(b);
+    int[] unsort = invert(sort);
+    float[] sorted = apply(sort, b);
+    int[] ranking = new int[a.length];
+    int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      final int idx = binarySearch(sorted, a[i]);
-      if (idx < 0)
-        slotFailure();
-      final int slot = findSlot(a[i], idx, sorted, used);
-      ranking[i] = unsort[slot];
+      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = unsort[idx + offset];
+      offsets[idx] = shift(offset);
       if (a[i] != b[ranking[i]])
         slotFailure();
-      used[slot] = true;
     }
     return ranking;
   }
 
 
   public static int[] from(double[] a, double[] b) {
-    if (a.length != b.length)
-      lengthFailure();
-    final int[] sort = sort(b);
-    final double[] sorted = apply(sort, b);
-    final int[] unsort = invert(sort);
-    final int[] ranking = new int[a.length];
-    final boolean[] used = new boolean[b.length];
+    checkEqualLength(a, b);
+    int[] sort = sort(b);
+    int[] unsort = invert(sort);
+    double[] sorted = apply(sort, b);
+    int[] ranking = new int[a.length];
+    int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      final int idx = binarySearch(sorted, a[i]);
-      if (idx < 0)
-        slotFailure();
-      final int slot = findSlot(a[i], idx, sorted, used);
-      ranking[i] = unsort[slot];
+      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = unsort[idx + offset];
+      offsets[idx] = shift(offset);
       if (a[i] != b[ranking[i]])
         slotFailure();
-      used[slot] = true;
     }
     return ranking;
   }
 
 
   public static <E> int[] from(E[] a, E[] b, Comparator<E> comp) {
-    if (a.length != b.length)
-      lengthFailure();
-    final int[] sort = sort(b, comp);
-    final Object[] sorted = apply(sort, b);
-    final int[] unsort = invert(sort);
-    final int[] ranking = new int[a.length];
-    final boolean[] used = new boolean[b.length];
+    checkEqualLength(a, b);
+    int[] sort = sort(b, comp);
+    int[] unsort = invert(sort);
+    Object[] sorted = apply(sort, b);
+    int[] ranking = new int[a.length];
+    int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      @SuppressWarnings("unchecked")
-      final int idx = binarySearch(sorted, a[i], (Comparator) comp);
-      if (idx < 0)
-        slotFailure();
-      final int slot = findSlot(a[i], idx, sorted, used);
-      ranking[i] = unsort[slot];
+      int idx = exceptionalBinarySearch(sorted, a[i], comp);
+      int offset = nextOffsetShifting(idx, offsets[idx], sorted);
+      ranking[i] = unsort[idx + offset];
+      offsets[idx] = shift(offset);
       if (!a[i].equals(b[ranking[i]]))
         slotFailure();
-      used[slot] = true;
     }
     return ranking;
   }

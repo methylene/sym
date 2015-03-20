@@ -1,10 +1,12 @@
 package com.github.methylene.sym;
 
 import static java.lang.Math.max;
+import static java.util.Arrays.binarySearch;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -61,13 +63,17 @@ public final class Util {
    * Find element in array by comparing each element in sequence, starting at index {@code 0}.
    * @param a an array
    * @param el a number
+   * @param skip The number of matching elements to skip. Passing a negative number as {@code skip} has the same effect
+   *             as passing {@code 0}: the index of the first match, if any, will be returned.
    * @return the least non-negative number {@code i} so that {@code a[i] = el}, or {@code -1} if {@code el} is not
    * found in {@code a}.
    */
-  public static int indexOf(int[] a, int el) {
+  public static int indexOf(int[] a, int el, final int skip) {
+    int cnt = 0;
     for (int i = 0; i < a.length; i += 1)
       if (a[i] == el)
-        return i;
+        if (cnt++ >= skip)
+          return i;
     return -1;
   }
 
@@ -145,7 +151,7 @@ public final class Util {
       max = Math.max(max, j);
     int[] test = new int[max + 1];
     Arrays.fill(test, -1);
-    for (int _: input) {
+    for (int _ : input) {
       if (test[input[start]] == -1)
         test[input[start]] = start;
       else
@@ -163,7 +169,7 @@ public final class Util {
     @SuppressWarnings("unchecked")
     Map<Object, Integer> test = new TreeMap<Object, Integer>(comp);
     int start = (int) (Math.random() * input.length);
-    for (Object _: input) {
+    for (Object _ : input) {
       if (!test.containsKey(input[start])) {
         test.put(input[start], start);
       } else {
@@ -184,7 +190,7 @@ public final class Util {
     int[] test = new int[max + 1];
     Arrays.fill(test, -1);
     int start = (int) (Math.random() * input.length);
-    for (long _: input) {
+    for (long _ : input) {
       if (test[(int) input[start]] == -1) {
         test[(int) input[start]] = start;
       } else {
@@ -427,7 +433,7 @@ public final class Util {
   public static boolean isSorted(int[] input) {
     if (input.length == 0) {return true;}
     int test = input[0];
-    for (int i: input) {
+    for (int i : input) {
       if (i < test) {return false;}
       test = i;
     }
@@ -442,7 +448,7 @@ public final class Util {
   public static boolean isSorted(char[] input) {
     if (input.length == 0) {return true;}
     int test = input[0];
-    for (int i: input) {
+    for (int i : input) {
       if (i < test) {return false;}
       test = i;
     }
@@ -457,7 +463,7 @@ public final class Util {
   public static boolean isSorted(float[] input) {
     if (input.length == 0) {return true;}
     float test = input[0];
-    for (float i: input) {
+    for (float i : input) {
       if (i < test) {return false;}
       test = i;
     }
@@ -472,7 +478,7 @@ public final class Util {
   public static boolean isSorted(double[] input) {
     if (input.length == 0) {return true;}
     double test = input[0];
-    for (double i: input) {
+    for (double i : input) {
       if (i < test) {return false;}
       test = i;
     }
@@ -487,7 +493,7 @@ public final class Util {
   public static boolean isSorted(long[] input) {
     if (input.length == 0) {return true;}
     long test = input[0];
-    for (long i: input) {
+    for (long i : input) {
       if (i < test) {return false;}
       test = i;
     }
@@ -504,7 +510,7 @@ public final class Util {
     if (input.length == 0) {return true;}
     E test = input[0];
     if (test == null) {throw new NullPointerException("null is not allowed");}
-    for (E i: input) {
+    for (E i : input) {
       if (i.compareTo(test) < 0) {return false;}
       test = i;
     }
@@ -522,11 +528,108 @@ public final class Util {
     if (input.length == 0) {return true;}
     E test = input[0];
     if (test == null) {throw new NullPointerException("null is not allowed");}
-    for (E i: input) {
+    for (E i : input) {
       if (comparator.compare(i, test) < 0) {return false;}
       test = i;
     }
     return true;
+  }
+
+  static int exceptionalBinarySearch(int[] sorted, int el) {
+    final int idx = binarySearch(sorted, el);
+    if (idx < 0)
+      slotFailure();
+    return idx;
+  }
+
+  static int exceptionalBinarySearch(byte[] sorted, byte el) {
+    final int idx = binarySearch(sorted, el);
+    if (idx < 0)
+      slotFailure();
+    return idx;
+  }
+
+  static int exceptionalBinarySearch(short[] sorted, short el) {
+    final int idx = binarySearch(sorted, el);
+    if (idx < 0)
+      slotFailure();
+    return idx;
+  }
+
+  static int exceptionalBinarySearch(long[] sorted, long el) {
+    final int idx = binarySearch(sorted, el);
+    if (idx < 0)
+      slotFailure();
+    return idx;
+  }
+
+  static int exceptionalBinarySearch(float[] sorted, float el) {
+    final int idx = binarySearch(sorted, el);
+    if (idx < 0)
+      slotFailure();
+    return idx;
+  }
+
+  static int exceptionalBinarySearch(double[] sorted, double el) {
+    final int idx = binarySearch(sorted, el);
+    if (idx < 0)
+      slotFailure();
+    return idx;
+  }
+
+  static int exceptionalBinarySearch(char[] sorted, char el) {
+    final int idx = binarySearch(sorted, el);
+    if (idx < 0)
+      slotFailure();
+    return idx;
+  }
+
+  static int exceptionalBinarySearch(Comparable[] sorted, Comparable el) {
+    final int idx = binarySearch(sorted, el);
+    if (idx < 0)
+      slotFailure();
+    return idx;
+  }
+
+  static <E> int exceptionalBinarySearch(Object[] sorted, E el, Comparator<E> comparator) {
+    @SuppressWarnings("unchecked")
+    final int idx = binarySearch(sorted, el, (Comparator) comparator);
+    if (idx < 0)
+      slotFailure();
+    return idx;
+  }
+
+  static void checkEqualLength(int[] a, int[] b) {
+    if (a.length != b.length)
+      lengthFailure();
+  }
+  static void checkEqualLength(byte[] a, byte[] b) {
+    if (a.length != b.length)
+      lengthFailure();
+  }
+  static void checkEqualLength(short[] a, short[] b) {
+    if (a.length != b.length)
+      lengthFailure();
+  }
+  static void checkEqualLength(float[] a, float[] b) {
+    if (a.length != b.length)
+      lengthFailure();
+  }
+  static void checkEqualLength(double[] a, double[] b) {
+    if (a.length != b.length)
+      lengthFailure();
+  }
+  static void checkEqualLength(long[] a, long[] b) {
+    if (a.length != b.length)
+      lengthFailure();
+  }
+  static void checkEqualLength(char[] a, char[] b) {
+    if (a.length != b.length)
+      lengthFailure();
+  }
+  static void checkEqualLength(Object[] a, Object[] b) {
+    if (a.length != b.length)
+      lengthFailure();
   }
 
 }

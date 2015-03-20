@@ -48,7 +48,7 @@ public final class Cycles {
     boolean[] moved = movedIndexes(cycle);
     int[] ranking = new int[moved.length];
     for (int i = 0; i < moved.length; i += 1)
-      ranking[i] = moved[i] ? cycle[(indexOf(cycle, i) + 1) % cycle.length] : i;
+      ranking[i] = moved[i] ? cycle[(indexOf(cycle, i, 0) + 1) % cycle.length] : i;
     return ranking;
   }
 
@@ -110,7 +110,7 @@ public final class Cycles {
           boolean goodCandidate = true;
           for (int[] orbit : orbits) {
             if (orbit.length == candidate.length) {
-              if (Util.indexOf(orbit, candidate[0]) != -1) {
+              if (indexOf(orbit, candidate[0], 0) != -1) {
                 goodCandidate = false;
                 break;
               }
