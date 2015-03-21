@@ -24,7 +24,21 @@ public abstract class ListBuilder<E> {
     return newCapacity;
   }
 
+  static int checkPositive(int initialCapacity) {
+    if (initialCapacity <= 0)
+      throw new IllegalArgumentException("initial capacity must be positive");
+    return initialCapacity;
+  }
+
   public static int[] ensureCapacity(int[] a, int minCapacity) {
+    return (minCapacity > a.length) ? copyOf(a, extendedCapacity(a.length, minCapacity)) : a;
+  }
+
+  public static Object[] ensureCapacity(Object[] a, int minCapacity) {
+    return (minCapacity > a.length) ? copyOf(a, extendedCapacity(a.length, minCapacity)) : a;
+  }
+
+  public static Comparable[] ensureCapacity(Comparable[] a, int minCapacity) {
     return (minCapacity > a.length) ? copyOf(a, extendedCapacity(a.length, minCapacity)) : a;
   }
 

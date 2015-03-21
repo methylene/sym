@@ -1,8 +1,17 @@
 package com.github.methylene.lists;
 
+import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
+import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
+import static com.github.methylene.sym.Rankings.nextOffset;
+import static java.lang.System.arraycopy;
+import static java.util.Arrays.binarySearch;
+import static java.util.Arrays.copyOf;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Primitive based lookup list.
@@ -54,41 +63,22 @@ public final class ByteList extends LookupList<Byte> {
   @SuppressWarnings("unchecked")
   public int[] indexOf(Byte el, int size) {
     final byte b = el;
-    final int pos = Arrays.binarySearch(sorted, b);
-    if (pos < 0)
+    final int idx = binarySearch(sorted, b);
+    if (idx < 0 || size == 0)
       return EMPTY_INT_ARRAY;
-    final boolean varsize = size < 0;
-    final Object builder = varsize ? new IntList.Builder() : new int[size];
+    int[] builder = new int[size < 0 ? DEFAULT_INITIAL_CAPACITY : size];
     int offset = 0;
-    int current;
     int i = 0;
-    while (sorted[current = pos + offset] == b
-        && (varsize || i < size)) {
-      if (varsize)
-        ((IntList.Builder) builder).add(unsort[current]);
-      else
-        ((int[]) builder)[i] = unsort[current];
-      i++;
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length
-            || sorted[next] != b) {
-          if (pos > 0)
-            offset = -1;
-          else
-            break;
-        } else {
-          offset++;
-        }
-      } else {
-        if (current == 0)
-          break;
-        offset--;
-      }
-    }
-    return varsize ? ((IntList.Builder) builder).get() :
-        i == size ? (int[]) builder :
-            Arrays.copyOf((int[]) builder, i);
+    do {
+      builder = ensureCapacity(builder, i + 1);
+      builder[i++] = unsort[idx + offset];
+    } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
+    return i == size ? builder : copyOf(builder, i);
+  }
+
+  @Override
+  public LinkedHashMap<Byte, int[]> getPartitions() {
+    return Partitions.partition(sorted, unsort);
   }
 
 }

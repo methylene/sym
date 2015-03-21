@@ -1,8 +1,14 @@
 package com.github.methylene.lists;
 
+import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
+import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
+import static com.github.methylene.sym.Rankings.nextOffset;
+import static java.util.Arrays.binarySearch;
+import static java.util.Arrays.copyOf;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * Primitive based lookup list.
@@ -53,42 +59,23 @@ public final class DoubleList extends LookupList<Double> {
 
   @Override
   public int[] indexOf(Double el, int size) {
-    final double d = el;
-    final int pos = Arrays.binarySearch(sorted, d);
-    if (pos < 0)
+    final double f = el;
+    final int idx = binarySearch(sorted, f);
+    if (idx < 0 || size == 0)
       return EMPTY_INT_ARRAY;
-    final boolean varsize = size < 0;
-    final Object builder = varsize ? new IntList.Builder() : new int[size];
+    int[] builder = new int[size < 0 ? DEFAULT_INITIAL_CAPACITY : size];
     int offset = 0;
-    int current;
     int i = 0;
-    while (sorted[current = pos + offset] == d
-        && (varsize || i < size)) {
-      if (varsize)
-        ((IntList.Builder) builder).add(unsort[current]);
-      else
-        ((int[]) builder)[i] = unsort[current];
-      i++;
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length
-            || sorted[next] != d) {
-          if (pos > 0)
-            offset = -1;
-          else
-            break;
-        } else {
-          offset++;
-        }
-      } else {
-        if (current == 0)
-          break;
-        offset--;
-      }
-    }
-    return varsize ? ((IntList.Builder) builder).get() :
-        i == size ? (int[]) builder :
-            Arrays.copyOf((int[]) builder, i);
+    do {
+      builder = ensureCapacity(builder, i + 1);
+      builder[i++] = unsort[idx + offset];
+    } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
+    return i == size ? builder : copyOf(builder, i);
+  }
+
+  @Override
+  public Map<Double, int[]> getPartitions() {
+    return Partitions.partition(sorted, unsort);
   }
 
 }

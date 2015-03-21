@@ -5,7 +5,7 @@ import static com.github.methylene.sym.Rankings.sort;
 
 import java.util.AbstractList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Map;
 import java.util.RandomAccess;
 
 /**
@@ -36,25 +36,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
     this.unsort = invert(sort);
   }
 
-  public static final class Partition<E> {
-    public E getKey() {
-      return key;
-    }
-
-    public int[] getIndexes() {
-      return indexes;
-    }
-
-    private final E key;
-    private final int[] indexes;
-    public Partition(E key, int[] indexes) {
-      this.key = key;
-      this.indexes = indexes;
-    }
-
-  }
-
-//  public abstract List<Partition> getPartitions();
+  public abstract Map<E, int[]> getPartitions();
 
   /**
    * Find at most {@code size} indexes {@code i} where
@@ -95,7 +77,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
-  public static LongList asList(long... a) {
+  public static LookupList<Long> asList(long... a) {
     return new LongList(a, sort(a));
   }
 
@@ -104,7 +86,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
-  public static ByteList asList(byte... a) {
+  public static LookupList<Byte> asList(byte... a) {
     return new ByteList(a, sort(a));
   }
 
@@ -113,7 +95,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
-  public static CharList asList(char... a) {
+  public static LookupList<Character> asList(char... a) {
     return new CharList(a, sort(a));
   }
 
@@ -122,7 +104,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
-  public static FloatList asList(float... a) {
+  public static LookupList<Float> asList(float... a) {
     return new FloatList(a, sort(a));
   }
 
@@ -131,7 +113,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
-  public static DoubleList asList(double... a) {
+  public static LookupList<Double> asList(double... a) {
     return new DoubleList(a, sort(a));
   }
 
@@ -140,7 +122,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
-  public static ShortList asList(short... a) {
+  public static LookupList<Short> asList(short... a) {
     return new ShortList(a, sort(a));
   }
 
@@ -149,7 +131,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
-  public static <E extends Comparable> ComparableList<E> asList(E... a) {
+  public static <E extends Comparable> LookupList<E> asList(E... a) {
     return new ComparableList<E>(a, sort(a));
   }
 
@@ -159,7 +141,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
-  public static <E> ComparatorList<E> asList(Comparator<E> comparator, E... a) {
+  public static <E> LookupList<E> asList(Comparator<E> comparator, E... a) {
     if (comparator == null)
       throw new IllegalArgumentException("comparator can not be null");
     return new ComparatorList<E>(a, comparator, sort(a, comparator));
@@ -172,6 +154,5 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   public static <E extends Comparable> ListBuilder<E> builder() {
     return new ComparableList.Builder<E>();
   }
-
 
 }

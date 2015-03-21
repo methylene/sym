@@ -4,11 +4,15 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
+import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 import com.github.methylene.sym.Rankings;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Primitive based lookup list.
@@ -72,6 +76,11 @@ public final class IntList extends LookupList<Integer> {
       builder[i++] = unsort[idx + offset];
     } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
     return i == size ? builder : copyOf(builder, i);
+  }
+
+  @Override
+  public Map<Integer, int[]> getPartitions() {
+    return Partitions.partition(sorted, unsort);
   }
 
   public static final class Builder extends ListBuilder<Integer> {

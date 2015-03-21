@@ -1,10 +1,19 @@
 package com.github.methylene.lists;
 
+import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
+import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
+import static com.github.methylene.sym.Rankings.nextOffset;
 import static com.github.methylene.sym.Rankings.sort;
+import static java.lang.System.arraycopy;
+import static java.util.Arrays.binarySearch;
+import static java.util.Arrays.copyOf;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -56,50 +65,29 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
 
   @Override
   public int[] indexOf(E el, int size) {
-    final int pos = Arrays.binarySearch(sorted, el);
-    if (pos < 0)
+    final int idx = binarySearch(sorted, el);
+    if (idx < 0 || size == 0)
       return EMPTY_INT_ARRAY;
-    final boolean varsize = size < 0;
-    final Object builder = varsize ? new IntList.Builder() : new int[size];
+    int[] builder = new int[size < 0 ? DEFAULT_INITIAL_CAPACITY : size];
     int offset = 0;
-    int current;
     int i = 0;
-    while (el.equals(sorted[current = pos + offset])
-        && (varsize || i < size)) {
-      if (varsize)
-        ((IntList.Builder) builder).add(unsort[current]);
-      else
-        ((int[]) builder)[i] = unsort[current];
-      i++;
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length
-            || !el.equals(sorted[next])) {
-          if (pos > 0)
-            offset = -1;
-          else
-            break;
-        } else {
-          offset++;
-        }
-      } else {
-        if (current == 0)
-          break;
-        offset--;
-      }
-    }
-    return varsize ? ((IntList.Builder) builder).get() :
-        i == size ? (int[]) builder :
-            Arrays.copyOf((int[]) builder, i);
+    do {
+      builder = ensureCapacity(builder, i + 1);
+      builder[i++] = unsort[idx + offset];
+    } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
+    return i == size ? builder : copyOf(builder, i);
+  }
+
+  @Override
+  public Map<E, int[]> getPartitions() {
+    return Partitions.partition(sorted, unsort);
   }
 
   public static final class Builder<E extends Comparable> extends ListBuilder<E> {
     private Comparable[] contents;
 
     Builder(int initialCapacity) {
-      if (initialCapacity < 0)
-        throw new IllegalArgumentException("initial capacity can not be negative");
-      this.contents = new Comparable[initialCapacity];
+      this.contents = new Comparable[checkPositive(initialCapacity)];
     }
 
     Builder() {
@@ -115,7 +103,7 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
     @Override
     protected void ensureCapacity(int minCapacity) {
       if (minCapacity > contents.length)
-        contents = Arrays.copyOf(contents, extendedCapacity(contents.length, minCapacity));
+        contents = ensureCapacity(contents, minCapacity);
     }
 
     @Override
