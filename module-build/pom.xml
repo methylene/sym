@@ -7,9 +7,7 @@
   <packaging>pom</packaging>
 
   <description>
-    This is just a convenience for building all projects in the right order.
-    It is not intended to be released.
-    The subprojects can be built independently of this.
+    This is obsolete
   </description>
   
   <properties>
@@ -19,7 +17,6 @@
 
   <modules>
     <module>../sym</module>
-    <module>../lookup-list</module>
   </modules>
 
 </project>
