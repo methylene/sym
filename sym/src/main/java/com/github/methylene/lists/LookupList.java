@@ -9,20 +9,24 @@ import java.util.Map;
 import java.util.RandomAccess;
 
 /**
- * <p>Base class for immutable, null-rejecting, array based implementations of {@link java.util.List}
- * that have efficient search methods: {@code indexOf}, {@code lastIndexOf} and {@code contains}.</p>
+ * <p>Base class for all List implementations in this package.</p>
  *
- * <p>These lists are similar to {@link java.util.ArrayList} in that they store an array internally,
- * but in this case, the array is sorted, so binary search can be used.
- * This means that the list can only contain things that can be compared:
+ * <p>LookupList is an immutable, null-rejecting, array based implementation of {@link java.util.List}
+ * that is optimized for search. Its {@code indexOf}, {@code lastIndexOf} and {@code contains}
+ * methods will often perform much better than those of other array based list implementations.</p>
+ *
+ * <p>LookupList implementations store a sorted array internally, so binary search can be used.</p>
+ *
+ * <p>
+ * Consequentially, the list can only contain things that can be compared:
  * primitives or Comparables. Building a list from arbitrary objects is also possible if a suitable Comparator
  * is provided.</p>
  *
- * <p>Instances of this list are slower to create, because of the sorting step, and use more memory than other lists.
- * For each element in the list, an extra 8 bytes (2 int) are needed to store its original position.</p>
+ * <p>Instances of this list are slower to create and use more memory than ArrayList.
+ * For each element in the list, an extra 8 bytes (two ints) are needed to store its original position.</p>
  *
- * <p>The speedup of the search methods depends on the size of the list and the cost of the {@code equals} method of
- * its elements. If the list is not very small, the {@code indexOf} methods will often save many calls to {@code equals}.</p>
+ * <p>The speedup of the search methods depends on the size of the list, and also on the cost of the
+ * {@code equals} method of its elements.</p>
  */
 public abstract class LookupList<E> extends AbstractList<E> implements RandomAccess {
 
