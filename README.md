@@ -1,9 +1,6 @@
 # sym
 
-## Permutation and LookupList
-
-Permutations are objects that encapsulate certain operations on arrays and lists,
-such as sorting, shuffling, swapping two elements, or moving an element.
+## Permutations and LookupList
 
 Maven dependency:
 
@@ -15,15 +12,18 @@ Maven dependency:
 </dependency>
 ````
 
-`LookupList` builds on permutations to provide an immutable implementation of `java.util.List` 
-that is optimized for searching.
+Permutations are objects that encapsulate certain operations on arrays and lists,
+such as sorting, shuffling, swapping two elements, or moving an element.
 
-Its `.indexOf`, `.lastIndexOf` and `.contains` methods will often perform much better than 
-other array based lists.
+`LookupList` is an immutable implementation of `java.util.List` 
+that is optimized for searching. Its implementation uses permutations internally.
 
-Additionally, `LookupList` provides an efficient `partition` method.
+The  <i>indexOf</i>, <i>lastIndexOf</i> and <i>contains</i> methods of `LookupList` 
+will often perform much better than other array based lists.
 
-A comparison between LookupList and ArrayList can be made as follows:
+Additionally, `LookupList` provides an efficient <i>partition</i> method.
+
+A speed comparison between <i>LookupList</i> and <i>ArrayList</i> can be made as follows:
 
     $ mvn clean test -f sym/pom.xml -Pbench
 
