@@ -1,5 +1,32 @@
 # sym
 
+## LookupList
+
+This project contains immutable implementations of the `java.util.List` interface 
+that are backed by a sorted array.
+Their `.indexOf`, `.lastIndexOf` and `.contains` method use binary search internally.
+
+The abstract class `LookupList` defines an additional arity of the 
+`indexOf` method that can be used
+to find duplicate elements, or count occurrences.
+
+For example, the following method finds two indexes of an element 
+that is at least twice in the list, in roughly `O(n*log(n))` time:
+
+````java
+public <E> int[] findDuplicate(LookupList<E> list) {
+  for (int i = 0; i < list.size(); i++) {
+    int[] indexes = list.indexOf(list.get(i), 2);
+    if (indexes.length == 2)
+      return indexes;
+  }
+  // all elements unique
+  return null;
+}
+````
+
+## Permutation
+
 <b>Permutations</b> are objects that encapsulate certain operations on arrays and lists,
 such as sorting, shuffling, swapping two elements, or moving an element.
 
@@ -103,8 +130,7 @@ if (i >= 0) {
 Note that this will always the _least_ index of x if there is a choice, due to the way
 the sort permutation is built using binarySearch. So this returns 3, not 4.
 
-The [lookup-lists](../lookup-lists) uses this mechanism to implement `java.util.List` 
-implementation that's backed by a sorted array.
+The subclasses of `LookupList` use this mechanism internally.
 
 ### Composition
 
