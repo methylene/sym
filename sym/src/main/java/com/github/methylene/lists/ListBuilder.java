@@ -5,6 +5,9 @@ import static java.util.Arrays.copyOf;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Base class for list builders in this package.
+ */
 public abstract class ListBuilder<E> {
 
   protected static final int DEFAULT_INITIAL_CAPACITY = 16;
@@ -46,6 +49,7 @@ public abstract class ListBuilder<E> {
 
   protected abstract ListBuilder<E> add(E el);
 
+  @SafeVarargs
   public final ListBuilder<E> addAll(E... els) {
     ensureCapacity(size + els.length);
     for (E el : els) {add(el); }

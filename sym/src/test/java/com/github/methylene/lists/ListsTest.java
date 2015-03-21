@@ -13,6 +13,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ListsTest {
 
@@ -354,11 +357,11 @@ public class ListsTest {
     int[] part_2 = {8};
     int[] part_3 = {2};
     IntList list = (IntList) LookupList.asList(a);
-    assertArrayEquals(part_0, list.getPartitions().get(0));
-    assertArrayEquals(part_1, list.getPartitions().get(1));
-    assertArrayEquals(part_2, list.getPartitions().get(2));
-    assertArrayEquals(part_3, list.getPartitions().get(3));
-    assertNull(list.getPartitions().get(4));
+    assertArrayEquals(part_0, list.group().get(0));
+    assertArrayEquals(part_1, list.group().get(1));
+    assertArrayEquals(part_2, list.group().get(2));
+    assertArrayEquals(part_3, list.group().get(3));
+    assertNull(list.group().get(4));
   }
 
   @Test
@@ -368,7 +371,7 @@ public class ListsTest {
       int[] a = Util.randomNumbers(1000, size);
       IntList lookupList = (IntList) LookupList.asList(a);
       int idx = (int) (Math.random() * size);
-      assertArrayEquals(lookupList.indexOf(a[idx], -1), lookupList.getPartitions().get(a[idx]));
+      assertArrayEquals(lookupList.indexOf(a[idx], -1), lookupList.group().get(a[idx]));
     }
   }
 
@@ -379,8 +382,68 @@ public class ListsTest {
       MyInt[] a = MyInt.box(Util.randomNumbers(1000, size));
       LookupList<MyInt> lookupList = LookupList.asList(MyInt.COMP, a);
       int idx = (int) (Math.random() * size);
-      assertArrayEquals(lookupList.indexOf(a[idx], -1), lookupList.getPartitions().get(a[idx]));
+      assertArrayEquals(lookupList.indexOf(a[idx], -1), lookupList.group().get(a[idx]));
     }
+  }
+
+  @Test
+  public void testUnique() {
+    int[] a = {0, 0, 3, 1, 1, 1, 0, 0, 2, 1};
+    int[] sorted = {0, 0, 0, 0, 1, 1, 1, 1, 2, 3};
+    int[] uniqued = {0, 1, 2, 3};
+    IntList list = (IntList) LookupList.asList(a);
+    assertArrayEquals(Util.box(sorted), list.sort().toArray(new Integer[1]));
+    assertArrayEquals(Util.box(uniqued), list.sortUnique().toArray(new Integer[1]));
+  }
+
+  @Test
+  public void testUnique2() {
+    for (int _ = 0; _ < 100; _++) {
+      int size = 1000;
+      int[] a = Util.randomNumbers(100, size);
+      LookupList<Integer> lookupList = LookupList.asList(a);
+      assertTrue(Util.isSorted(lookupList.sort()));
+      List<Integer> unique = lookupList.sortUnique();
+      assertTrue(Util.isSorted(unique));
+      Set<Integer> set = new HashSet<Integer>(lookupList.size());
+      for (Integer i : unique)
+        assertTrue(set.add(i));
+    }
+  }
+
+  @Test
+  public void testUnique3() {
+    for (int _ = 0; _ < 100; _++) {
+      int size = 1000;
+      int[] a = Util.randomNumbers(100, size);
+      LookupList<MyInt> lookupList = LookupList.asList(MyInt.COMP, MyInt.box(a));
+      assertTrue(Util.isSorted(MyInt.COMP, lookupList.sort()));
+      List<MyInt> unique = lookupList.sortUnique();
+      assertTrue(Util.isSorted(MyInt.COMP, unique));
+      HashSet<MyInt> set = new HashSet<MyInt>(lookupList.size());
+      for (MyInt i : unique)
+        assertTrue(set.add(i));
+    }
+  }
+
+  @Test
+  public void testUniqueBox() {
+    int[] a = {0, 0, 3, 1, 1, 1, 0, 0, 2, 1};
+    int[] sorted = {0, 0, 0, 0, 1, 1, 1, 1, 2, 3};
+    int[] uniqued = {0, 1, 2, 3};
+    LookupList<Integer> list = LookupList.asList(Util.box(a));
+    assertArrayEquals(Util.box(sorted), list.sort().toArray(new Integer[1]));
+    assertArrayEquals(Util.box(uniqued), list.sortUnique().toArray(new Integer[1]));
+  }
+
+  @Test
+  public void testUniqueBox2() {
+    int[] a = {0, 0, 3, 1, 1, 1, 0, 0, 2, 1};
+    int[] sorted = {0, 0, 0, 0, 1, 1, 1, 1, 2, 3};
+    int[] uniqued = {0, 1, 2, 3};
+    LookupList<MyInt> list = LookupList.asList(MyInt.COMP, MyInt.box(a));
+    assertArrayEquals(MyInt.box(sorted), list.sort().toArray(new MyInt[1]));
+    assertArrayEquals(MyInt.box(uniqued), list.sortUnique().toArray(new MyInt[1]));
   }
 
 }

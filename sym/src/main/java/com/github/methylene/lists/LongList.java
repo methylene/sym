@@ -4,10 +4,16 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
+import static com.github.methylene.sym.Util.box;
+import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.Util;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,8 +79,18 @@ public final class LongList extends LookupList<Long> {
   }
 
   @Override
-  public Map<Long, int[]> getPartitions() {
-    return Partitions.partition(sorted, unsort);
+  public Map<Long, int[]> group() {
+    return Group.group(sorted, unsort);
+  }
+
+  @Override
+  public List<Long> sort() {
+    return Arrays.asList(box(sorted));
+  }
+
+  @Override
+  public List<Long> sortUnique() {
+    return Arrays.asList(box(unique(sorted)));
   }
 
 }

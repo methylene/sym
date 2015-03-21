@@ -16,11 +16,12 @@ public final class Permutation implements Comparable<Permutation> {
    */
   private final int[] ranking;
 
-  private static final Permutation[] IDENTITIES = new Permutation[]{
-      new Permutation(Util.sequence(0)),
-      new Permutation(Util.sequence(1))
-  };
+  private static final Permutation[] IDENTITIES = new Permutation[20];
 
+  static {
+    for (int i = 0; i < IDENTITIES.length; i++)
+      IDENTITIES[i] = new Permutation(Util.sequence(i));
+  }
 
   private Permutation(int[] ranking, boolean validate) {
     this.ranking = validate ? Rankings.checkRanking(ranking) : ranking;
@@ -98,8 +99,6 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#isIdentity
    */
   public static Permutation identity(int length) {
-    if (length < IDENTITIES.length)
-      return IDENTITIES[length];
     return new Permutation(Util.sequence(length));
   }
 

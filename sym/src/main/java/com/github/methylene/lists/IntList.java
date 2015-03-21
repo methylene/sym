@@ -4,20 +4,24 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
-import static java.lang.System.arraycopy;
+import static com.github.methylene.sym.Util.box;
+import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 import com.github.methylene.sym.Rankings;
+import com.github.methylene.sym.Util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Primitive based lookup list.
  */
 public final class IntList extends LookupList<Integer> {
+
   private final int[] sorted;
 
   IntList(int[] a, int[] sort) {
@@ -79,10 +83,23 @@ public final class IntList extends LookupList<Integer> {
   }
 
   @Override
-  public Map<Integer, int[]> getPartitions() {
-    return Partitions.partition(sorted, unsort);
+  public List<Integer> sort() {
+    return Arrays.asList(box(sorted));
   }
 
+  @Override
+  public List<Integer> sortUnique() {
+    return Arrays.asList(box(unique(sorted)));
+  }
+
+  @Override
+  public Map<Integer, int[]> group() {
+    return Group.group(sorted, unsort);
+  }
+
+  /**
+   * Convenience list builder
+   */
   public static final class Builder extends ListBuilder<Integer> {
 
     private int[] contents;
@@ -121,10 +138,6 @@ public final class IntList extends LookupList<Integer> {
       ensureCapacity(size + 1);
       contents[size++] = element;
       return this;
-    }
-
-    int[] get() {
-      return copyOf(contents, size);
     }
 
   }

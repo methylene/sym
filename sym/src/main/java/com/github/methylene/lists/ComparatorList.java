@@ -7,8 +7,13 @@ import static com.github.methylene.sym.Rankings.nextOffset;
 import static com.github.methylene.sym.Rankings.sort;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.Rankings;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -88,10 +93,40 @@ public final class ComparatorList<E> extends LookupList<E> {
   }
 
   @Override
-  public Map<E, int[]> getPartitions() {
-    return Partitions.partition(sorted, unsort);
+  public Map<E, int[]> group() {
+    return Group.group(sorted, unsort);
   }
 
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<E> sort() {
+    ArrayList<E> result = new ArrayList<E>(sorted.length);
+    for (Object el : sorted)
+      result.add((E) el);
+    return result;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<E> sortUnique() {
+    if (sorted.length == 0)
+      return Collections.emptyList();
+    ArrayList<E> result = new ArrayList<E>(sorted.length);
+    E previous = (E) sorted[0];
+    for (Object el : sorted) {
+      if (!el.equals(previous)) {
+        result.add(previous);
+        previous = (E) el;
+      }
+    }
+    result.add(previous);
+    return result;
+  }
+
+
+  /**
+   * Convenience list builder
+   */
   public static final class Builder<E> extends ListBuilder<E> {
 
     private final Comparator<E> comparator;
@@ -109,7 +144,7 @@ public final class ComparatorList<E> extends LookupList<E> {
     @SuppressWarnings("unchecked")
     public ComparatorList<E> build() {
       Object[] a = Arrays.copyOf(contents, size);
-      return new ComparatorList<E>(a, comparator, sort(a, (Comparator) comparator));
+      return new ComparatorList<E>(a, comparator, Rankings.sort(a, (Comparator) comparator));
     }
 
     @Override

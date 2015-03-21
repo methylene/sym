@@ -4,16 +4,23 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
+import static com.github.methylene.sym.Util.box;
+import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.Util;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Primitive based lookup list.
  */
 public final class DoubleList extends LookupList<Double> {
+
   private final double[] sorted;
 
   DoubleList(double[] a, int[] sort) {
@@ -74,8 +81,17 @@ public final class DoubleList extends LookupList<Double> {
   }
 
   @Override
-  public Map<Double, int[]> getPartitions() {
-    return Partitions.partition(sorted, unsort);
+  public Map<Double, int[]> group() {
+    return Group.group(sorted, unsort);
   }
 
+  @Override
+  public List<Double> sort() {
+    return Arrays.asList(box(sorted));
+  }
+
+  @Override
+  public List<Double> sortUnique() {
+    return Arrays.asList(box(unique(sorted)));
+  }
 }

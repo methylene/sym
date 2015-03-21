@@ -1,10 +1,11 @@
 package com.github.methylene.lists;
 
 import static com.github.methylene.sym.Rankings.invert;
-import static com.github.methylene.sym.Rankings.sort;
+import com.github.methylene.sym.Rankings;
 
 import java.util.AbstractList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.RandomAccess;
 
@@ -30,7 +31,7 @@ import java.util.RandomAccess;
  */
 public abstract class LookupList<E> extends AbstractList<E> implements RandomAccess {
 
-  public static final int[] EMPTY_INT_ARRAY = new int[0];
+  static final int[] EMPTY_INT_ARRAY = new int[0];
 
   protected final int[] unsort;
   protected final int[] sort;
@@ -40,15 +41,36 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
     this.unsort = invert(sort);
   }
 
-  public abstract Map<E, int[]> getPartitions();
+  /**
+   * Return a new list that contains the elements of this list in natural order.
+   * @return the sorted list
+   */
+  public abstract List<E> sort();
+
+
+  /**
+   * Returns a new list that contains the elements of this list in natural order,
+   * with duplicates removed.
+   * @return the unique sorted list
+   */
+  public abstract List<E> sortUnique();
+
+
+  /**
+   * Group the elements in this list.
+   * This method returns a map where each distinct value in this list is mapped to the array of all indexes
+   * where it appears. The array of indexes is in natural order.
+   * @return the grouped list
+   */
+  public abstract Map<E, int[]> group();
 
   /**
    * Find at most {@code size} indexes {@code i} where
    * <pre><code>
    *   this.get(i).equals(el)
    * </code></pre>
-   * The returned array will always be sorted.
-   * For example, this method could be used to find duplicates in the list as follows:
+   * <p>The return value is in natural order.</p>
+   * <p>This method could be used to find duplicates in the list as follows:</p>
    * <pre><code>
    *   public <E> E findDuplicate(LookupList<E> list) {
    *     for (E el: list) {
@@ -59,7 +81,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    *     return null;
    *   }
    * </code></pre>
-   * If {@code size < 0}, all indexes are returned.
+   * If {@code size < 0}, all indexes of {@code el} are returned.
    * If {@code el} is not in the list, this returns an empty array.
    * @param el an object
    * @param size a number
@@ -73,7 +95,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list
    */
   public static LookupList<Integer> asList(int... a) {
-    return new IntList(a, sort(a));
+    return new IntList(a, Rankings.sort(a));
   }
 
   /**
@@ -82,7 +104,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list
    */
   public static LookupList<Long> asList(long... a) {
-    return new LongList(a, sort(a));
+    return new LongList(a, Rankings.sort(a));
   }
 
   /**
@@ -91,7 +113,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list
    */
   public static LookupList<Byte> asList(byte... a) {
-    return new ByteList(a, sort(a));
+    return new ByteList(a, Rankings.sort(a));
   }
 
   /**
@@ -100,7 +122,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list
    */
   public static LookupList<Character> asList(char... a) {
-    return new CharList(a, sort(a));
+    return new CharList(a, Rankings.sort(a));
   }
 
   /**
@@ -109,7 +131,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list
    */
   public static LookupList<Float> asList(float... a) {
-    return new FloatList(a, sort(a));
+    return new FloatList(a, Rankings.sort(a));
   }
 
   /**
@@ -118,7 +140,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list
    */
   public static LookupList<Double> asList(double... a) {
-    return new DoubleList(a, sort(a));
+    return new DoubleList(a, Rankings.sort(a));
   }
 
   /**
@@ -127,7 +149,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list
    */
   public static LookupList<Short> asList(short... a) {
-    return new ShortList(a, sort(a));
+    return new ShortList(a, Rankings.sort(a));
   }
 
   /**
@@ -135,8 +157,9 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
+  @SafeVarargs
   public static <E extends Comparable> LookupList<E> asList(E... a) {
-    return new ComparableList<E>(a, sort(a));
+    return new ComparableList<E>(a, Rankings.sort(a));
   }
 
   /**
@@ -145,16 +168,26 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list
    */
+  @SafeVarargs
   public static <E> LookupList<E> asList(Comparator<E> comparator, E... a) {
     if (comparator == null)
       throw new IllegalArgumentException("comparator can not be null");
-    return new ComparatorList<E>(a, comparator, sort(a, comparator));
+    return new ComparatorList<E>(a, comparator, Rankings.sort(a, comparator));
   }
 
+  /**
+   * Create a list builder
+   * @param comparator a comparator
+   * @return a new builder
+   */
   public static <E> ListBuilder<E> builder(Comparator<E> comparator) {
     return new ComparatorList.Builder<E>(comparator);
   }
 
+  /**
+   * Create a list builder
+   * @return a new builder
+   */
   public static <E extends Comparable> ListBuilder<E> builder() {
     return new ComparableList.Builder<E>();
   }

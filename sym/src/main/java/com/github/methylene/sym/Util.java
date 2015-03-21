@@ -1,16 +1,46 @@
 package com.github.methylene.sym;
 
 import static java.util.Arrays.binarySearch;
+import static java.util.Arrays.copyOf;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * A collection of array related utility methods.
+ * A collection of array related utilities
  */
 public final class Util {
+
+  /** An empty array of Bytes */
+  public static final Byte[] BOX_BYTE_0 = new Byte[0];
+  /** An empty array of Shorts */
+  public static final Short[] BOX_SHORT_0 = new Short[0];
+  /** An empty array of Characters */
+  public static final Character[] BOX_CHAR_0 = new Character[0];
+  /** An empty array of Longs */
+  public static final Long[] BOX_LONG_0 = new Long[0];
+  /** An empty array of Floats */
+  public static final Float[] BOX_FLOAT_0 = new Float[0];
+  /** An empty array of Doubles */
+  public static final Double[] BOX_DOUBLE_0 = new Double[0];
+  /** An empty array of Integers */
+  public static final Integer[] BOX_INT_0 = new Integer[0];
+  /** An empty array of bytes */
+  public static final byte[] BYTE_0 = new byte[0];
+  /** An empty array of shorts */
+  public static final short[] SHORT_0 = new short[0];
+  /** An empty array of chars */
+  public static final char[] CHAR_0 = new char[0];
+  /** An empty array of longs */
+  public static final long[] LONG_0 = new long[0];
+  /** An empty array of floats */
+  public static final float[] FLOAT_0 = new float[0];
+  /** An empty array of doubles */
+  public static final double[] DOUBLE_0 = new double[0];
+  /** An empty array of ints */
+  public static final int[] INT_0 = new int[0];
 
   private Util() {}
 
@@ -214,15 +244,103 @@ public final class Util {
     return result;
   }
 
+  /* ================= box ================= */
+
   /**
    * Box every value in the input. Return an array of boxed values.
-   * @param numbers an array of primitives
+   * @param a an array of primitives
    * @return an array of boxed primitives
    */
-  public static Integer[] box(int[] numbers) {
-    Integer[] result = new Integer[numbers.length];
-    for (int i = 0; i < numbers.length; i += 1)
-      result[i] = numbers[i];
+  public static Integer[] box(int[] a) {
+    if (a.length == 0)
+      return BOX_INT_0;
+    Integer[] result = new Integer[a.length];
+    for (int i = 0; i < a.length; i += 1)
+      result[i] = a[i];
+    return result;
+  }
+
+  /**
+   * Box every value in the input. Return an array of boxed values.
+   * @param a an array of primitives
+   * @return an array of boxed primitives
+   */
+  public static Byte[] box(byte[] a) {
+    if (a.length == 0)
+      return BOX_BYTE_0;
+    Byte[] result = new Byte[a.length];
+    for (int i = 0; i < a.length; i += 1)
+      result[i] = a[i];
+    return result;
+  }
+
+  /**
+   * Box every value in the input. Return an array of boxed values.
+   * @param a an array of primitives
+   * @return an array of boxed primitives
+   */
+  public static Short[] box(short[] a) {
+    if (a.length == 0)
+      return BOX_SHORT_0;
+    Short[] result = new Short[a.length];
+    for (int i = 0; i < a.length; i += 1)
+      result[i] = a[i];
+    return result;
+  }
+
+  /**
+   * Box every value in the input. Return an array of boxed values.
+   * @param a an array of primitives
+   * @return an array of boxed primitives
+   */
+  public static Long[] box(long[] a) {
+    if (a.length == 0)
+      return BOX_LONG_0;
+    Long[] result = new Long[a.length];
+    for (int i = 0; i < a.length; i += 1)
+      result[i] = a[i];
+    return result;
+  }
+
+  /**
+   * Box every value in the input. Return an array of boxed values.
+   * @param a an array of primitives
+   * @return an array of boxed primitives
+   */
+  public static Float[] box(float[] a) {
+    if (a.length == 0)
+      return BOX_FLOAT_0;
+    Float[] result = new Float[a.length];
+    for (int i = 0; i < a.length; i += 1)
+      result[i] = a[i];
+    return result;
+  }
+
+  /**
+   * Box every value in the input. Return an array of boxed values.
+   * @param a an array of primitives
+   * @return an array of boxed primitives
+   */
+  public static Double[] box(double[] a) {
+    if (a.length == 0)
+      return BOX_DOUBLE_0;
+    Double[] result = new Double[a.length];
+    for (int i = 0; i < a.length; i += 1)
+      result[i] = a[i];
+    return result;
+  }
+
+  /**
+   * Box every value in the input. Return an array of boxed values.
+   * @param a an array of primitives
+   * @return an array of boxed primitives
+   */
+  public static Character[] box(char[] a) {
+    if (a.length == 0)
+      return BOX_CHAR_0;
+    Character[] result = new Character[a.length];
+    for (int i = 0; i < a.length; i += 1)
+      result[i] = a[i];
     return result;
   }
 
@@ -445,6 +563,47 @@ public final class Util {
 
   /**
    * Test if input is sorted
+   * @param input an iterable
+   * @return true if the {@code array} is sorted
+   * @throws java.lang.NullPointerException if the input contains null
+   */
+  public static <E extends Comparable<E>> boolean isSorted(Iterable<E> input) {
+    Iterator<E> iterator = input.iterator();
+    if (!iterator.hasNext()) {return true;}
+    E test = iterator.next();
+    if (test == null) {throw new NullPointerException("null is not allowed");}
+    while (iterator.hasNext()) {
+      E next = iterator.next();
+      if (next.compareTo(test) < 0) {return false;}
+      test = next;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
+   * @param input an iterable
+   * @return true if the {@code array} is sorted
+   * @throws java.lang.NullPointerException if the input contains null
+   */
+  public static <E> boolean isSorted(Comparator<E> comparator, Iterable<E> input) {
+    Iterator<E> iterator = input.iterator();
+    if (!iterator.hasNext()) {return true;}
+    E test = iterator.next();
+    if (test == null)
+      throw new NullPointerException("null is not allowed");
+    while (iterator.hasNext()) {
+      E next = iterator.next();
+      if (next == null)
+        throw new NullPointerException("null is not allowed");
+      if (comparator.compare(next, test) < 0) {return false;}
+      test = next;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
    * @param input an array
    * @param comparator a comparator
    * @return true if the {@code array} is sorted
@@ -557,5 +716,148 @@ public final class Util {
     if (a.length != b.length)
       lengthFailure();
   }
+
+    /* ================= unique ================= */
+
+  /**
+   * Returns a copy of the input array with duplicates removed.
+   * This will only produce the expected result if the input is sorted.
+   * @param sorted a sorted array
+   * @return the unique sorted array
+   */
+  public static int[] unique(int[] sorted) {
+    int[] result = new int[sorted.length];
+    int idx = 0;
+    int previous = sorted[0];
+    for (int i : sorted) {
+      if (i != previous) {
+        result[idx++] = previous;
+        previous = i;
+      }
+    }
+    result[idx++] = previous;
+    return idx == sorted.length ? result : copyOf(result, idx);
+  }
+
+  /**
+   * Returns a copy of the input array with duplicates removed.
+   * This will only produce the expected result if the input is sorted.
+   * @param sorted a sorted array
+   * @return the unique sorted array
+   */
+  public static byte[] unique(byte[] sorted) {
+    byte[] result = new byte[sorted.length];
+    int idx = 0;
+    byte previous = sorted[0];
+    for (byte b : sorted) {
+      if (b != previous) {
+        result[idx++] = previous;
+        previous = b;
+      }
+    }
+    result[idx++] = previous;
+    return idx == sorted.length ? result : copyOf(result, idx);
+  }
+
+  /**
+   * Returns a copy of the input array with duplicates removed.
+   * This will only produce the expected result if the input is sorted.
+   * @param sorted a sorted array
+   * @return the unique sorted array
+   */
+  public static short[] unique(short[] sorted) {
+    short[] result = new short[sorted.length];
+    int idx = 0;
+    short previous = sorted[0];
+    for (short n : sorted) {
+      if (n != previous) {
+        result[idx++] = previous;
+        previous = n;
+      }
+    }
+    result[idx++] = previous;
+    return idx == sorted.length ? result : copyOf(result, idx);
+  }
+
+  /**
+   * Returns a copy of the input array with duplicates removed.
+   * This will only produce the expected result if the input is sorted.
+   * @param sorted a sorted array
+   * @return the unique sorted array
+   */
+  public static long[] unique(long[] sorted) {
+    long[] result = new long[sorted.length];
+    int idx = 0;
+    long previous = sorted[0];
+    for (long n : sorted) {
+      if (n != previous) {
+        result[idx++] = previous;
+        previous = n;
+      }
+    }
+    result[idx++] = previous;
+    return idx == sorted.length ? result : copyOf(result, idx);
+  }
+
+  /**
+   * Returns a copy of the input array with duplicates removed.
+   * This will only produce the expected result if the input is sorted.
+   * @param sorted a sorted array
+   * @return the unique sorted array
+   */
+  public static float[] unique(float[] sorted) {
+    float[] result = new float[sorted.length];
+    int idx = 0;
+    float previous = sorted[0];
+    for (float f : sorted) {
+      if (f != previous) {
+        result[idx++] = previous;
+        previous = f;
+      }
+    }
+    result[idx++] = previous;
+    return idx == sorted.length ? result : copyOf(result, idx);
+  }
+
+  /**
+   * Returns a copy of the input array with duplicates removed.
+   * This will only produce the expected result if the input is sorted.
+   * @param sorted a sorted array
+   * @return the unique sorted array
+   */
+  public static double[] unique(double[] sorted) {
+    double[] result = new double[sorted.length];
+    int idx = 0;
+    double previous = sorted[0];
+    for (double d : sorted) {
+      if (d != previous) {
+        result[idx++] = previous;
+        previous = d;
+      }
+    }
+    result[idx++] = previous;
+    return idx == sorted.length ? result : copyOf(result, idx);
+  }
+
+  /**
+   * Returns a copy of the input array with duplicates removed.
+   * This will only produce the expected result if the input is sorted.
+   * @param sorted a sorted array
+   * @return the unique sorted array
+   */
+  public static char[] unique(char[] sorted) {
+    char[] result = new char[sorted.length];
+    int idx = 0;
+    char previous = sorted[0];
+    for (char c : sorted) {
+      if (c != previous) {
+        result[idx++] = previous;
+        previous = c;
+      }
+    }
+    result[idx++] = previous;
+    return idx == sorted.length ? result : copyOf(result, idx);
+  }
+
 
 }

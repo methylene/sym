@@ -5,13 +5,15 @@ import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
 import static com.github.methylene.sym.Rankings.sort;
-import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.Permutation;
+import com.github.methylene.sym.Rankings;
+
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -79,10 +81,39 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
   }
 
   @Override
-  public Map<E, int[]> getPartitions() {
-    return Partitions.partition(sorted, unsort);
+  public Map<E, int[]> group() {
+    return Group.group(sorted, unsort);
   }
 
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<E> sort() {
+    ArrayList<E> result = new ArrayList<E>(sorted.length);
+    for (Comparable el : sorted)
+      result.add((E) el);
+    return result;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<E> sortUnique() {
+    if (sorted.length == 0)
+      return Collections.emptyList();
+    ArrayList<E> result = new ArrayList<E>(sorted.length);
+    E previous = (E) sorted[0];
+    for (Comparable el : sorted) {
+      if (!el.equals(previous)) {
+        result.add(previous);
+        previous = (E) el;
+      }
+    }
+    result.add(previous);
+    return result;
+  }
+
+  /**
+   * Convenience list builder
+   */
   public static final class Builder<E extends Comparable> extends ListBuilder<E> {
     private Comparable[] contents;
 
@@ -97,7 +128,7 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
     @Override
     public List<E> build() {
       Comparable[] a = Arrays.copyOf(contents, size);
-      return new ComparableList<E>(a, sort(a));
+      return new ComparableList<E>(a, Rankings.sort(a));
     }
 
     @Override

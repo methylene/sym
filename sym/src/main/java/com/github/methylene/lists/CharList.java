@@ -4,13 +4,13 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
-import static java.lang.System.arraycopy;
+import static com.github.methylene.sym.Util.box;
+import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -77,8 +77,19 @@ public final class CharList extends LookupList<Character> {
   }
 
   @Override
-  public Map<Character, int[]> getPartitions() {
-    return Partitions.partition(sorted, unsort);
+  public Map<Character, int[]> group() {
+    return Group.group(sorted, unsort);
   }
+
+  @Override
+  public List<Character> sort() {
+    return Arrays.asList(box(sorted));
+  }
+
+  @Override
+  public List<Character> sortUnique() {
+    return Arrays.asList(box(unique(sorted)));
+  }
+
 
 }

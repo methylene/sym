@@ -7,7 +7,11 @@ import static com.github.methylene.sym.Rankings.nextOffset;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.Util;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,8 +77,21 @@ public final class ShortList extends LookupList<Short> {
   }
 
   @Override
-  public Map<Short, int[]> getPartitions() {
-    return Partitions.partition(sorted, unsort);
+  public Map<Short, int[]> group() {
+    return Group.group(sorted, unsort);
+  }
+
+
+  @Override
+  public List<Short> sort() {
+    return Arrays.asList(Util.box(sorted));
+  }
+
+  @Override
+  public List<Short> sortUnique() {
+    if (sorted.length == 0)
+      return Collections.emptyList();
+    return Arrays.asList(Util.box(Util.unique(sorted)));
   }
 
 }

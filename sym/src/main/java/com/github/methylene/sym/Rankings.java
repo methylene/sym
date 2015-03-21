@@ -28,6 +28,8 @@ public final class Rankings {
     }
   };
 
+  private static final int[] IDENTITY_0 = new int[0];
+
 
   /**
    * Check that the input is a <i>ranking</i>. Each non-negative integer less than
@@ -45,6 +47,17 @@ public final class Rankings {
       used[i] = true;
     }
     return true;
+  }
+
+  /**
+   * Return the identity ranking
+   * @param length the length of the ranking
+   * @return the identity ranking of the given length
+   */
+  public static int[] identity(int length) {
+    if (length == 0)
+      return IDENTITY_0;
+    return Util.sequence(length);
   }
 
   /**
