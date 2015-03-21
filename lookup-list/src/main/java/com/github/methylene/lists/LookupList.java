@@ -26,7 +26,7 @@ import java.util.RandomAccess;
  */
 public abstract class LookupList<E> extends AbstractList<E> implements RandomAccess {
 
-  protected final int[] emptyIntArray = new int[0];
+  public static final int[] EMPTY_INT_ARRAY = new int[0];
 
   protected final int[] unsort;
   protected final int[] sort;
@@ -54,7 +54,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
 
   }
 
-  public abstract List<Partition> getPartitions();
+//  public abstract List<Partition> getPartitions();
 
   /**
    * Find at most {@code size} indexes {@code i} where

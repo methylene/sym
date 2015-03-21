@@ -58,7 +58,7 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
   public int[] indexOf(E el, int size) {
     final int pos = Arrays.binarySearch(sorted, el);
     if (pos < 0)
-      return emptyIntArray;
+      return EMPTY_INT_ARRAY;
     final boolean varsize = size < 0;
     final Object builder = varsize ? new IntList.Builder() : new int[size];
     int offset = 0;

@@ -84,20 +84,20 @@ public final class Rankings {
     return result;
   }
 
-  /* ================= map ================= */
+  /* ================= nextOffset ================= */
 
   public static int nextOffset(final int idx, int offset, final int[] sorted) {
     if (offset >= 0) {
       int next = idx + ++offset;
       if (next >= sorted.length || sorted[next] != sorted[idx])
         if (idx == 0 || sorted[idx - 1] != sorted[idx])
-          slotFailure();
+          return 0;
         else
           return -1;
     } else {
       int next = idx + --offset;
       if (next < 0 || sorted[next] != sorted[idx])
-        slotFailure();
+        return 0;
     }
     return offset;
   }
@@ -107,13 +107,13 @@ public final class Rankings {
       int next = idx + ++offset;
       if (next >= sorted.length || sorted[next] != sorted[idx])
         if (idx == 0 || sorted[idx - 1] != sorted[idx])
-          slotFailure();
+          return 0;
         else
           return -1;
     } else {
       int next = idx + --offset;
       if (next < 0 || sorted[next] != sorted[idx])
-        slotFailure();
+        return 0;
     }
     return offset;
   }
@@ -123,13 +123,13 @@ public final class Rankings {
       int next = idx + ++offset;
       if (next >= sorted.length || sorted[next] != sorted[idx])
         if (idx == 0 || sorted[idx - 1] != sorted[idx])
-          slotFailure();
+          return 0;
         else
           return -1;
     } else {
       int next = idx + --offset;
       if (next < 0 || sorted[next] != sorted[idx])
-        slotFailure();
+        return 0;
     }
     return offset;
   }
@@ -139,13 +139,13 @@ public final class Rankings {
       int next = idx + ++offset;
       if (next >= sorted.length || sorted[next] != sorted[idx])
         if (idx == 0 || sorted[idx - 1] != sorted[idx])
-          slotFailure();
+          return 0;
         else
           return -1;
     } else {
       int next = idx + --offset;
       if (next < 0 || sorted[next] != sorted[idx])
-        slotFailure();
+        return 0;
     }
     return offset;
   }
@@ -155,13 +155,13 @@ public final class Rankings {
       int next = idx + ++offset;
       if (next >= sorted.length || sorted[next] != sorted[idx])
         if (idx == 0 || sorted[idx - 1] != sorted[idx])
-          slotFailure();
+          return 0;
         else
           return -1;
     } else {
       int next = idx + --offset;
       if (next < 0 || sorted[next] != sorted[idx])
-        slotFailure();
+        return 0;
     }
     return offset;
   }
@@ -171,13 +171,13 @@ public final class Rankings {
       int next = idx + ++offset;
       if (next >= sorted.length || sorted[next] != sorted[idx])
         if (idx == 0 || sorted[idx - 1] != sorted[idx])
-          slotFailure();
+          return 0;
         else
           return -1;
     } else {
       int next = idx + --offset;
       if (next < 0 || sorted[next] != sorted[idx])
-        slotFailure();
+        return 0;
     }
     return offset;
   }
@@ -187,13 +187,13 @@ public final class Rankings {
       int next = idx + ++offset;
       if (next >= sorted.length || sorted[next] != sorted[idx])
         if (idx == 0 || sorted[idx - 1] != sorted[idx])
-          slotFailure();
+          return 0;
         else
           return -1;
     } else {
       int next = idx + --offset;
       if (next < 0 || sorted[next] != sorted[idx])
-        slotFailure();
+        return 0;
     }
     return offset;
   }
@@ -203,18 +203,18 @@ public final class Rankings {
       int next = idx + ++offset;
       if (next >= sorted.length || !sorted[next].equals(sorted[idx]))
         if (idx == 0 || !sorted[idx - 1].equals(sorted[idx]))
-          slotFailure();
+          return 0;
         else
           return -1;
     } else {
       int next = idx + --offset;
       if (next < 0 || !sorted[next].equals(sorted[idx]))
-        slotFailure();
+        return 0;
     }
     return offset;
   }
 
-  /* ================= sort ================= */
+  /* ================= shift ================= */
 
   /**
    * Encode an int as a non-zero int
@@ -237,36 +237,78 @@ public final class Rankings {
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final int[] sorted) {
-    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (shiftedOffset == 0)
+      return 0;
+    int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (offset == 0)
+      slotFailure();
+    return offset;
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final byte[] sorted) {
-    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (shiftedOffset == 0)
+      return 0;
+    int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (offset == 0)
+      slotFailure();
+    return offset;
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final short[] sorted) {
-    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (shiftedOffset == 0)
+      return 0;
+    int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (offset == 0)
+      slotFailure();
+    return offset;
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final long[] sorted) {
-    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (shiftedOffset == 0)
+      return 0;
+    int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (offset == 0)
+      slotFailure();
+    return offset;
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final char[] sorted) {
-    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (shiftedOffset == 0)
+      return 0;
+    int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (offset == 0)
+      slotFailure();
+    return offset;
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final float[] sorted) {
-    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (shiftedOffset == 0)
+      return 0;
+    int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (offset == 0)
+      slotFailure();
+    return offset;
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final double[] sorted) {
-    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (shiftedOffset == 0)
+      return 0;
+    int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (offset == 0)
+      slotFailure();
+    return offset;
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final Object[] sorted) {
-    return shiftedOffset == 0 ? 0 : nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (shiftedOffset == 0)
+      return 0;
+    int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
+    if (offset == 0)
+      slotFailure();
+    return offset;
   }
+
+  /* ================= sort ================= */
 
   /**
    * Produce a ranking that sorts the input when applied to it. For each index {@code i < a.length}, the return value

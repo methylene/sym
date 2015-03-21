@@ -71,7 +71,7 @@ public final class ComparatorList<E> extends LookupList<E> {
     @SuppressWarnings("unchecked")
     final int pos = Arrays.binarySearch(sorted, el, (Comparator) comparator);
     if (pos < 0)
-      return emptyIntArray;
+      return EMPTY_INT_ARRAY;
     final boolean varsize = size < 0;
     final Object builder = varsize ? new IntList.Builder() : new int[size];
     int offset = 0;

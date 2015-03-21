@@ -1,7 +1,12 @@
 package com.github.methylene.lists;
 
+import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
+import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
-import static com.github.methylene.sym.Rankings.sort;
+import static com.github.methylene.sym.Rankings.nextOffset;
+import static java.util.Arrays.binarySearch;
+import static java.util.Arrays.copyOf;
+import com.github.methylene.sym.Rankings;
 
 import java.util.Arrays;
 
@@ -18,23 +23,23 @@ public final class IntList extends LookupList<Integer> {
 
   @Override
   public int indexOf(Object el) {
-    int i = Arrays.binarySearch(sorted, (Integer) el);
+    int i = binarySearch(sorted, (Integer) el);
     return i < 0 ? -1 : unsort[i];
   }
 
   @Override
   public int lastIndexOf(Object el) {
     int n = (Integer) el;
-    int start = Arrays.binarySearch(sorted, n);
-    if (start < 0) {return -1;}
-    ;
-    int direction = start > 0 && sorted[start - 1] == n ? -1 : 1;
-    int peek = start + direction;
+    int idx = binarySearch(sorted, n);
+    if (idx < 0)
+      return -1;
+    int direction = idx > 0 && sorted[idx - 1] == n ? -1 : 1;
+    int peek = idx + direction;
     while (peek >= 0 && peek < sorted.length && sorted[peek] == n) {
-      start = peek;
+      idx = peek;
       peek += direction;
     }
-    return unsort[start];
+    return unsort[idx];
   }
 
   @Override
@@ -54,43 +59,19 @@ public final class IntList extends LookupList<Integer> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public int[] indexOf(Integer el, int size) {
+  public int[] indexOf(Integer el, final int size) {
     final int n = el;
-    final int pos = Arrays.binarySearch(sorted, n);
-    if (pos < 0)
-      return emptyIntArray;
-    final boolean varsize = size < 0;
-    final Object builder = varsize ? new Builder() : new int[size];
+    final int idx = binarySearch(sorted, n);
+    if (idx < 0 || size == 0)
+      return EMPTY_INT_ARRAY;
+    int[] builder = new int[size < 0 ? DEFAULT_INITIAL_CAPACITY : size];
     int offset = 0;
-    int current;
     int i = 0;
-    while (sorted[current = pos + offset] == n
-        && (varsize || i < size)) {
-      if (varsize)
-        ((Builder) builder).add(unsort[current]);
-      else
-        ((int[]) builder)[i] = unsort[current];
-      i++;
-      if (offset >= 0) {
-        int next = current + 1;
-        if (next >= sorted.length
-            || sorted[next] != n) {
-          if (pos > 0)
-            offset = -1;
-          else
-            break;
-        } else {
-          offset++;
-        }
-      } else {
-        if (current == 0)
-          break;
-        offset--;
-      }
-    }
-    return varsize ? ((Builder) builder).get() :
-        i == size ? (int[]) builder :
-            Arrays.copyOf((int[]) builder, i);
+    do {
+      builder = ensureCapacity(builder, i + 1);
+      builder[i++] = unsort[idx + offset];
+    } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
+    return i == size ? builder : copyOf(builder, i);
   }
 
   public static final class Builder extends ListBuilder<Integer> {
@@ -110,13 +91,14 @@ public final class IntList extends LookupList<Integer> {
     @Override
     public IntList build() {
       int[] a = Arrays.copyOf(contents, size);
-      return new IntList(a, sort(a));
+      return new IntList(a, Rankings.sort(a));
     }
+
 
     @Override
     protected void ensureCapacity(int minCapacity) {
       if (minCapacity > contents.length)
-        contents = Arrays.copyOf(contents, extendedCapacity(contents.length, minCapacity));
+        contents = ensureCapacity(contents, minCapacity);
     }
 
     @Override
@@ -133,7 +115,7 @@ public final class IntList extends LookupList<Integer> {
     }
 
     int[] get() {
-      return Arrays.copyOf(contents, size);
+      return copyOf(contents, size);
     }
 
   }

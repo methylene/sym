@@ -1,5 +1,6 @@
 package com.github.methylene.lists;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -170,6 +171,7 @@ public class ListsTest {
       int extended = ListBuilder.extendedCapacity(oldCapacity, minCapacity);
       assertTrue(extended >= minCapacity);
       if (minCapacity < safe) {
+        assertTrue(extended >= oldCapacity * 1.4);
         assertTrue(extended < minCapacity * 3);
       }
     }
@@ -326,9 +328,16 @@ public class ListsTest {
 
   @Test
   public void testIndexesOf() {
+    int[] a = {0, 0, 3, 1, 1, 1, 0, 0, 2, 1};
+    int[] zeros = {0, 1, 6, 7};
+    assertArrayEquals(zeros, LookupList.asList(a).indexOf(0, -1));
+  }
+
+  @Test
+  public void testIndexesOf2() {
     for (int _ = 0; _ < 100; _ += 1) {
-      int size = 1000;
-      int maxNumber = 100;
+      int size = 10;
+      int maxNumber = 4;
       int[] a = Util.randomNumbers(maxNumber, size);
       LookupList<Integer> lookupList = LookupList.asList(a);
       int el = (int) (Math.random() * maxNumber);
@@ -336,9 +345,11 @@ public class ListsTest {
       assertTrue(Util.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if (a[i] == el) {
-          assertTrue(Arrays.binarySearch(els, i) >= 0);
+          String msg = String.format("%d, %s", a[i], Arrays.toString(els));
+          assertTrue(msg, Arrays.binarySearch(els, i) >= 0);
         } else {
-          assertTrue(Arrays.binarySearch(els, i) < 0);
+          String msg = String.format("%d, %s, %s", a[i], Arrays.toString(els), Arrays.toString(a));
+          assertTrue(msg, Arrays.binarySearch(els, i) < 0);
         }
       }
     }
@@ -424,13 +435,13 @@ public class ListsTest {
 
   int count(int[] a, int i) {
     int cnt = 0;
-    for (int x: a) if (x == i) cnt++;
+    for (int x : a) if (x == i) cnt++;
     return cnt;
   }
 
   int count(Object[] a, Object i) {
     int cnt = 0;
-    for (Object x: a) if (x.equals(i)) cnt++;
+    for (Object x : a) if (x.equals(i)) cnt++;
     return cnt;
   }
 
@@ -440,7 +451,7 @@ public class ListsTest {
       int[] a = Util.randomNumbers(100, 50);
       int[] duplicate = findDuplicate(LookupList.asList(a));
       if (duplicate == null) {
-        for (int i: a)
+        for (int i : a)
           assertEquals(0, count(a, i));
       } else {
         assertTrue(count(a, a[duplicate[0]]) > 1);
@@ -454,7 +465,7 @@ public class ListsTest {
       Integer[] a = Util.box(Util.randomNumbers(100, 50));
       int[] duplicate = findDuplicate(LookupList.asList(a));
       if (duplicate == null) {
-        for (Integer i: a)
+        for (Integer i : a)
           assertEquals(0, count(a, i));
       } else {
         assertTrue(count(a, a[duplicate[0]]) > 1);
@@ -468,7 +479,7 @@ public class ListsTest {
       MyInt[] a = MyInt.box(Util.randomNumbers(100, 50));
       int[] duplicate = findDuplicate(LookupList.asList(MyInt.COMP, a));
       if (duplicate == null) {
-        for (MyInt i: a)
+        for (MyInt i : a)
           assertEquals(0, count(a, i));
       } else {
         assertTrue(count(a, a[duplicate[0]]) > 1);

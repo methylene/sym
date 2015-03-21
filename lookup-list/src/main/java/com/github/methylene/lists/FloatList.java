@@ -56,7 +56,7 @@ public final class FloatList extends LookupList<Float> {
     final float f = el;
     final int pos = Arrays.binarySearch(sorted, f);
     if (pos < 0)
-      return emptyIntArray;
+      return EMPTY_INT_ARRAY;
     final boolean varsize = size < 0;
     final Object builder = varsize ? new IntList.Builder() : new int[size];
     int offset = 0;

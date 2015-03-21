@@ -1,5 +1,7 @@
 package com.github.methylene.lists;
 
+import static java.util.Arrays.copyOf;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -20,6 +22,10 @@ public abstract class ListBuilder<E> {
       newCapacity = next;
     }
     return newCapacity;
+  }
+
+  public static int[] ensureCapacity(int[] a, int minCapacity) {
+    return (minCapacity > a.length) ? copyOf(a, extendedCapacity(a.length, minCapacity)) : a;
   }
 
   protected abstract void ensureCapacity(int minCapacity);
