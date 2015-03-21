@@ -12,10 +12,12 @@ Maven dependency:
 </dependency>
 ````
 
-Permutations are objects that encapsulate certain operations on arrays and lists,
-such as sorting, shuffling, swapping two elements, or moving an element.
+<i>Permutations</i> 
+are objects that act on arrays or lists to perform certain operations,
+such as sorting, shuffling, swapping or moving elements.
 
-`LookupList` is an immutable implementation of `java.util.List` 
+<i>LookupList</i>
+is an immutable implementation of `java.util.List` 
 that is optimized for searching. Its implementation uses permutations internally.
 
 The  <i>indexOf</i>, <i>lastIndexOf</i> and <i>contains</i> methods of `LookupList` 
@@ -27,15 +29,22 @@ A speed comparison between <i>LookupList</i> and <i>ArrayList</i> can be made as
 
     $ mvn clean test -f sym/pom.xml -Pbench
 
-This will print something like
-    
+This will run a benchmark with a random list of size 10000 and print the results.
+
     Running com.github.methylene.lists.PerformanceTest
     == list size: 10000
     == repeat: 50
-    == return value of .indexOf: -1
-    indexOf:                 2626.92
-    indexOfjdK:            249112.92
-    lastIndexOf:             2224.66
-    lastIndexOfJdk         657190.04
-    index_relative:     0.0105450973
-    lastIndex_relative: 0.0033851091
+    == return value of .indexOf: 2024
+    indexOf:                 2759.76
+    indexOfjdK:             97604.78
+    lastIndexOf:             2390.68
+    lastIndexOfJdk         820767.64
+    index_relative:     0.0282748447
+    lastIndex_relative: 0.0029127366
+
+Javadoc:
+
+* [Permutation](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html),
+* [LookupList](http://methylene.github.io/sym/current/com/github/methylene/lists/package-summary.html)
+
+For more information, see also the [other README](sym).

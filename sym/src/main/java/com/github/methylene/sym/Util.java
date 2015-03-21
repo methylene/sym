@@ -1,12 +1,10 @@
 package com.github.methylene.sym;
 
-import static java.lang.Math.max;
 import static java.util.Arrays.binarySearch;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -77,20 +75,6 @@ public final class Util {
     return -1;
   }
 
-  /**
-   * Calculates the factorial.
-   * @param n a nonnegative number
-   * @return the factorial of {@code n}
-   * @throws java.lang.IllegalArgumentException if n is negative
-   */
-  public static long factorial(int n) {
-    if (n < 0) {throw new IllegalArgumentException("negative number is not allowed");}
-    if (n > 20) {throw new IllegalArgumentException("preventing long overflow");}
-    long seed = 1;
-    for (int i = 1; i <= n; i += 1)
-      seed = seed * i;
-    return seed;
-  }
 
   /**
    * Add a fixed number to each element of given array.
@@ -137,69 +121,6 @@ public final class Util {
     return result;
   }
 
-
-  /**
-   * Find a pair of duplicate indexes.
-   * @param input
-   * @param start the index where to start looking in the array
-   * @return A pair {@code i, j} of indexes so that {@code input[i] == input[j]}
-   * @throws java.lang.IllegalArgumentException if no duplicates were found
-   */
-  public static int[] duplicateIndexes(int[] input, int start) {
-    int max = 0;
-    for (int j : input)
-      max = Math.max(max, j);
-    int[] test = new int[max + 1];
-    Arrays.fill(test, -1);
-    for (int _ : input) {
-      if (test[input[start]] == -1)
-        test[input[start]] = start;
-      else
-        return new int[]{test[input[start]], start};
-      start = (start + 1) % input.length;
-    }
-    throw new IllegalArgumentException("no duplicates found");
-  }
-
-  public static int[] duplicateIndexes(int[] input) {
-    return duplicateIndexes(input, (int) (Math.random() * input.length));
-  }
-
-  public static int[] duplicateIndexes(Object[] input, Comparator comp) {
-    @SuppressWarnings("unchecked")
-    Map<Object, Integer> test = new TreeMap<Object, Integer>(comp);
-    int start = (int) (Math.random() * input.length);
-    for (Object _ : input) {
-      if (!test.containsKey(input[start])) {
-        test.put(input[start], start);
-      } else {
-        return new int[]{test.get(input[start]), start};
-      }
-      start = (start + 1) % input.length;
-    }
-    throw new IllegalArgumentException("no duplicates found");
-  }
-
-  public static int[] duplicateIndexes(long[] input) {
-    int max = 0;
-    for (long i : input) {
-      if (i > Integer.MAX_VALUE)
-        throw new IllegalArgumentException("too large: " + i);
-      max = (int) Math.max(max, i);
-    }
-    int[] test = new int[max + 1];
-    Arrays.fill(test, -1);
-    int start = (int) (Math.random() * input.length);
-    for (long _ : input) {
-      if (test[(int) input[start]] == -1) {
-        test[(int) input[start]] = start;
-      } else {
-        return new int[]{test[(int) input[start]], start};
-      }
-      start = (start + 1) % input.length;
-    }
-    return new int[0];
-  }
 
   /**
    * Produce an array of distinct random numbers.
@@ -293,6 +214,11 @@ public final class Util {
     return result;
   }
 
+  /**
+   * Box every value in the input. Return an array of boxed values.
+   * @param numbers an array of primitives
+   * @return an array of boxed primitives
+   */
   public static Integer[] box(int[] numbers) {
     Integer[] result = new Integer[numbers.length];
     for (int i = 0; i < numbers.length; i += 1)

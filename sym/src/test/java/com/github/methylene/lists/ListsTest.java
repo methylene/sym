@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import com.github.methylene.sym.TestUtil;
 import com.github.methylene.sym.Util;
 import org.junit.Test;
 
@@ -36,7 +37,7 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-      int[] pair = Util.duplicateIndexes(a);
+      int[] pair = TestUtil.duplicateIndexes(a);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       int el = a[pair[0]];
@@ -68,7 +69,7 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-      int[] pair = Util.duplicateIndexes(a);
+      int[] pair = TestUtil.duplicateIndexes(a);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       int el = a[pair[0]];
@@ -89,7 +90,7 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
-      int[] pair = Util.duplicateIndexes(a, MyInt.COMP);
+      int[] pair = TestUtil.duplicateIndexes(a, MyInt.COMP);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       MyInt el = a[pair[0]];
@@ -110,7 +111,7 @@ public class ListsTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
-      int[] pair = Util.duplicateIndexes(a, MyInt.COMP);
+      int[] pair = TestUtil.duplicateIndexes(a, MyInt.COMP);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       MyInt el = a[pair[0]];
