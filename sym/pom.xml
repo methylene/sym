@@ -4,13 +4,13 @@
 
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>1.9.5-SNAPSHOT</version>
+  <version>2.0</version>
   <packaging>jar</packaging>
 
   <name>sym</name>
 
   <description>
-    Permutations for Java
+    Permutations and LookupLists
   </description>
 
   <url>https://github.com/methylene/sym</url>
@@ -18,8 +18,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.excluded.tests>**/PerformanceTest.java</surefire.excluded.tests>
-      <surefire.fork.count>1</surefire.fork.count>
-      <surefire.reuse.forks>true</surefire.reuse.forks>
+    <surefire.fork.count>1</surefire.fork.count>
+    <surefire.reuse.forks>true</surefire.reuse.forks>
   </properties>
 
   <licenses>
@@ -100,8 +100,8 @@
           <excludes>
             <exclude>${surefire.excluded.tests}</exclude>
           </excludes>
-            <forkCount>${surefire.fork.count}</forkCount>
-            <reuseForks>${surefire.reuse.forks}</reuseForks>
+          <forkCount>${surefire.fork.count}</forkCount>
+          <reuseForks>${surefire.reuse.forks}</reuseForks>
         </configuration>
       </plugin>
     </plugins>
@@ -114,8 +114,8 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <properties>
-          <surefire.fork.count>1</surefire.fork.count>
-          <surefire.reuse.forks>false</surefire.reuse.forks>
+        <surefire.fork.count>1</surefire.fork.count>
+        <surefire.reuse.forks>false</surefire.reuse.forks>
         <surefire.excluded.tests>0</surefire.excluded.tests>
       </properties>
     </profile>
