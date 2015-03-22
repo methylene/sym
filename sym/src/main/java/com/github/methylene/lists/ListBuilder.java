@@ -49,19 +49,32 @@ public abstract class ListBuilder<E> {
 
   protected abstract ListBuilder<E> add(E el);
 
+  /**
+   * Add all elements of {@code elements} to the list
+   * @param elements
+   * @return the builder
+   */
   @SafeVarargs
-  public final ListBuilder<E> addAll(E... els) {
-    ensureCapacity(size + els.length);
-    for (E el : els) {add(el); }
+  public final ListBuilder<E> addAll(E... elements) {
+    ensureCapacity(size + elements.length);
+    for (E el : elements) {add(el); }
     return this;
   }
 
-  public final ListBuilder<E> addAll(Collection<E> els) {
-    ensureCapacity(size + els.size());
-    for (E el : els) { add(el); }
+  /**
+   * Add all elements of {@code elements} to the list
+   * @param elements
+   * @return the builder
+   */
+  public final ListBuilder<E> addAll(Iterable<E> elements) {
+    for (E el : elements) { add(el); }
     return this;
   }
 
-  public abstract List<E> build();
+  /**
+   * Return a new LookupList based on the contents of this builder.
+   * @return a new list
+   */
+  public abstract LookupList<E> build();
 
 }

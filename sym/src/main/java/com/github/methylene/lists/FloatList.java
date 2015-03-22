@@ -5,10 +5,12 @@ import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
 import static com.github.methylene.sym.Util.box;
+import static com.github.methylene.sym.Util.sortedCopy;
 import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
 import java.util.Arrays;
@@ -22,15 +24,16 @@ import java.util.Map;
 public final class FloatList extends LookupList<Float> {
   private final float[] sorted;
 
-  FloatList(float[] a, int[] sort) {
+  FloatList(float[] a, Permutation sort) {
     super(sort);
-    this.sorted = apply(sort, a);
+    float[] applied = sort.apply(a);
+    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
   }
 
   @Override
   public int indexOf(Object el) {
     int i = Arrays.binarySearch(sorted, (Float) el);
-    return i < 0 ? -1 : unsort[i];
+    return i < 0 ? -1 : unsort.apply(i);
   }
 
   @Override
@@ -44,7 +47,7 @@ public final class FloatList extends LookupList<Float> {
       start = peek;
       peek += direction;
     }
-    return unsort[start];
+    return unsort.apply(start);
   }
 
 
@@ -55,7 +58,7 @@ public final class FloatList extends LookupList<Float> {
 
   @Override
   public Float get(int i) {
-    return sorted[sort[i]];
+    return sorted[sort.apply(i)];
   }
 
   @Override
@@ -74,9 +77,9 @@ public final class FloatList extends LookupList<Float> {
     int i = 0;
     do {
       builder = ensureCapacity(builder, i + 1);
-      builder[i++] = unsort[idx + offset];
+      builder[i++] = unsort.apply(idx + offset);
     } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
-    return i == size ? builder : copyOf(builder, i);
+    return i == size ? builder : Arrays.copyOf(builder, i);
   }
 
   @Override

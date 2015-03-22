@@ -449,6 +449,12 @@ public final class Util {
     throw new IllegalArgumentException("length mismatch");
   }
 
+  static void checkLength(int rankingLength, int inputLength) {
+    if (inputLength < rankingLength)
+      throw new IllegalArgumentException("not enough input: minimum input length is " + rankingLength
+          + ", but input length is " + inputLength);
+  }
+
   static void indexFailure() {
     throw new IllegalArgumentException("index out of bounds");
   }
@@ -475,7 +481,7 @@ public final class Util {
    * @return true if the {@code array} is sorted
    */
   public static boolean isSorted(int[] input) {
-    if (input.length == 0) {return true;}
+    if (input.length < 2) {return true;}
     int test = input[0];
     for (int i : input) {
       if (i < test) {return false;}
@@ -490,7 +496,7 @@ public final class Util {
    * @return true if the {@code array} is sorted
    */
   public static boolean isSorted(char[] input) {
-    if (input.length == 0) {return true;}
+    if (input.length < 2) {return true;}
     int test = input[0];
     for (int i : input) {
       if (i < test) {return false;}
@@ -505,7 +511,7 @@ public final class Util {
    * @return true if the {@code array} is sorted
    */
   public static boolean isSorted(float[] input) {
-    if (input.length == 0) {return true;}
+    if (input.length < 2) {return true;}
     float test = input[0];
     for (float i : input) {
       if (i < test) {return false;}
@@ -520,7 +526,7 @@ public final class Util {
    * @return true if the {@code array} is sorted
    */
   public static boolean isSorted(double[] input) {
-    if (input.length == 0) {return true;}
+    if (input.length < 2) {return true;}
     double test = input[0];
     for (double i : input) {
       if (i < test) {return false;}
@@ -535,7 +541,7 @@ public final class Util {
    * @return true if the {@code array} is sorted
    */
   public static boolean isSorted(long[] input) {
-    if (input.length == 0) {return true;}
+    if (input.length < 2) {return true;}
     long test = input[0];
     for (long i : input) {
       if (i < test) {return false;}
@@ -859,5 +865,21 @@ public final class Util {
     return idx == sorted.length ? result : copyOf(result, idx);
   }
 
+  /* ================= isUnique ================= */
+
+  /**
+   * Test of the input contains duplicates. This will give a false answer if the input is not sorted.
+   * @param sorted a sorted array
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(int[] sorted) {
+    if (sorted.length < 2)
+      return true;
+    int previous = sorted[0];
+    for (int i : sorted)
+      if (i == previous)
+        return false;
+    return true;
+  }
 
 }

@@ -5,6 +5,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import com.github.methylene.sym.Permutation;
+import static com.github.methylene.sym.Permutation.perm;
+import com.github.methylene.sym.Rankings;
 import com.github.methylene.sym.TestUtil;
 import com.github.methylene.sym.Util;
 import org.junit.Test;
@@ -445,5 +448,48 @@ public class ListsTest {
     assertArrayEquals(MyInt.box(sorted), list.sort().toArray(new MyInt[1]));
     assertArrayEquals(MyInt.box(uniqued), list.sortUnique().toArray(new MyInt[1]));
   }
+
+  @Test
+  public void testShuffle() {
+    int[] a = Util.randomNumbers(20, 10);
+    IntList list = (IntList) LookupList.asList(a);
+    Permutation p = Permutation.random(a.length);
+    int[] ranking = p.getRanking();
+    Integer[] expected = Util.box(Rankings.apply(ranking, a));
+    Integer[] actuals = list.shuffle(p).toArray(new Integer[a.length]);
+    assertArrayEquals(expected, actuals);
+  }
+
+  @Test
+  public void testIndexOfShuffle() throws Exception {
+    for (int _ = 0; _ < 10000; _ += 1) {
+      int maxNumber = 10;
+      int[] b = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      int[] ranking = Rankings.random(b.length);
+      int[] a = Rankings.apply(ranking, b);
+      int el = a[TestUtil.duplicateIndexes(a)[0]];
+      IntList list = ((IntList) LookupList.asList(b)).shuffle(perm(ranking));
+      int i = list.indexOf(el);
+      assertEquals(a[i], el);
+      for (int j = 0; j < i; j += 1)
+        assertNotEquals(a[j], el);
+    }
+  }
+
+  @Test
+  public void testIndexOfShuffleUnique() throws Exception {
+    for (int _ = 0; _ < 10000; _ += 1) {
+      int[] b = Util.distinctInts(100, 2);
+      int[] ranking = Rankings.random(b.length);
+      int[] a = Rankings.apply(ranking, b);
+      int el = a[((int) (Math.random() * b.length))];
+      IntList list = ((IntList) LookupList.asList(b)).shuffle(perm(ranking));
+      int i = list.indexOf(el);
+      assertEquals(a[i], el);
+      for (int j = 0; j < i; j += 1)
+        assertNotEquals(a[j], el);
+    }
+  }
+
 
 }

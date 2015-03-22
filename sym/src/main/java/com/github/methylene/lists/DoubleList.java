@@ -9,6 +9,7 @@ import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
 import java.util.Arrays;
@@ -23,15 +24,16 @@ public final class DoubleList extends LookupList<Double> {
 
   private final double[] sorted;
 
-  DoubleList(double[] a, int[] sort) {
+  DoubleList(double[] a, Permutation sort) {
     super(sort);
-    this.sorted = apply(sort, a);
+    double[] applied = sort.apply(a);
+    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
   }
 
   @Override
   public int indexOf(Object el) {
     int i = Arrays.binarySearch(sorted, (Double) el);
-    return i < 0 ? -1 : unsort[i];
+    return i < 0 ? -1 : unsort.apply(i);
   }
 
   @Override
@@ -45,7 +47,7 @@ public final class DoubleList extends LookupList<Double> {
       start = peek;
       peek += direction;
     }
-    return unsort[start];
+    return unsort.apply(start);
   }
 
 
@@ -56,7 +58,7 @@ public final class DoubleList extends LookupList<Double> {
 
   @Override
   public Double get(int i) {
-    return sorted[sort[i]];
+    return sorted[sort.apply(i)];
   }
 
   @Override
@@ -75,9 +77,9 @@ public final class DoubleList extends LookupList<Double> {
     int i = 0;
     do {
       builder = ensureCapacity(builder, i + 1);
-      builder[i++] = unsort[idx + offset];
+      builder[i++] = unsort.apply(idx + offset);
     } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
-    return i == size ? builder : copyOf(builder, i);
+    return i == size ? builder : Arrays.copyOf(builder, i);
   }
 
   @Override

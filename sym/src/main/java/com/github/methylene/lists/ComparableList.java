@@ -24,15 +24,16 @@ import java.util.Objects;
 public final class ComparableList<E extends Comparable> extends LookupList<E> {
   private final Comparable[] sorted;
 
-  ComparableList(Comparable[] a, int[] sort) {
+  ComparableList(Comparable[] a, Permutation sort) {
     super(sort);
-    this.sorted = apply(sort, a);
+    Comparable[] applied = sort.apply(a);
+    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
   }
 
   @Override
   public int indexOf(Object el) {
     int i = Arrays.binarySearch(sorted, el);
-    return i < 0 ? -1 : unsort[i];
+    return i < 0 ? -1 : unsort.apply(i);
   }
 
   @Override
@@ -46,7 +47,7 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
       start = peek;
       peek += direction;
     }
-    return unsort[start];
+    return unsort.apply(start);
   }
 
   @Override
@@ -57,7 +58,7 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
   @Override
   @SuppressWarnings("unchecked")
   public E get(int i) {
-    return (E) sorted[sort[i]];
+    return (E) sorted[sort.apply(i)];
   }
 
   @Override
@@ -75,9 +76,9 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
     int i = 0;
     do {
       builder = ensureCapacity(builder, i + 1);
-      builder[i++] = unsort[idx + offset];
+      builder[i++] = unsort.apply(idx + offset);
     } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
-    return i == size ? builder : copyOf(builder, i);
+    return i == size ? builder : Arrays.copyOf(builder, i);
   }
 
   @Override
@@ -126,9 +127,9 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
     }
 
     @Override
-    public List<E> build() {
+    public LookupList<E> build() {
       Comparable[] a = Arrays.copyOf(contents, size);
-      return new ComparableList<E>(a, Rankings.sort(a));
+      return new ComparableList<E>(a, Permutation.sort(a));
     }
 
     @Override

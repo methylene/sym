@@ -7,6 +7,7 @@ import static com.github.methylene.sym.Rankings.nextOffset;
 import static com.github.methylene.sym.Rankings.sort;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Rankings;
 
 import java.util.ArrayList;
@@ -25,9 +26,10 @@ public final class ComparatorList<E> extends LookupList<E> {
   private final Object[] sorted;
   private final Comparator<E> comparator;
 
-  ComparatorList(Object[] a, Comparator<E> comparator, int[] sort) {
+  ComparatorList(Object[] a, Comparator<E> comparator, Permutation sort) {
     super(sort);
-    this.sorted = apply(sort, a);
+    Object[] applied = sort.apply(a);
+    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
     this.comparator = comparator;
   }
 
@@ -43,7 +45,7 @@ public final class ComparatorList<E> extends LookupList<E> {
   public int indexOf(Object el) {
     @SuppressWarnings("unchecked")
     int i = Arrays.binarySearch(sorted, el, (Comparator) comparator);
-    return i < 0 ? -1 : unsort[i];
+    return i < 0 ? -1 : unsort.apply(i);
   }
 
   @Override
@@ -57,7 +59,7 @@ public final class ComparatorList<E> extends LookupList<E> {
       start = peek;
       peek += direction;
     }
-    return unsort[start];
+    return unsort.apply(start);
   }
 
   @Override
@@ -68,7 +70,7 @@ public final class ComparatorList<E> extends LookupList<E> {
   @Override
   @SuppressWarnings("unchecked")
   public E get(int i) {
-    return (E) sorted[sort[i]];
+    return (E) sorted[sort.apply(i)];
   }
 
   @Override
@@ -87,9 +89,9 @@ public final class ComparatorList<E> extends LookupList<E> {
     int i = 0;
     do {
       builder = ensureCapacity(builder, i + 1);
-      builder[i++] = unsort[idx + offset];
+      builder[i++] = unsort.apply(idx + offset);
     } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
-    return i == size ? builder : copyOf(builder, i);
+    return i == size ? builder : Arrays.copyOf(builder, i);
   }
 
   @Override
@@ -144,7 +146,7 @@ public final class ComparatorList<E> extends LookupList<E> {
     @SuppressWarnings("unchecked")
     public ComparatorList<E> build() {
       Object[] a = Arrays.copyOf(contents, size);
-      return new ComparatorList<E>(a, comparator, Rankings.sort(a, (Comparator) comparator));
+      return new ComparatorList<E>(a, comparator, Permutation.sort(a, (Comparator) comparator));
     }
 
     @Override

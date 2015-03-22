@@ -9,6 +9,8 @@ import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.Permutation;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -19,15 +21,16 @@ import java.util.Map;
 public final class ByteList extends LookupList<Byte> {
   private final byte[] sorted;
 
-  ByteList(byte[] a, int[] sort) {
+  ByteList(byte[] a, Permutation sort) {
     super(sort);
-    this.sorted = apply(sort, a);
+    byte[] applied = sort.apply(a);
+    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
   }
 
   @Override
   public int indexOf(Object el) {
     int i = Arrays.binarySearch(sorted, (Byte) el);
-    return i < 0 ? -1 : unsort[i];
+    return i < 0 ? -1 : unsort.apply(i);
   }
 
   @Override
@@ -41,7 +44,7 @@ public final class ByteList extends LookupList<Byte> {
       start = peek;
       peek += direction;
     }
-    return unsort[start];
+    return unsort.apply(start);
   }
 
   @Override
@@ -51,7 +54,7 @@ public final class ByteList extends LookupList<Byte> {
 
   @Override
   public Byte get(int i) {
-    return sorted[sort[i]];
+    return sorted[sort.apply(i)];
   }
 
   @Override
@@ -71,9 +74,9 @@ public final class ByteList extends LookupList<Byte> {
     int i = 0;
     do {
       builder = ensureCapacity(builder, i + 1);
-      builder[i++] = unsort[idx + offset];
+      builder[i++] = unsort.apply(idx + offset);
     } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
-    return i == size ? builder : copyOf(builder, i);
+    return i == size ? builder : Arrays.copyOf(builder, i);
   }
 
   @Override

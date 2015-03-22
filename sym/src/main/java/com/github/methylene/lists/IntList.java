@@ -4,10 +4,12 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
+import static com.github.methylene.sym.Rankings.sort;
 import static com.github.methylene.sym.Util.box;
 import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
+import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Rankings;
 import com.github.methylene.sym.Util;
 
@@ -23,16 +25,26 @@ import java.util.Map;
 public final class IntList extends LookupList<Integer> {
 
   private final int[] sorted;
+  private final boolean unique;
+  private final boolean ordered;
 
-  IntList(int[] a, int[] sort) {
-    super(sort);
-    this.sorted = apply(sort, a);
+  private IntList(int[] sorted, boolean ordered, Permutation sort, Permutation unsort) {
+    super(sort, unsort);
+    this.sorted = sorted;
+    this.ordered = ordered;
+    this.unique = Util.isUnique(sorted);
+  }
+
+  static IntList createNewList(int[] a, Permutation sort) {
+    int[] applied = sort.apply(a);
+    int[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    return new IntList(sorted, Util.isSorted(a), sort, sort.invert());
   }
 
   @Override
   public int indexOf(Object el) {
     int i = binarySearch(sorted, (Integer) el);
-    return i < 0 ? -1 : unsort[i];
+    return i < 0 ? -1 : unsort.apply(i);
   }
 
   @Override
@@ -47,7 +59,7 @@ public final class IntList extends LookupList<Integer> {
       idx = peek;
       peek += direction;
     }
-    return unsort[idx];
+    return unsort.apply(idx);
   }
 
   @Override
@@ -57,7 +69,7 @@ public final class IntList extends LookupList<Integer> {
 
   @Override
   public Integer get(int i) {
-    return sorted[sort[i]];
+    return sorted[sort.apply(i)];
   }
 
   @Override
@@ -77,24 +89,46 @@ public final class IntList extends LookupList<Integer> {
     int i = 0;
     do {
       builder = ensureCapacity(builder, i + 1);
-      builder[i++] = unsort[idx + offset];
+      builder[i++] = unsort.apply(idx + offset);
     } while ((offset = nextOffset(idx, offset, sorted)) != 0 && (size < 0 || i < size));
-    return i == size ? builder : copyOf(builder, i);
+    return i == size ? builder : Arrays.copyOf(builder, i);
   }
 
   @Override
   public List<Integer> sort() {
+    if (ordered)
+      return this;
     return Arrays.asList(box(sorted));
   }
 
   @Override
   public List<Integer> sortUnique() {
-    return Arrays.asList(box(unique(sorted)));
+    if (ordered && unique)
+      return this;
+    return Arrays.asList(box(unique ? sorted : unique(sorted)));
   }
 
   @Override
   public Map<Integer, int[]> group() {
     return Group.group(sorted, unsort);
+  }
+
+  public IntList shuffle(Permutation p) {
+    if (unique) {
+      Permutation punsort = p.comp(unsort);
+      return new IntList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
+    } else {
+      int[] a = p.comp(super.unsort).apply(sorted);
+      return createNewList(a, Permutation.sort(a));
+    }
+  }
+
+  public boolean isUnique() {
+    return unique;
+  }
+
+  public boolean isSorted() {
+    return ordered;
   }
 
   /**
@@ -117,7 +151,7 @@ public final class IntList extends LookupList<Integer> {
     @Override
     public IntList build() {
       int[] a = Arrays.copyOf(contents, size);
-      return new IntList(a, Rankings.sort(a));
+      return createNewList(a, Permutation.sort(a));
     }
 
 

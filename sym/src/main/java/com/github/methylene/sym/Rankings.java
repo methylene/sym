@@ -1,9 +1,9 @@
 package com.github.methylene.sym;
 
 import static com.github.methylene.sym.Util.checkEqualLength;
+import static com.github.methylene.sym.Util.checkLength;
 import static com.github.methylene.sym.Util.distinctInts;
 import static com.github.methylene.sym.Util.exceptionalBinarySearch;
-import static com.github.methylene.sym.Util.lengthFailure;
 import static com.github.methylene.sym.Util.padding;
 import static com.github.methylene.sym.Util.slotFailure;
 import static com.github.methylene.sym.Util.sortedCopy;
@@ -30,21 +30,20 @@ public final class Rankings {
 
   private static final int[] IDENTITY_0 = new int[0];
 
-
   /**
-   * Check that the input is a <i>ranking</i>. Each non-negative integer less than
+   * Check that the input ranking is valid. In order to be valid, each non-negative integer less than
    * {@code a.length} must appear exactly once.
    * @param a an array
    * @return true if a is a ranking
    */
-  public static boolean isRanking(int[] a) {
+  public static boolean isValid(int[] a) {
     boolean[] used = new boolean[a.length];
-    for (int i : a) {
-      if (i < 0 || i >= a.length)
+    for (int i = 0; i < a.length; i++) {
+      if (a[i] < 0 || a[i] >= a.length)
         return false;
-      if (used[i])
+      if (used[a[i]])
         return false;
-      used[i] = true;
+      used[a[i]] = true;
     }
     return true;
   }
@@ -61,14 +60,33 @@ public final class Rankings {
   }
 
   /**
+   * Find the length that this ranking can be safely trimmed to.
+   * @param ranking a ranking
+   * @return the length that this ranking can be safely trimmed to
+   */
+  static int trimmedLength(int[] ranking) {
+    for (int i = ranking.length - 1; i >= 0; i--)
+      if (ranking[i] != i)
+        return i + 1;
+    return 0;
+  }
+
+  static int[] trim(int[] ranking) {
+    int length = trimmedLength(ranking);
+    if (length < ranking.length)
+      return Arrays.copyOf(ranking, length);
+    return ranking;
+  }
+
+  /**
    * Ensure that the input is a ranking.
    * @param a an array
-   * @return the input array
-   * @throws java.lang.IllegalArgumentException if {@code a} is not a ranking
-   * @see #isRanking
+   * @return the input ranking
+   * @throws java.lang.IllegalArgumentException if {@code a} is not a valid ranking
+   * @see #isValid
    */
   public static int[] checkRanking(int[] a) {
-    if (!isRanking(a))
+    if (!isValid(a))
       throw new IllegalArgumentException("argument is not a ranking");
     return a;
   }
@@ -915,8 +933,7 @@ public final class Rankings {
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    */
   public static Object[] apply(int[] ranking, Object[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     Object[] result = new Object[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -935,11 +952,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static Comparable[] apply(int[] ranking, Comparable[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     Comparable[] result = new Comparable[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -958,11 +973,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static String[] apply(int[] ranking, String[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     String[] result = new String[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -981,11 +994,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static byte[] apply(int[] ranking, byte[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     byte[] result = new byte[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -1004,11 +1015,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static short[] apply(int[] ranking, short[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     short[] result = new short[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -1026,11 +1035,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static int[] apply(int[] ranking, int[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     int[] result = new int[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -1049,11 +1056,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static long[] apply(int[] ranking, long[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     long[] result = new long[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -1072,11 +1077,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static float[] apply(int[] ranking, float[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     float[] result = new float[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -1095,11 +1098,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static double[] apply(int[] ranking, double[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     double[] result = new double[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -1118,11 +1119,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static boolean[] apply(int[] ranking, boolean[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     boolean[] result = new boolean[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
@@ -1141,11 +1140,9 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   * @see #isRanking
    */
   public static char[] apply(int[] ranking, char[] input) {
-    if (input.length < ranking.length)
-      lengthFailure();
+    checkLength(ranking.length, input.length);
     char[] result = new char[input.length];
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];

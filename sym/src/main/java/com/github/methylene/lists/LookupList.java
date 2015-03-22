@@ -1,30 +1,31 @@
 package com.github.methylene.lists;
 
 import static com.github.methylene.sym.Rankings.invert;
+import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Rankings;
 
 import java.util.AbstractList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.RandomAccess;
 
 /**
- * <p>Base class for all List implementations in this package.</p>
+ * <p>LookupLists are immutable, null-rejecting, array based implementation of {@link java.util.List}
+ * that are optimized for search. Its {@code indexOf}, {@code lastIndexOf} and {@code contains}
+ * methods will often run faster than other array based list implementations.</p>
  *
- * <p>LookupList is an immutable, null-rejecting, array based implementation of {@link java.util.List}
- * that is optimized for search. Its {@code indexOf}, {@code lastIndexOf} and {@code contains}
- * methods will often perform much better than those of other array based list implementations.</p>
- *
- * <p>LookupList implementations store a sorted array internally, so binary search can be used.</p>
+ * <p>LookupList stores a sorted array internally, so binary search can be used.</p>
  *
  * <p>
  * Consequentially, the list can only contain things that can be compared:
  * primitives or Comparables. Building a list from arbitrary objects is also possible if a suitable Comparator
  * is provided.</p>
  *
- * <p>Instances of this list are slower to create and use more memory than ArrayList.
- * For each element in the list, an extra 8 bytes (two ints) are needed to store its original position.</p>
+ * <p>Instances of this list are slower to create and use more memory than {@link java.util.ArrayList}.
+ * This is because the backing array has to be sorted when the list is created, and for each element in the list,
+ * an extra 8 bytes (two ints) are used to store its original position.</p>
  *
  * <p>The speedup of the search methods depends on the size of the list, and also on the cost of the
  * {@code equals} method of its elements.</p>
@@ -33,12 +34,16 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
 
   static final int[] EMPTY_INT_ARRAY = new int[0];
 
-  protected final int[] unsort;
-  protected final int[] sort;
+  protected final Permutation unsort;
+  protected final Permutation sort;
 
-  protected LookupList(int[] sort) {
+  protected LookupList(Permutation sort, Permutation unsort) {
     this.sort = sort;
-    this.unsort = invert(sort);
+    this.unsort = unsort;
+  }
+
+  protected LookupList(Permutation sort) {
+    this(sort, sort.invert());
   }
 
   /**
@@ -95,7 +100,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Integer> asList(int... a) {
-    return new IntList(a, Rankings.sort(a));
+    return IntList.createNewList(a, Permutation.sort(a));
   }
 
   /**
@@ -104,7 +109,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Long> asList(long... a) {
-    return new LongList(a, Rankings.sort(a));
+    return new LongList(a, Permutation.sort(a));
   }
 
   /**
@@ -113,7 +118,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Byte> asList(byte... a) {
-    return new ByteList(a, Rankings.sort(a));
+    return new ByteList(a, Permutation.sort(a));
   }
 
   /**
@@ -122,7 +127,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Character> asList(char... a) {
-    return new CharList(a, Rankings.sort(a));
+    return new CharList(a, Permutation.sort(a));
   }
 
   /**
@@ -131,7 +136,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Float> asList(float... a) {
-    return new FloatList(a, Rankings.sort(a));
+    return new FloatList(a, Permutation.sort(a));
   }
 
   /**
@@ -140,7 +145,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Double> asList(double... a) {
-    return new DoubleList(a, Rankings.sort(a));
+    return new DoubleList(a, Permutation.sort(a));
   }
 
   /**
@@ -149,17 +154,42 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Short> asList(short... a) {
-    return new ShortList(a, Rankings.sort(a));
+    return new ShortList(a, Permutation.sort(a));
   }
 
   /**
    * Creates a list from the given input.
    * @param a an array
    * @return a list representation of the input
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
    */
   @SafeVarargs
   public static <E extends Comparable> LookupList<E> asList(E... a) {
-    return new ComparableList<E>(a, Rankings.sort(a));
+    return new ComparableList<E>(a, Permutation.sort(a));
+  }
+
+  /**
+   * Create a new list from the given input. If the input is already an instance of LookupList, it is returned unchanged.
+   * @param list a list
+   * @return a LookupList
+   */
+  public static <E extends Comparable> LookupList<E> copyOf(Collection<E> list) {
+    if (list instanceof LookupList)
+      return (LookupList<E>) list;
+    ComparableList.Builder<E> builder = new ComparableList.Builder<E>(list.size());
+    builder.addAll(list);
+    return builder.build();
+  }
+
+  /**
+   * Create a new list from the given input.
+   * @param list a list
+   * @return a LookupList
+   */
+  public static <E extends Comparable> LookupList<E> copyOf(Iterable<E> list) {
+    ComparableList.Builder<E> builder = new ComparableList.Builder<E>();
+    builder.addAll(list);
+    return builder.build();
   }
 
   /**
@@ -167,12 +197,13 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param comparator a comparator
    * @param a an array
    * @return a list representation of the input
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
    */
   @SafeVarargs
   public static <E> LookupList<E> asList(Comparator<E> comparator, E... a) {
     if (comparator == null)
       throw new IllegalArgumentException("comparator can not be null");
-    return new ComparatorList<E>(a, comparator, Rankings.sort(a, comparator));
+    return new ComparatorList<E>(a, comparator, Permutation.sort(a, comparator));
   }
 
   /**
@@ -182,6 +213,11 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    */
   public static <E> ListBuilder<E> builder(Comparator<E> comparator) {
     return new ComparatorList.Builder<E>(comparator);
+  }
+
+  public LookupList<E> rearrange(Permutation p) {
+    //TODO
+    return this;
   }
 
   /**
