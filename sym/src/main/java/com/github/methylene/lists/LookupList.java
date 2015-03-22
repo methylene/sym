@@ -58,8 +58,8 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
 
   /**
    * Group the elements in this list.
-   * This method returns a map where each distinct value in this list is mapped to the array of all indexes
-   * where it appears. The array of indexes is in natural order.
+   * This returns a map where each distinct value in the list is mapped to an array of all the indexes
+   * where it appears. This array of indexes is in ascending order.
    * @return the grouped list
    */
   public abstract Map<E, int[]> group();
@@ -85,14 +85,14 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * If {@code el} is not in the list, this returns an empty array.
    * @param el an object
    * @param size a number
-   * @return the array of all indexes where the value equals {@code el}
+   * @return an array of length {@code size} or less, or an array of all indexes of {@code el} if {@code size < 0}
    */
   public abstract int[] indexOf(E el, int size);
 
   /**
    * Creates a primitive list from the given input.
    * @param a an array
-   * @return a list
+   * @return a list representation of the input
    */
   public static LookupList<Integer> asList(int... a) {
     return new IntList(a, Rankings.sort(a));
@@ -101,7 +101,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   /**
    * Creates a primitive list from the given input.
    * @param a an array
-   * @return a list
+   * @return a list representation of the input
    */
   public static LookupList<Long> asList(long... a) {
     return new LongList(a, Rankings.sort(a));
@@ -110,7 +110,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   /**
    * Creates a primitive list from the given input.
    * @param a an array
-   * @return a list
+   * @return a list representation of the input
    */
   public static LookupList<Byte> asList(byte... a) {
     return new ByteList(a, Rankings.sort(a));
@@ -119,7 +119,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   /**
    * Creates a primitive list from the given input.
    * @param a an array
-   * @return a list
+   * @return a list representation of the input
    */
   public static LookupList<Character> asList(char... a) {
     return new CharList(a, Rankings.sort(a));
@@ -128,7 +128,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   /**
    * Creates a primitive list from the given input.
    * @param a an array
-   * @return a list
+   * @return a list representation of the input
    */
   public static LookupList<Float> asList(float... a) {
     return new FloatList(a, Rankings.sort(a));
@@ -137,7 +137,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   /**
    * Creates a primitive list from the given input.
    * @param a an array
-   * @return a list
+   * @return a list representation of the input
    */
   public static LookupList<Double> asList(double... a) {
     return new DoubleList(a, Rankings.sort(a));
@@ -146,7 +146,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   /**
    * Creates a primitive list from the given input.
    * @param a an array
-   * @return a list
+   * @return a list representation of the input
    */
   public static LookupList<Short> asList(short... a) {
     return new ShortList(a, Rankings.sort(a));
@@ -155,7 +155,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   /**
    * Creates a list from the given input.
    * @param a an array
-   * @return a list
+   * @return a list representation of the input
    */
   @SafeVarargs
   public static <E extends Comparable> LookupList<E> asList(E... a) {
@@ -166,7 +166,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * Creates a list from the given input.
    * @param comparator a comparator
    * @param a an array
-   * @return a list
+   * @return a list representation of the input
    */
   @SafeVarargs
   public static <E> LookupList<E> asList(Comparator<E> comparator, E... a) {
@@ -176,7 +176,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   }
 
   /**
-   * Create a list builder
+   * Create a list builder.
    * @param comparator a comparator
    * @return a new builder
    */
@@ -185,7 +185,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   }
 
   /**
-   * Create a list builder
+   * Create a list builder.
    * @return a new builder
    */
   public static <E extends Comparable> ListBuilder<E> builder() {

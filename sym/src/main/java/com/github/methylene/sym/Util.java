@@ -717,7 +717,7 @@ public final class Util {
       lengthFailure();
   }
 
-    /* ================= unique ================= */
+  /* ================= unique ================= */
 
   /**
    * Returns a copy of the input array with duplicates removed.
