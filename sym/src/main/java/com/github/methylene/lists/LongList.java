@@ -22,12 +22,26 @@ import java.util.Map;
  * Primitive based lookup list.
  */
 public final class LongList extends LookupList<Long> {
-  private final long[] sorted;
 
-  LongList(long[] a, Permutation sort) {
-    super(sort);
+  private final long[] sorted;
+  private final boolean unique;
+  private final boolean ordered;
+
+  private LongList(long[] sorted, boolean ordered, Permutation sort, Permutation unsort) {
+    super(sort, unsort);
+    this.sorted = sorted;
+    this.ordered = ordered;
+    this.unique = Util.isUnique(sorted);
+  }
+
+  static LongList createNewList(long[] a, Permutation sort) {
     long[] applied = sort.apply(a);
-    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    long[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    return new LongList(sorted, Util.isSorted(a), sort, sort.invert());
+  }
+
+  public static LongList createNewList(long[] a) {
+    return createNewList(a, Permutation.sort(a));
   }
 
   @Override
@@ -88,12 +102,38 @@ public final class LongList extends LookupList<Long> {
 
   @Override
   public List<Long> sort() {
+    if (ordered)
+      return this;
     return Arrays.asList(box(sorted));
   }
 
   @Override
   public List<Long> sortUnique() {
+    if (unique)
+      return sort();
     return Arrays.asList(box(unique(sorted)));
   }
+
+  @Override
+  public LongList shuffle(Permutation p) {
+    if (unique) {
+      Permutation punsort = p.comp(unsort);
+      return new LongList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
+    } else {
+      long[] a = p.comp(super.unsort).apply(sorted);
+      return createNewList(a, Permutation.sort(a));
+    }
+  }
+
+  @Override
+  public boolean isUnique() {
+    return unique;
+  }
+
+  @Override
+  public boolean isSorted() {
+    return ordered;
+  }
+
 
 }

@@ -22,12 +22,26 @@ import java.util.Map;
  * Primitive based lookup list.
  */
 public final class FloatList extends LookupList<Float> {
-  private final float[] sorted;
 
-  FloatList(float[] a, Permutation sort) {
-    super(sort);
+  private final float[] sorted;
+  private final boolean unique;
+  private final boolean ordered;
+
+  private FloatList(float[] sorted, boolean ordered, Permutation sort, Permutation unsort) {
+    super(sort, unsort);
+    this.sorted = sorted;
+    this.ordered = ordered;
+    this.unique = Util.isUnique(sorted);
+  }
+
+  static FloatList createNewList(float[] a, Permutation sort) {
     float[] applied = sort.apply(a);
-    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    float[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    return new FloatList(sorted, Util.isSorted(a), sort, sort.invert());
+  }
+
+  public static FloatList createNewList(float[] a) {
+    return createNewList(a, Permutation.sort(a));
   }
 
   @Override
@@ -89,12 +103,38 @@ public final class FloatList extends LookupList<Float> {
 
   @Override
   public List<Float> sort() {
+    if (ordered)
+      return this;
     return Arrays.asList(box(sorted));
   }
 
   @Override
   public List<Float> sortUnique() {
+    if (unique)
+      return sort();
     return Arrays.asList(box(unique(sorted)));
   }
+
+  @Override
+  public FloatList shuffle(Permutation p) {
+    if (unique) {
+      Permutation punsort = p.comp(unsort);
+      return new FloatList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
+    } else {
+      float[] a = p.comp(super.unsort).apply(sorted);
+      return createNewList(a, Permutation.sort(a));
+    }
+  }
+
+  @Override
+  public boolean isUnique() {
+    return unique;
+  }
+
+  @Override
+  public boolean isSorted() {
+    return ordered;
+  }
+
 
 }

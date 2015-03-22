@@ -4,6 +4,9 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
+import static com.github.methylene.sym.Rankings.sort;
+import static com.github.methylene.sym.Util.box;
+import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
@@ -19,12 +22,26 @@ import java.util.Map;
  * Primitive based lookup list.
  */
 public final class ShortList extends LookupList<Short> {
-  private final short[] sorted;
 
-  ShortList(short[] a, Permutation sort) {
-    super(sort);
+  private final short[] sorted;
+  private final boolean unique;
+  private final boolean ordered;
+
+  private ShortList(short[] sorted, boolean ordered, Permutation sort, Permutation unsort) {
+    super(sort, unsort);
+    this.sorted = sorted;
+    this.ordered = ordered;
+    this.unique = Util.isUnique(sorted);
+  }
+
+  static ShortList createNewList(short[] a, Permutation sort) {
     short[] applied = sort.apply(a);
-    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    short[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    return new ShortList(sorted, Util.isSorted(a), sort, sort.invert());
+  }
+
+  public static ShortList createNewList(short[] a) {
+    return createNewList(a, Permutation.sort(a));
   }
 
   @Override
@@ -86,14 +103,39 @@ public final class ShortList extends LookupList<Short> {
 
   @Override
   public List<Short> sort() {
+    if (ordered)
+      return this;
     return Arrays.asList(Util.box(sorted));
   }
 
   @Override
   public List<Short> sortUnique() {
-    if (sorted.length == 0)
-      return Collections.emptyList();
-    return Arrays.asList(Util.box(Util.unique(sorted)));
+    if (unique)
+      return sort();
+    return Arrays.asList(box(unique(sorted)));
   }
+
+
+  @Override
+  public ShortList shuffle(Permutation p) {
+    if (unique) {
+      Permutation punsort = p.comp(unsort);
+      return new ShortList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
+    } else {
+      short[] a = p.comp(super.unsort).apply(sorted);
+      return createNewList(a, Permutation.sort(a));
+    }
+  }
+
+  @Override
+  public boolean isUnique() {
+    return unique;
+  }
+
+  @Override
+  public boolean isSorted() {
+    return ordered;
+  }
+
 
 }

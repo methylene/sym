@@ -478,7 +478,7 @@ public final class Util {
   /**
    * Test if input is sorted
    * @param input an array
-   * @return true if the {@code array} is sorted
+   * @return true if the {@code input} is sorted
    */
   public static boolean isSorted(int[] input) {
     if (input.length < 2) {return true;}
@@ -493,7 +493,37 @@ public final class Util {
   /**
    * Test if input is sorted
    * @param input an array
-   * @return true if the {@code array} is sorted
+   * @return true if the {@code input} is sorted
+   */
+  public static boolean isSorted(byte[] input) {
+    if (input.length < 2) {return true;}
+    byte test = input[0];
+    for (byte i : input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
+   * @param input an array
+   * @return true if the {@code input} is sorted
+   */
+  public static boolean isSorted(short[] input) {
+    if (input.length < 2) {return true;}
+    short test = input[0];
+    for (short i : input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  /**
+   * Test if input is sorted
+   * @param input an array
+   * @return true if the {@code input} is sorted
    */
   public static boolean isSorted(char[] input) {
     if (input.length < 2) {return true;}
@@ -508,7 +538,7 @@ public final class Util {
   /**
    * Test if input is sorted
    * @param input an array
-   * @return true if the {@code array} is sorted
+   * @return true if the {@code input} is sorted
    */
   public static boolean isSorted(float[] input) {
     if (input.length < 2) {return true;}
@@ -523,7 +553,7 @@ public final class Util {
   /**
    * Test if input is sorted
    * @param input an array
-   * @return true if the {@code array} is sorted
+   * @return true if the {@code input} is sorted
    */
   public static boolean isSorted(double[] input) {
     if (input.length < 2) {return true;}
@@ -538,7 +568,7 @@ public final class Util {
   /**
    * Test if input is sorted
    * @param input an array
-   * @return true if the {@code array} is sorted
+   * @return true if the {@code input} is sorted
    */
   public static boolean isSorted(long[] input) {
     if (input.length < 2) {return true;}
@@ -553,7 +583,7 @@ public final class Util {
   /**
    * Test if input is sorted
    * @param input an array
-   * @return true if the {@code array} is sorted
+   * @return true if the {@code input} is sorted
    * @throws java.lang.NullPointerException if the input contains null
    */
   public static <E extends Comparable<E>> boolean isSorted(E[] input) {
@@ -570,7 +600,7 @@ public final class Util {
   /**
    * Test if input is sorted
    * @param input an iterable
-   * @return true if the {@code array} is sorted
+   * @return true if the {@code input} is sorted
    * @throws java.lang.NullPointerException if the input contains null
    */
   public static <E extends Comparable<E>> boolean isSorted(Iterable<E> input) {
@@ -589,7 +619,7 @@ public final class Util {
   /**
    * Test if input is sorted
    * @param input an iterable
-   * @return true if the {@code array} is sorted
+   * @return true if the {@code input} is sorted
    * @throws java.lang.NullPointerException if the input contains null
    */
   public static <E> boolean isSorted(Comparator<E> comparator, Iterable<E> input) {
@@ -612,15 +642,16 @@ public final class Util {
    * Test if input is sorted
    * @param input an array
    * @param comparator a comparator
-   * @return true if the {@code array} is sorted
+   * @return true if the {@code input} is sorted
    * @throws java.lang.NullPointerException if the input contains null
    */
-  public static <E> boolean isSorted(Comparator<E> comparator, E[] input) {
+  @SuppressWarnings("unchecked")
+  public static <E> boolean isSorted(Comparator<E> comparator, Object[] input) {
     if (input.length == 0) {return true;}
-    E test = input[0];
+    Object test = input[0];
     if (test == null) {throw new NullPointerException("null is not allowed");}
-    for (E i : input) {
-      if (comparator.compare(i, test) < 0) {return false;}
+    for (Object i : input) {
+      if (comparator.compare((E) i, (E) test) < 0) {return false;}
       test = i;
     }
     return true;
@@ -868,7 +899,7 @@ public final class Util {
   /* ================= isUnique ================= */
 
   /**
-   * Test of the input contains duplicates. This will give a false answer if the input is not sorted.
+   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
    * @param sorted a sorted array
    * @return true if the input contains no duplicate element
    */
@@ -878,6 +909,114 @@ public final class Util {
     int previous = sorted[0];
     for (int i : sorted)
       if (i == previous)
+        return false;
+    return true;
+  }
+
+  /**
+   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
+   * @param sorted a sorted array
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(byte[] sorted) {
+    if (sorted.length < 2)
+      return true;
+    byte previous = sorted[0];
+    for (byte i : sorted)
+      if (i == previous)
+        return false;
+    return true;
+  }
+
+  /**
+   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
+   * @param sorted a sorted array
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(short[] sorted) {
+    if (sorted.length < 2)
+      return true;
+    short previous = sorted[0];
+    for (short i : sorted)
+      if (i == previous)
+        return false;
+    return true;
+  }
+
+  /**
+   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
+   * @param sorted a sorted array
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(char[] sorted) {
+    if (sorted.length < 2)
+      return true;
+    char previous = sorted[0];
+    for (char i : sorted)
+      if (i == previous)
+        return false;
+    return true;
+  }
+
+  /**
+   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
+   * @param sorted a sorted array
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(long[] sorted) {
+    if (sorted.length < 2)
+      return true;
+    long previous = sorted[0];
+    for (long i : sorted)
+      if (i == previous)
+        return false;
+    return true;
+  }
+
+  /**
+   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
+   * @param sorted a sorted array
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(double[] sorted) {
+    if (sorted.length < 2)
+      return true;
+    double previous = sorted[0];
+    for (double i : sorted)
+      if (i == previous)
+        return false;
+    return true;
+  }
+
+  /**
+   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
+   * @param sorted a sorted array
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(float[] sorted) {
+    if (sorted.length < 2)
+      return true;
+    float previous = sorted[0];
+    for (float i : sorted)
+      if (i == previous)
+        return false;
+    return true;
+  }
+
+  /**
+   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
+   * @param sorted a sorted array
+   * @return true if the input contains no duplicate element
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E> boolean isUnique(E[] sorted) {
+    if (sorted.length < 2)
+      return true;
+    E previous = sorted[0];
+    if (previous == null)
+      nullFailure();
+    for (E el : sorted)
+      if (el.equals(previous))
         return false;
     return true;
   }

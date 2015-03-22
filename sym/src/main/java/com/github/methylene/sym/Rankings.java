@@ -705,7 +705,7 @@ public final class Rankings {
    * @see com.github.methylene.sym.Util#indexOf
    * @throws java.lang.NullPointerException if {@code a} is {@code null} or contains a {@code null} element
    */
-  public static <E> int[] sort(E[] a, Comparator<E> comp) {
+  public static <E> int[] sort(Object[] a, Comparator<E> comp) {
     Object[] sorted = sortedCopy(a, comp);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];

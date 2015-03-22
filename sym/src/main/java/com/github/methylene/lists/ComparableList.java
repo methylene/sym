@@ -10,6 +10,7 @@ import static java.util.Arrays.copyOf;
 
 import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Rankings;
+import com.github.methylene.sym.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,13 +23,30 @@ import java.util.Objects;
  * Comparable based lookup list.
  */
 public final class ComparableList<E extends Comparable> extends LookupList<E> {
+
   private final Comparable[] sorted;
 
-  ComparableList(Comparable[] a, Permutation sort) {
-    super(sort);
-    Comparable[] applied = sort.apply(a);
-    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+  private final boolean unique;
+  private final boolean ordered;
+
+  private ComparableList(Comparable[] sorted, boolean ordered, Permutation sort, Permutation unsort) {
+    super(sort, unsort);
+    this.sorted = sorted;
+    this.ordered = ordered;
+    this.unique = Util.isUnique(sorted);
   }
+
+  @SuppressWarnings("unchecked")
+  static <E extends Comparable> ComparableList<E> createNewList(Comparable[] a, Permutation sort) {
+    Comparable[] applied = sort.apply(a);
+    Comparable[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    return new ComparableList<E>(sorted, Util.isSorted(a), sort, sort.invert());
+  }
+
+  public static <E extends Comparable> ComparableList<E> createNewList(Comparable[] a) {
+    return createNewList(a, Permutation.sort(a));
+  }
+
 
   @Override
   public int indexOf(Object el) {
@@ -89,6 +107,8 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
   @Override
   @SuppressWarnings("unchecked")
   public List<E> sort() {
+    if (ordered)
+      return this;
     ArrayList<E> result = new ArrayList<E>(sorted.length);
     for (Comparable el : sorted)
       result.add((E) el);
@@ -98,8 +118,8 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
   @Override
   @SuppressWarnings("unchecked")
   public List<E> sortUnique() {
-    if (sorted.length == 0)
-      return Collections.emptyList();
+    if (unique)
+      return sort();
     ArrayList<E> result = new ArrayList<E>(sorted.length);
     E previous = (E) sorted[0];
     for (Comparable el : sorted) {
@@ -111,6 +131,29 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
     result.add(previous);
     return result;
   }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public ComparableList<E> shuffle(Permutation p) {
+    if (unique) {
+      Permutation punsort = p.comp(unsort);
+      return new ComparableList<E>(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
+    } else {
+      Comparable[] a = p.comp(super.unsort).apply(sorted);
+      return createNewList(a, Permutation.sort(a));
+    }
+  }
+
+  @Override
+  public boolean isUnique() {
+    return unique;
+  }
+
+  @Override
+  public boolean isSorted() {
+    return ordered;
+  }
+
 
   /**
    * Convenience list builder
@@ -129,7 +172,7 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
     @Override
     public LookupList<E> build() {
       Comparable[] a = Arrays.copyOf(contents, size);
-      return new ComparableList<E>(a, Permutation.sort(a));
+      return createNewList(a, Permutation.sort(a));
     }
 
     @Override

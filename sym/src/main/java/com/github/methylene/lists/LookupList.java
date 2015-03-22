@@ -69,6 +69,13 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    */
   public abstract Map<E, int[]> group();
 
+  public abstract LookupList<E> shuffle(Permutation p);
+
+  public abstract boolean isUnique();
+
+  public abstract boolean isSorted();
+
+
   /**
    * Find at most {@code size} indexes {@code i} where
    * <pre><code>
@@ -109,7 +116,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Long> asList(long... a) {
-    return new LongList(a, Permutation.sort(a));
+    return LongList.createNewList(a, Permutation.sort(a));
   }
 
   /**
@@ -118,7 +125,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Byte> asList(byte... a) {
-    return new ByteList(a, Permutation.sort(a));
+    return ByteList.createNewList(a, Permutation.sort(a));
   }
 
   /**
@@ -127,7 +134,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Character> asList(char... a) {
-    return new CharList(a, Permutation.sort(a));
+    return CharList.createNewList(a, Permutation.sort(a));
   }
 
   /**
@@ -136,7 +143,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Float> asList(float... a) {
-    return new FloatList(a, Permutation.sort(a));
+    return FloatList.createNewList(a, Permutation.sort(a));
   }
 
   /**
@@ -145,7 +152,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Double> asList(double... a) {
-    return new DoubleList(a, Permutation.sort(a));
+    return DoubleList.createNewList(a, Permutation.sort(a));
   }
 
   /**
@@ -154,7 +161,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    */
   public static LookupList<Short> asList(short... a) {
-    return new ShortList(a, Permutation.sort(a));
+    return ShortList.createNewList(a, Permutation.sort(a));
   }
 
   /**
@@ -165,7 +172,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    */
   @SafeVarargs
   public static <E extends Comparable> LookupList<E> asList(E... a) {
-    return new ComparableList<E>(a, Permutation.sort(a));
+    return ComparableList.createNewList(a, Permutation.sort(a));
   }
 
   /**
@@ -199,11 +206,10 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    * @throws java.lang.NullPointerException if the input contains a {@code null} element
    */
-  @SafeVarargs
-  public static <E> LookupList<E> asList(Comparator<E> comparator, E... a) {
+  public static <E> LookupList<E> asList(Comparator<E> comparator, Object... a) {
     if (comparator == null)
       throw new IllegalArgumentException("comparator can not be null");
-    return new ComparatorList<E>(a, comparator, Permutation.sort(a, comparator));
+    return ComparatorList.createNewList(comparator, a, Permutation.sort(a, comparator));
   }
 
   /**
@@ -213,11 +219,6 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    */
   public static <E> ListBuilder<E> builder(Comparator<E> comparator) {
     return new ComparatorList.Builder<E>(comparator);
-  }
-
-  public LookupList<E> rearrange(Permutation p) {
-    //TODO
-    return this;
   }
 
   /**

@@ -21,7 +21,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   private final int[] ranking;
 
-  private static final Permutation IDENTITIY = new Permutation(new int[0], false);
+  private static final Permutation IDENTITY = new Permutation(new int[0], false);
 
   private Permutation(int[] ranking, boolean validate) {
     ranking = Rankings.trim(ranking);
@@ -43,7 +43,7 @@ public final class Permutation implements Comparable<Permutation> {
   private static Permutation perm(int[] ranking, boolean validate) {
     ranking = Rankings.trim(ranking);
     if (ranking.length == 0)
-      return IDENTITIY;
+      return IDENTITY;
     return new Permutation(Arrays.copyOf(ranking, ranking.length), validate);
   }
 
@@ -106,7 +106,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#isIdentity
    */
   public static Permutation identity() {
-    return IDENTITIY;
+    return IDENTITY;
   }
 
   /**
@@ -427,24 +427,6 @@ public final class Permutation implements Comparable<Permutation> {
     return Arrays.copyOf(ranking, ranking.length);
   }
 
-  /*
-   * Get a slice of the ranking that represents of this permutation.
-   * @param from start index, inclusive
-   * @param to end index, exclusive
-   * @return an array of length {@code to - end}; note that this array is generally not a ranking
-   * @throws java.lang.IllegalArgumentException if {@code to < from}, or {@code from} or {@code to}
-   * are negative or greater than {@code this.length}
-   */
-//  public int[] getRanking(int from, int to) {
-//    if (to < from)
-//      throw new IllegalArgumentException("to must not be smaller than from");
-//    if (to < 0 || from < 0 || to > length() || from > length())
-//      throw new IllegalArgumentException("to or from out of bounds: " + from + ", " + to + ", " + length());
-//    int[] slice = new int[to - from];
-//    System.arraycopy(ranking, from, slice, 0, slice.length);
-//    return slice;
-//  }
-
   /**
    * Move an index. The following is true for arrays {@code a} of any type and of length
    * {@code a.length == this.length}, and all indexes {@code 0 <= i < a.length}:
@@ -663,7 +645,7 @@ public final class Permutation implements Comparable<Permutation> {
     if (isIdentity())
       return input;
     if (input instanceof LookupList)
-      return ((LookupList<E>) input).rearrange(this);
+      return ((LookupList<E>) input).shuffle(this);
     ArrayList<E> result = new ArrayList<E>(length);
     for (int i = 0; i < length; i += 1)
       result.add(null);
@@ -735,7 +717,7 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /** @see com.github.methylene.sym.Permutation#sort(char[]) */
-  public static <E> Permutation sort(E[] input, Comparator<E> comp) {
+  public static <E> Permutation sort(Object[] input, Comparator<E> comp) {
     return perm(Rankings.sort(input, comp), false);
   }
 
@@ -826,6 +808,87 @@ public final class Permutation implements Comparable<Permutation> {
     for (int i : input) {
       if (i < test) {return false;}
       test = i;
+    }
+    return true;
+  }
+
+  public boolean sorts(byte[] input) {
+    if (input.length < 2) {return true;}
+    byte test = input[0];
+    for (byte i : input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  public boolean sorts(short[] input) {
+    if (input.length < 2) {return true;}
+    short test = input[0];
+    for (short i : input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  public boolean sorts(char[] input) {
+    if (input.length < 2) {return true;}
+    char test = input[0];
+    for (char i : input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  public boolean sorts(long[] input) {
+    if (input.length < 2) {return true;}
+    long test = input[0];
+    for (long i : input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  public boolean sorts(float[] input) {
+    if (input.length < 2) {return true;}
+    float test = input[0];
+    for (float i : input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  public boolean sorts(double[] input) {
+    if (input.length < 2) {return true;}
+    double test = input[0];
+    for (double i : input) {
+      if (i < test) {return false;}
+      test = i;
+    }
+    return true;
+  }
+
+  public <E extends Comparable<E>> boolean sorts(E[] input) {
+    if (input.length < 2) {return true;}
+    E test = input[0];
+    for (E el : input) {
+      if (el.compareTo(test) < 0) {return false;}
+      test = el;
+    }
+    return true;
+  }
+
+  @SuppressWarnings("unchecked")
+  public <E> boolean sorts(Comparator<E> comparator, Object[] input) {
+    if (input.length < 2) {return true;}
+    Object test = input[0];
+    for (Object el : input) {
+      if (comparator.compare((E) el, (E) test) < 0) {return false;}
+      test = el;
     }
     return true;
   }

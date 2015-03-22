@@ -10,6 +10,7 @@ import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
 import com.github.methylene.sym.Permutation;
+import com.github.methylene.sym.Util;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,11 +20,26 @@ import java.util.Map;
  * Primitive based lookup list.
  */
 public final class CharList extends LookupList<Character> {
-  private final char[] sorted;
 
-  CharList(char[] a, Permutation sort) {
-    super(sort);
-    this.sorted = sort.isIdentity() ? Arrays.copyOf(a, a.length) : sort.apply(a);
+  private final char[] sorted;
+  private final boolean unique;
+  private final boolean ordered;
+
+  private CharList(char[] sorted, boolean ordered, Permutation sort, Permutation unsort) {
+    super(sort, unsort);
+    this.sorted = sorted;
+    this.ordered = ordered;
+    this.unique = Util.isUnique(sorted);
+  }
+
+  static CharList createNewList(char[] a, Permutation sort) {
+    char[] applied = sort.apply(a);
+    char[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    return new CharList(sorted, Util.isSorted(a), sort, sort.invert());
+  }
+
+  public static CharList createNewList(char[] a) {
+    return createNewList(a, Permutation.sort(a));
   }
 
   @Override
@@ -85,13 +101,37 @@ public final class CharList extends LookupList<Character> {
 
   @Override
   public List<Character> sort() {
+    if (ordered)
+      return this;
     return Arrays.asList(box(sorted));
   }
 
   @Override
   public List<Character> sortUnique() {
+    if (unique)
+      return sort();
     return Arrays.asList(box(unique(sorted)));
   }
 
+  @Override
+  public CharList shuffle(Permutation p) {
+    if (unique) {
+      Permutation punsort = p.comp(unsort);
+      return new CharList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
+    } else {
+      char[] a = p.comp(super.unsort).apply(sorted);
+      return createNewList(a, Permutation.sort(a));
+    }
+  }
+
+  @Override
+  public boolean isUnique() {
+    return unique;
+  }
+
+  @Override
+  public boolean isSorted() {
+    return ordered;
+  }
 
 }

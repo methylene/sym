@@ -41,6 +41,10 @@ public final class IntList extends LookupList<Integer> {
     return new IntList(sorted, Util.isSorted(a), sort, sort.invert());
   }
 
+  public static IntList createNewList(int[] a) {
+    return createNewList(a, Permutation.sort(a));
+  }
+
   @Override
   public int indexOf(Object el) {
     int i = binarySearch(sorted, (Integer) el);
@@ -103,9 +107,9 @@ public final class IntList extends LookupList<Integer> {
 
   @Override
   public List<Integer> sortUnique() {
-    if (ordered && unique)
-      return this;
-    return Arrays.asList(box(unique ? sorted : unique(sorted)));
+    if (unique)
+      return sort();
+    return Arrays.asList(box(unique(sorted)));
   }
 
   @Override
@@ -113,6 +117,7 @@ public final class IntList extends LookupList<Integer> {
     return Group.group(sorted, unsort);
   }
 
+  @Override
   public IntList shuffle(Permutation p) {
     if (unique) {
       Permutation punsort = p.comp(unsort);
@@ -123,10 +128,12 @@ public final class IntList extends LookupList<Integer> {
     }
   }
 
+  @Override
   public boolean isUnique() {
     return unique;
   }
 
+  @Override
   public boolean isSorted() {
     return ordered;
   }

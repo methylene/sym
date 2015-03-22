@@ -10,6 +10,7 @@ import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
 import com.github.methylene.sym.Permutation;
+import com.github.methylene.sym.Util;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,12 +20,26 @@ import java.util.Map;
  * Primitive based lookup list.
  */
 public final class ByteList extends LookupList<Byte> {
-  private final byte[] sorted;
 
-  ByteList(byte[] a, Permutation sort) {
-    super(sort);
+  private final byte[] sorted;
+  private final boolean unique;
+  private final boolean ordered;
+
+  private ByteList(byte[] sorted, boolean ordered, Permutation sort, Permutation unsort) {
+    super(sort, unsort);
+    this.sorted = sorted;
+    this.ordered = ordered;
+    this.unique = Util.isUnique(sorted);
+  }
+
+  static ByteList createNewList(byte[] a, Permutation sort) {
     byte[] applied = sort.apply(a);
-    this.sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    byte[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
+    return new ByteList(sorted, Util.isSorted(a), sort, sort.invert());
+  }
+
+  public static ByteList createNewList(byte[] a) {
+    return createNewList(a, Permutation.sort(a));
   }
 
   @Override
@@ -86,12 +101,38 @@ public final class ByteList extends LookupList<Byte> {
 
   @Override
   public List<Byte> sort() {
-    return Arrays.asList(box(sorted));
-  }
+    if (ordered)
+      return this;
+    return Arrays.asList(box(sorted));  }
 
   @Override
   public List<Byte> sortUnique() {
+    if (unique)
+      return sort();
     return Arrays.asList(box(unique(sorted)));
   }
+
+
+  @Override
+  public ByteList shuffle(Permutation p) {
+    if (unique) {
+      Permutation punsort = p.comp(unsort);
+      return new ByteList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
+    } else {
+      byte[] a = p.comp(super.unsort).apply(sorted);
+      return createNewList(a, Permutation.sort(a));
+    }
+  }
+
+  @Override
+  public boolean isUnique() {
+    return unique;
+  }
+
+  @Override
+  public boolean isSorted() {
+    return ordered;
+  }
+
 
 }
