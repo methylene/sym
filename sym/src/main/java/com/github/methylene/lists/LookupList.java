@@ -4,12 +4,7 @@ import static com.github.methylene.sym.Rankings.invert;
 import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Rankings;
 
-import java.util.AbstractList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.RandomAccess;
+import java.util.*;
 
 /**
  * <p>LookupLists are immutable, null-rejecting, array based implementation of {@link java.util.List}
@@ -106,7 +101,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list representation of the input
    */
-  public static LookupList<Integer> asList(int... a) {
+  public static LookupList<Integer> of(int... a) {
     return IntList.createNewList(a, Permutation.sort(a));
   }
 
@@ -115,7 +110,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list representation of the input
    */
-  public static LookupList<Long> asList(long... a) {
+  public static LookupList<Long> of(long... a) {
     return LongList.createNewList(a, Permutation.sort(a));
   }
 
@@ -124,7 +119,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list representation of the input
    */
-  public static LookupList<Byte> asList(byte... a) {
+  public static LookupList<Byte> of(byte... a) {
     return ByteList.createNewList(a, Permutation.sort(a));
   }
 
@@ -133,7 +128,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list representation of the input
    */
-  public static LookupList<Character> asList(char... a) {
+  public static LookupList<Character> of(char... a) {
     return CharList.createNewList(a, Permutation.sort(a));
   }
 
@@ -142,7 +137,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list representation of the input
    */
-  public static LookupList<Float> asList(float... a) {
+  public static LookupList<Float> of(float... a) {
     return FloatList.createNewList(a, Permutation.sort(a));
   }
 
@@ -151,7 +146,7 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list representation of the input
    */
-  public static LookupList<Double> asList(double... a) {
+  public static LookupList<Double> of(double... a) {
     return DoubleList.createNewList(a, Permutation.sort(a));
   }
 
@@ -160,18 +155,132 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @param a an array
    * @return a list representation of the input
    */
-  public static LookupList<Short> asList(short... a) {
+  public static LookupList<Short> of(short... a) {
     return ShortList.createNewList(a, Permutation.sort(a));
   }
 
   /**
+   * Returns the empty list.
+   * @return the empty list
+   */
+  @SuppressWarnings("unchecked")
+  public static <E extends Comparable> LookupList<E> of() {
+    return (LookupList<E>) ComparableList.EMPTY;
+  }
+
+  /**
    * Creates a list from the given input.
-   * @param a an array
-   * @return a list representation of the input
    * @throws java.lang.NullPointerException if the input contains a {@code null} element
    */
-  @SafeVarargs
-  public static <E extends Comparable> LookupList<E> asList(E... a) {
+  public static <E extends Comparable> LookupList<E> of(E e0) {
+    return new ComparableList.Builder<E>(1).add(e0).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1) {
+    return new ComparableList.Builder<E>(2).add(e0).add(e1).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2) {
+    return new ComparableList.Builder<E>(3).add(e0).add(e1).add(e2).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2, E e3) {
+    return new ComparableList.Builder<E>(4).add(e0).add(e1).add(e2).add(e3).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2, E e3, E e4) {
+    return new ComparableList.Builder<E>(5).add(e0).add(e1).add(e2).add(e3).add(e4).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2, E e3, E e4, E e5) {
+    return new ComparableList.Builder<E>(6).add(e0).add(e1).add(e2).add(e3).add(e4).add(e5).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2, E e3, E e4, E e5, E e6) {
+    return new ComparableList.Builder<E>(7).add(e0).add(e1).add(e2).add(e3).add(e4).add(e5).add(e6).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2, E e3, E e4, E e5, E e6, E e7) {
+    return new ComparableList.Builder<E>(8).add(e0).add(e1).add(e2).add(e3).add(e4).add(e5).add(e6).add(e7).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8) {
+    return new ComparableList.Builder<E>(9).add(e0).add(e1).add(e2).add(e3).add(e4).add(e5).add(e6).add(e7).add(e8).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9) {
+    return new ComparableList.Builder<E>(10).add(e0).add(e1).add(e2).add(e3).add(e4).add(e5).add(e6).add(e7).add(e8).add(e9).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9, E e10) {
+    return new ComparableList.Builder<E>(11).add(e0).add(e1).add(e2).add(e3).add(e4).add(e5).add(e6).add(e7).add(e8).add(e9).add(e10).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> of(E e0, E e1, E e2, E e3, E e4, E e5, E e6, E e7, E e8, E e9, E e10, E... es) {
+    return new ComparableList.Builder<E>(11 + es.length).add(e0).add(e1).add(e2).add(e3).add(e4).add(e5).add(e6).add(e7).add(e8).add(e9).add(e10).addAll(es).build();
+  }
+
+  /**
+   * Creates a list from the given input.
+   *
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  public static <E extends Comparable> LookupList<E> copyOf(E[] a) {
     return ComparableList.createNewList(a, Permutation.sort(a));
   }
 
@@ -190,12 +299,24 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
 
   /**
    * Create a new list from the given input.
-   * @param list a list
+   * @param iterable a iterable
    * @return a LookupList
    */
-  public static <E extends Comparable> LookupList<E> copyOf(Iterable<E> list) {
+  public static <E extends Comparable> LookupList<E> copyOf(Iterable<E> iterable) {
     ComparableList.Builder<E> builder = new ComparableList.Builder<E>();
-    builder.addAll(list);
+    builder.addAll(iterable);
+    return builder.build();
+  }
+
+  /**
+   * Create a new list from the given input.
+   * @param iterator a iterator
+   * @return a LookupList
+   */
+  public static <E extends Comparable> LookupList<E> copyOf(Iterator<E> iterator) {
+    ComparableList.Builder<E> builder = new ComparableList.Builder<E>();
+    while (iterator.hasNext())
+      builder.add(iterator.next());
     return builder.build();
   }
 
@@ -206,11 +327,52 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return a list representation of the input
    * @throws java.lang.NullPointerException if the input contains a {@code null} element
    */
-  public static <E> LookupList<E> asList(Comparator<E> comparator, Object... a) {
+  public static <E> LookupList<E> copyOf(Comparator<E> comparator, Object[] a) {
     if (comparator == null)
       throw new IllegalArgumentException("comparator can not be null");
     return ComparatorList.createNewList(comparator, a, Permutation.sort(a, comparator));
   }
+
+  /**
+   * Create a new list from the given input. If the input is already an instance of LookupList, it is returned unchanged.
+   * @param comparator a comparator
+   * @param list a list
+   * @return a LookupList
+   */
+  public static <E> LookupList<E> copyOf(Comparator<E> comparator, Collection<E> list) {
+    if (list instanceof LookupList)
+      return (LookupList<E>) list;
+    ComparatorList.Builder<E> builder = new ComparatorList.Builder<E>(comparator, list.size());
+    builder.addAll(list);
+    return builder.build();
+  }
+
+  /**
+   * Create a new list from the given input.
+   * @param comparator a comparator
+   * @param iterable a iterable
+   * @return a LookupList
+   */
+  public static <E> LookupList<E> copyOf(Comparator<E> comparator, Iterable<E> iterable) {
+    ComparatorList.Builder<E> builder = new ComparatorList.Builder<E>(comparator);
+    builder.addAll(iterable);
+    return builder.build();
+  }
+
+  /**
+   * Create a new list from the given input.
+   * @param comparator a comparator
+   * @param iterator a iterator
+   * @return a LookupList
+   */
+  public static <E> LookupList<E> copyOf(Comparator<E> comparator, Iterator<E> iterator) {
+    ComparatorList.Builder<E> builder = new ComparatorList.Builder<E>(comparator);
+    while (iterator.hasNext())
+      builder.add(iterator.next());
+    return builder.build();
+  }
+
+
 
   /**
    * Create a list builder.
@@ -223,10 +385,29 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
 
   /**
    * Create a list builder.
+   * @param comparator a comparator
+   * @param initialCapacity initial builder capacity
+   * @return a new builder
+   */
+  public static <E> ListBuilder<E> builder(Comparator<E> comparator, int initialCapacity) {
+    return new ComparatorList.Builder<E>(comparator, initialCapacity);
+  }
+
+  /**
+   * Create a list builder.
    * @return a new builder
    */
   public static <E extends Comparable> ListBuilder<E> builder() {
     return new ComparableList.Builder<E>();
+  }
+
+  /**
+   * Create a list builder.
+   * @param initialCapacity initial builder capacity
+   * @return a new builder
+   */
+  public static <E extends Comparable> ListBuilder<E> builder(int initialCapacity) {
+    return new ComparableList.Builder<E>(initialCapacity);
   }
 
 }

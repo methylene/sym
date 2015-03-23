@@ -28,7 +28,7 @@ public class PerformanceTest {
     int maxNumber = 20000;
     int[] a = Util.randomNumbers(maxNumber, size);
     Integer candidate = (int) (Math.random() * maxNumber);
-    IntList asList = (IntList) LookupList.asList(a);
+    IntList asList = (IntList) LookupList.of(a);
     List<Integer> jdk = Arrays.asList(Util.box(a));
     long check;
     for (int _ = 0; _ < repeat; _ += 1) {

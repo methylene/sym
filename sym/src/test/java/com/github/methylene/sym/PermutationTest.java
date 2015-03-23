@@ -1,11 +1,7 @@
 package com.github.methylene.sym;
 
 import static com.github.methylene.sym.MyInt.box;
-import static com.github.methylene.sym.Permutation.cycle;
-import static com.github.methylene.sym.Permutation.perm;
-import static com.github.methylene.sym.Permutation.identity;
-import static com.github.methylene.sym.Permutation.move;
-import static com.github.methylene.sym.Permutation.prod;
+import static com.github.methylene.sym.Permutation.*;
 import static com.github.methylene.sym.Util.distinctInts;
 import static com.github.methylene.sym.Util.randomNumbers;
 import static org.junit.Assert.assertArrayEquals;
@@ -396,15 +392,16 @@ public class PermutationTest {
     assertEquals("Hello world!", prod(Arrays.asList(c0, c1, c2)).invert().apply(" !Hdellloorw"));
   }
 
+  /* making sure sort does what we think it does */
   @Test
   public void testDegenerate() {
-    int[] a = new int[]{1, 2, 3, 3, 4, 5, 6};
-    if (Arrays.binarySearch(a, 3) == 3) {
-      assertFalse(Permutation.sort(a).isIdentity());
-    } else {
-      System.out.println("binarySearch algorithm has changed");
-      assertTrue(Permutation.sort(a).isIdentity());
-    }
+    int[] a = new int[]{3, 3, 3, 3, 3, 3, 3};
+    assertFalse(Permutation.sort(a).isIdentity());
+  }
+
+  @Test
+  public void testShift() {
+    assertEquals("abccba", Permutation.reverse(3).shift(3).apply("abcabc"));
   }
 
 

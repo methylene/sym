@@ -91,12 +91,14 @@ public final class Util {
    * Find element in array by comparing each element in sequence, starting at index {@code 0}.
    * @param a an array
    * @param el a number
-   * @param skip The number of matching elements to skip. Passing a negative number as {@code skip} has the same effect
-   *             as passing {@code 0}: the index of the first match, if any, will be returned.
+   * @param skip number of matches to skip; if {@code skip = 0} the index of the first match, if any, will be returned
    * @return the least non-negative number {@code i} so that {@code a[i] = el}, or {@code -1} if {@code el} is not
-   * found in {@code a}.
+   * found in {@code a}, or if all occurences are skipped
+   * @throws java.lang.IllegalArgumentException if {@code skip < 0}
    */
   public static int indexOf(int[] a, int el, final int skip) {
+    if (skip < 0)
+      negativeFailure();
     int cnt = 0;
     for (int i = 0; i < a.length; i += 1)
       if (a[i] == el)
@@ -105,6 +107,9 @@ public final class Util {
     return -1;
   }
 
+  static int indexOf(int[] a, int el) {
+    return indexOf(a, el, 0);
+  }
 
   /**
    * Add a fixed number to each element of given array.

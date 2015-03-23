@@ -52,7 +52,7 @@ public final class Cycles {
     return ranking;
   }
 
-  public static int orbitLength(int[] ranking, int i) {
+  static int orbitLength(int[] ranking, int i) {
     if (i < 0 || i >= ranking.length)
       lengthFailure();
     int length = 1;
@@ -62,19 +62,25 @@ public final class Cycles {
     return length;
   }
 
-  public static int[] orbit(int[] ranking, int pos, int orbitLength) {
-    if (pos < 0 || pos >= ranking.length)
+  static int[] orbit(int[] ranking, int i, int orbitLength) {
+    if (i < 0)
       indexFailure();
+    if (i >= ranking.length)
+      return new int[]{i};
     int[] result = new int[orbitLength];
-    result[0] = pos;
-    int j = pos;
-    for (int k = 1; k < result.length; k += 1) {
-      j = ranking[j];
-      result[k] = j;
-    }
+    result[0] = i;
+    for (int k = 1; k < orbitLength; k += 1)
+      result[k] = (i = ranking[i]);
     return result;
   }
 
+  /**
+   * Calculate the orbit of an index
+   * @param ranking a ranking
+   * @param i an non-negative integer
+   * @return the orbit of {@code i}
+   * @throws java.lang.IllegalArgumentException if {@code i} is negative
+   */
   public static int[] orbit(int[] ranking, int i) {
     return orbit(ranking, i, orbitLength(ranking, i));
   }
@@ -82,10 +88,9 @@ public final class Cycles {
   public static boolean isCyclicRanking(int[] ranking) {
     int[] candidate = null;
     for (int i = 0; i < ranking.length; i += 1) {
-      int orbitLength = orbitLength(ranking, i);
-      if (orbitLength > 1) {
+      if (ranking[i] != i) {
         if (candidate == null) {
-          candidate = Util.sortedCopy(orbit(ranking, i, orbitLength));
+          candidate = Util.sortedCopy(orbit(ranking, i));
         } else {
           if (Arrays.binarySearch(candidate, i) < 0) {
             return false;
@@ -100,24 +105,17 @@ public final class Cycles {
   public static List<int[]> toOrbits(int[] ranking) {
     LinkedList<int[]> orbits = new LinkedList<int[]>();
     boolean[] done = new boolean[ranking.length];
+    outer:
     for (int i = 0; i < ranking.length; i += 1) {
-      if (!done[i]) {
-        int orbitLength = orbitLength(ranking, i);
-        if (orbitLength > 1) {
-          int[] candidate = orbit(ranking, i, orbitLength);
-          for (int k : candidate)
-            done[k] = true;
-          boolean goodCandidate = true;
-          for (int[] orbit : orbits) {
-            if (orbit.length == candidate.length) {
-              if (indexOf(orbit, candidate[0], 0) != -1) {
-                goodCandidate = false;
-                break;
-              }
-            }
-          }
-          if (goodCandidate) {orbits.push(candidate);}
-        }
+      if (!done[i] && ranking[i] != i) {
+        int[] candidate = orbit(ranking, i);
+        for (int k : candidate)
+          done[k] = true;
+        for (int[] orbit : orbits)
+          if (orbit.length == candidate.length
+              && indexOf(orbit, candidate[0]) >= 0)
+            continue outer;
+        orbits.push(candidate);
       }
     }
     return orbits;
@@ -127,7 +125,7 @@ public final class Cycles {
     List<int[]> transpositions = new ArrayList<int[]>(ranking.length);
     for (int[] orbit : toOrbits(ranking))
       for (int i = 0; i < orbit.length - 1; i += 1)
-        transpositions.add(new int[]{ orbit[i], orbit[i + 1] });
+        transpositions.add(new int[]{orbit[i], orbit[i + 1]});
     return transpositions;
   }
 

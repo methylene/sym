@@ -29,14 +29,14 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Creates a new permutation from the given array.
+   * Return the permutation defined by the given array.
    * @param ranking a list of numbers that specifies the permutation in zero-based
    *               <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
-   *               For example, {@code ranking = new int[]{1, 2, 0}} creates the permutation
-   *               that sends {@code new char[]{'a', 'b', 'c'}} to {@code new char[]{'c', 'a', 'b'}}.
+   *               For example, {@code perm(1,2,0)} creates the permutation
+   *               that maps {@code "abc"} to {@code "cab"}.
    * @throws java.lang.IllegalArgumentException if the input is not a ranking
    */
-  public static Permutation perm(int[] ranking) {
+  public static Permutation perm(int... ranking) {
     return perm(ranking, true);
   }
 
@@ -359,6 +359,21 @@ public final class Permutation implements Comparable<Permutation> {
       if (ranking[i] != ranking.length - i - 1)
         return false;
     return true;
+  }
+
+  public Permutation shift(int n) {
+    if (ranking.length == 0)
+      return this;
+    return perm(Rankings.shift(n, ranking), false);
+  }
+
+  public int[] findCycle() {
+    if (ranking.length == 0)
+      return null;
+    for (int i = 0; i < ranking.length; i++)
+      if (ranking[i] != i)
+        return orbit(i);
+    throw new IllegalStateException(); // we'll never get here
   }
 
   /**

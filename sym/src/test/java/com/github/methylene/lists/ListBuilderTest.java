@@ -30,7 +30,7 @@ public class ListBuilderTest {
     for (int _ = 0; _ < 10000; _ += 1) {
       int maxNumber = 10;
       Integer[] a = Util.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
-      List<Integer> asList = LookupList.asList(a);
+      List<Integer> asList = LookupList.copyOf(a);
       List<Integer> addAll = LookupList.<Integer>builder().addAll(a).build();
       List<Integer> jdk = Arrays.asList(a);
       assertEquals(jdk, addAll);

@@ -1,15 +1,6 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Util.checkEqualLength;
-import static com.github.methylene.sym.Util.checkLength;
-import static com.github.methylene.sym.Util.distinctInts;
-import static com.github.methylene.sym.Util.exceptionalBinarySearch;
-import static com.github.methylene.sym.Util.padding;
-import static com.github.methylene.sym.Util.slotFailure;
-import static com.github.methylene.sym.Util.sortedCopy;
-import static com.github.methylene.sym.Util.withIndex;
-import static java.lang.Math.min;
-import static java.lang.Math.max;
+import static com.github.methylene.sym.Util.*;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 
@@ -65,18 +56,44 @@ public final class Rankings {
    * @param ranking a ranking
    * @return the length that this ranking can be safely trimmed to
    */
-  static int trimmedLength(int[] ranking) {
+  public static int trimmedLength(int[] ranking) {
     for (int i = ranking.length - 1; i >= 0; i--)
       if (ranking[i] != i)
         return i + 1;
     return 0;
   }
 
-  static int[] trim(int[] ranking) {
+  /**
+   * If possible, trim ranking to something shorter but equivalent.
+   * @param ranking a ranking
+   * @return the trimmed ranking
+   */
+  public static int[] trim(int[] ranking) {
     int length = trimmedLength(ranking);
     if (length < ranking.length)
       return Arrays.copyOf(ranking, length);
     return ranking;
+  }
+
+  /**
+   * Return a ranking that acts similar to the input but operates on higher indexes,
+   * leaving the lower {@code n} indexes unmoved.
+   * @param n a non-negative number
+   * @param ranking a ranking
+   * @return the shifted ranking
+   * @throws java.lang.IllegalArgumentException if {@code n} is negative
+   */
+  public static int[] shift(int n, int[] ranking)  {
+    if (n < 0)
+      negativeFailure();
+    if (n == 0)
+      return ranking;
+    int[] shifted = new int[n + ranking.length];
+    for (int i = 1; i < n; i++)
+      shifted[i] = i;
+    for (int i = 0; i < ranking.length; i++)
+      shifted[i + n] = ranking[i] + n;
+    return shifted;
   }
 
   /**

@@ -140,4 +140,13 @@ public class TestRankings {
     assertEquals(-1, nextOffset(7, 0, sorted));
   }
 
+  @Test
+  public void testDecompose() {
+    for (int _ = 0; _ < 100; _++) {
+      Permutation p = Permutation.random(100);
+      assertEquals(p, Permutation.prod(p.toCycles()));
+      assertEquals(p, Permutation.prod(p.toTranspositions()));
+    }
+  }
+
 }
