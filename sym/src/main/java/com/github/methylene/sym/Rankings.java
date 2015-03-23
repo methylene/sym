@@ -70,6 +70,8 @@ public final class Rankings {
    */
   public static int[] trim(int[] ranking) {
     int length = trimmedLength(ranking);
+    if (length == 0)
+      return INT_0;
     if (length < ranking.length)
       return Arrays.copyOf(ranking, length);
     return ranking;

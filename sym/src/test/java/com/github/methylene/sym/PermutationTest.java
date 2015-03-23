@@ -404,5 +404,20 @@ public class PermutationTest {
     assertEquals("abccba", Permutation.reverse(3).shift(3).apply("abcabc"));
   }
 
-
+  @Test
+  public void testShift2() {
+    for (int _ = 0; _ < 100; _++) {
+      Permutation p = Permutation.random(40);
+      for (int n = 0; n < 100; n++) {
+        for (int j = 0; j < 100; j++) {
+          if (j < n) {
+            assertEquals(j, p.shift(n).apply(j));
+          } else {
+            assertEquals(p.shift(n).apply(j), n + p.apply(j - n));
+          }
+        }
+      }
+    }
+  }
+  
 }
