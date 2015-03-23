@@ -8,6 +8,7 @@ import static com.github.methylene.sym.Util.padding;
 import static com.github.methylene.sym.Util.slotFailure;
 import static com.github.methylene.sym.Util.sortedCopy;
 import static com.github.methylene.sym.Util.withIndex;
+import static java.lang.Math.min;
 import static java.lang.Math.max;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
@@ -105,13 +106,26 @@ public final class Rankings {
     return sort(distinctInts(length, 4));
   }
 
-  public static int[] comp(int[] ranking, int[] other) {
-    int length = max(ranking.length, other.length);
-    int[] lhs = padding(ranking, length);
-    int[] rhs = padding(other, length);
-    int[] result = new int[length];
-    for (int i = 0; i < length; i += 1)
-      result[i] = lhs[rhs[i]];
+  /**
+   * Multiply two rankings.
+   * @param lhs a ranking
+   * @param rhs another ranking
+   * @return the product of the input rankings
+   */
+  public static int[] comp(int[] lhs, int[] rhs) {
+    if (lhs.length >= rhs.length) {
+      int[] result = new int[lhs.length];
+      for (int i = 0; i < rhs.length; i++)
+        result[i] = lhs[rhs[i]];
+      if (lhs.length > rhs.length)
+        arraycopy(lhs, rhs.length, result, rhs.length, lhs.length - rhs.length);
+      return result;
+    }
+    int[] result = new int[rhs.length];
+    for (int i = 0; i < rhs.length; i++) {
+      int n = rhs[i];
+      result[i] = n >= lhs.length ? n : lhs[n];
+    }
     return result;
   }
 

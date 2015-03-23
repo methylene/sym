@@ -186,13 +186,15 @@ public class PermutationTest {
         Permutation.prod(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))).apply(Util.symbols(3)));
   }
 
-  @Test public void testCycleEquals() throws Exception {
+  @Test
+  public void testCycleEquals() throws Exception {
     assertTrue(Permutation.prod(Permutation.cycle1(1, 2), Permutation.cycle1(2, 1)).isIdentity());
     Assert.assertEquals(Permutation.cycle1(2, 3), Permutation.prod(Permutation.cycle1(1, 2),
         Permutation.prod(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))));
   }
 
-  @Test public void testCycleLaw() throws Exception {
+  @Test
+  public void testCycleLaw() throws Exception {
     Permutation longest = Permutation.cycle1(2, 4, 1, 11, 3);
     Assert.assertEquals(Permutation.prod(Permutation.cycle1(2, 4),
         Permutation.cycle1(4, 1, 11, 3)), longest);
