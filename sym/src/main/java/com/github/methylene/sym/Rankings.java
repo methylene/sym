@@ -114,6 +114,8 @@ public final class Rankings {
    */
   public static int[] comp(int[] lhs, int[] rhs) {
     if (lhs.length >= rhs.length) {
+      if (rhs.length == 0)
+          return lhs;
       int[] result = new int[lhs.length];
       for (int i = 0; i < rhs.length; i++)
         result[i] = lhs[rhs[i]];
@@ -121,6 +123,8 @@ public final class Rankings {
         arraycopy(lhs, rhs.length, result, rhs.length, lhs.length - rhs.length);
       return result;
     }
+    if (lhs.length == 0)
+      return rhs;
     int[] result = new int[rhs.length];
     for (int i = 0; i < rhs.length; i++) {
       int n = rhs[i];
