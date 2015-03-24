@@ -27,6 +27,8 @@ public final class Util {
   public static final Double[] BOX_DOUBLE_0 = new Double[0];
   /** An empty array of Integers */
   public static final Integer[] BOX_INT_0 = new Integer[0];
+  /** An empty array of Objects */
+  public static final Object[] OBJ_0 = new Object[0];
   /** An empty array of bytes */
   public static final byte[] BYTE_0 = new byte[0];
   /** An empty array of shorts */

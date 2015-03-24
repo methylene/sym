@@ -149,4 +149,23 @@ public class TestRankings {
     }
   }
 
+  @Test
+  public void testSorts() {
+    int[] ranking = {0, 3, 1, 4, 2};
+    int[] a = {0, 4, 2, 4, 3};
+    assertTrue(Util.isSorted(Rankings.apply(ranking, a)));
+    assertTrue(Rankings.sorts(ranking, a));
+  }
+
+  @Test
+  public void testSorts2() {
+    for (int _ = 0; _ < 100; _++) {
+      int[] a = Util.randomNumbers(100, 100 + (int) (100 * (Math.random() - 0.8)));
+      int[] ranking = Rankings.sort(a);
+      assertTrue(Util.isSorted(Rankings.apply(ranking, a)));
+      assertTrue(Rankings.sorts(ranking, a));
+    }
+  }
+
+
 }

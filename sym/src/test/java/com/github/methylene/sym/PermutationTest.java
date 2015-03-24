@@ -26,7 +26,7 @@ public class PermutationTest {
   /* Check example from constructor javadoc */
   @Test
   public void testAbc() {
-    Permutation p = perm(new int[]{1, 2, 0});
+    Permutation p = perm(1, 2, 0);
     assertArrayEquals(new char[]{'c', 'a', 'b'}, p.apply(new char[]{'a', 'b', 'c'}));
   }
 
@@ -79,13 +79,13 @@ public class PermutationTest {
   /* gaps in ranking */
   @Test(expected = IllegalArgumentException.class)
   public void testInvalidGap() throws Exception {
-    perm(new int[]{1, 2, 0, 5});
+    perm(1, 2, 0, 5);
   }
 
   /* missing zero in ranking */
   @Test(expected = IllegalArgumentException.class)
   public void testInvalidMissingZero() throws Exception {
-    perm(new int[]{1, 2, 3});
+    perm(1, 2, 3);
   }
 
   /* duplicates in ranking */
@@ -419,5 +419,48 @@ public class PermutationTest {
       }
     }
   }
-  
+
+  @Test
+  public void testDestructive() {
+    for (int _ = 0; _ < 100; _++) {
+      int[] a = Util.randomNumbers(10, 5);
+      int[] copy = Arrays.copyOf(a, a.length);
+      List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
+      Permutation p = Permutation.random(5);
+      DestructivePermutation d = p.toDestructivePermutation();
+      d.apply(copy);
+      d.apply(listCopy);
+      int[] expected = p.apply(a);
+      assertArrayEquals(expected, copy);
+      assertArrayEquals(Util.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
+      assertEquals(p, d.toPermutation());
+    }
+  }
+
+  @Test
+  public void testDestructive2() {
+    for (int _ = 0; _ < 100; _++) {
+      int[] a = Util.randomNumbers(100, 100);
+      int[] copy = Arrays.copyOf(a, a.length);
+      List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
+      Permutation p = Permutation.random(100);
+      DestructivePermutation d = p.toDestructivePermutation();
+      d.apply(copy);
+      d.apply(listCopy);
+      int[] expected = p.apply(a);
+      assertArrayEquals(expected, copy);
+      assertArrayEquals(Util.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
+      assertEquals(p, d.toPermutation());
+    }
+  }
+
+  @Test
+  public void testSorts() {
+    for (int _ = 0; _ < 100; _++) {
+      int[] a = Util.randomNumbers(100, 100);
+      Permutation p = Permutation.sort(a);
+      assertTrue(p.sorts(a));
+    }
+  }
+
 }

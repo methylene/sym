@@ -4,8 +4,12 @@ import static com.github.methylene.sym.Util.*;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 
+import com.github.methylene.lists.LookupList;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * A collection of methods that return rankings, or operate on rankings.
@@ -85,7 +89,7 @@ public final class Rankings {
    * @return the shifted ranking
    * @throws java.lang.IllegalArgumentException if {@code n} is negative
    */
-  public static int[] shift(int n, int[] ranking)  {
+  public static int[] shift(int n, int[] ranking) {
     if (n < 0)
       negativeFailure();
     if (n == 0)
@@ -120,7 +124,6 @@ public final class Rankings {
     return inverted;
   }
 
-
   public static int[] random(int length) {
     return sort(distinctInts(length, 4));
   }
@@ -134,7 +137,7 @@ public final class Rankings {
   public static int[] comp(int[] lhs, int[] rhs) {
     if (lhs.length >= rhs.length) {
       if (rhs.length == 0)
-          return lhs;
+        return lhs;
       int[] result = new int[lhs.length];
       for (int i = 0; i < rhs.length; i++)
         result[i] = lhs[rhs[i]];
@@ -956,7 +959,24 @@ public final class Rankings {
     return ranking;
   }
 
-
+  /**
+   * Check where the {@code ranking} moves the index {@code i}.
+   * The following is true for all {@code j < a.length}:
+   * <code><pre>
+   *   apply(ranking, a)[apply(ranking, j)] == a[j];
+   * </pre></code>
+   * This method does not check whether the input ranking is valid.
+   * @param i a non negative number
+   * @return the moved index
+   * @throws java.lang.IllegalArgumentException if {@code i} is negative
+   */
+  public static int apply(int[] ranking, int i) {
+    if (i < 0)
+      negativeFailure();
+    if (i >= ranking.length)
+      return i;
+    return ranking[i];
+  }
 
   /* ================= apply ================= */
 
@@ -1186,6 +1206,361 @@ public final class Rankings {
     if (input.length > ranking.length)
       arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
+  }
+
+  /**
+   * Apply the ranking to the input list. An element at {@code i} is moved to {@code ranking[i]}.
+   * Indexes that are greater or equal to the length of the ranking are not moved.
+   * This method does not check if the first argument is indeed a ranking, and will have unexpected results otherwise.
+   * @param ranking a ranking
+   * @param input an input array
+   * @return the result of applying the ranking to the input
+   * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
+   * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
+   */
+  public static <E> List<E> apply(int[] ranking, List<E> input) {
+    if (ranking.length == 0)
+      return input;
+    int length = input.size();
+    checkLength(ranking.length, length);
+    ArrayList<E> result = new ArrayList<E>(length);
+    for (int i = 0; i < length; i += 1)
+      result.add(null);
+    for (int i = 0; i < length; i += 1)
+      result.set(apply(ranking, i), input.get(i));
+    return result;
+  }
+
+
+  /* ================= sorts ================= */
+
+  /**
+   * Check if the input ranking will sort the input array when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a an array
+   * @param ranking a ranking
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+   * @see #isValid
+   */
+  public static boolean sorts(int[] ranking, int[] a) {
+    if (a.length < ranking.length)
+      lengthFailure();
+    if (a.length < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    int test = a[0];
+    for (int i = 1; i < a.length; i++) {
+      int idx2 = apply(ranking, i);
+      int test2 = a[i];
+      if (idx2 > idx) {
+        if (test > test2)
+          return false;
+      } else if (test < test2)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input array when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a an array
+   * @param ranking a ranking
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+   * @see #isValid
+   */
+  public static boolean sorts(int[] ranking, byte[] a) {
+    if (a.length < ranking.length)
+      lengthFailure();
+    if (a.length < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    byte test = a[0];
+    for (int i = 1; i < a.length; i++) {
+      int idx2 = apply(ranking, i);
+      byte test2 = a[i];
+      if (idx2 > idx) {
+        if (test > test2)
+          return false;
+      } else if (test < test2)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input array when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a an array
+   * @param ranking a ranking
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+   * @see #isValid
+   */
+  public static boolean sorts(int[] ranking, short[] a) {
+    if (a.length < ranking.length)
+      lengthFailure();
+    if (a.length < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    short test = a[0];
+    for (int i = 1; i < a.length; i++) {
+      int idx2 = apply(ranking, i);
+      short test2 = a[i];
+      if (idx2 > idx) {
+        if (test > test2)
+          return false;
+      } else if (test < test2)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input array when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a an array
+   * @param ranking a ranking
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+   * @see #isValid
+   */
+  public static boolean sorts(int[] ranking, long[] a) {
+    if (a.length < ranking.length)
+      lengthFailure();
+    if (a.length < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    long test = a[0];
+    for (int i = 1; i < a.length; i++) {
+      int idx2 = apply(ranking, i);
+      long test2 = a[i];
+      if (idx2 > idx) {
+        if (test > test2)
+          return false;
+      } else if (test < test2)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input array when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a an array
+   * @param ranking a ranking
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+   * @see #isValid
+   */
+  public static boolean sorts(int[] ranking, char[] a) {
+    if (a.length < ranking.length)
+      lengthFailure();
+    if (a.length < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    char test = a[0];
+    for (int i = 1; i < a.length; i++) {
+      int idx2 = apply(ranking, i);
+      char test2 = a[i];
+      if (idx2 > idx) {
+        if (test > test2)
+          return false;
+      } else if (test < test2)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input array when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a an array
+   * @param ranking a ranking
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+   * @see #isValid
+   */
+  public static boolean sorts(int[] ranking, float[] a) {
+    if (a.length < ranking.length)
+      lengthFailure();
+    if (a.length < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    float test = a[0];
+    for (int i = 1; i < a.length; i++) {
+      int idx2 = apply(ranking, i);
+      float test2 = a[i];
+      if (idx2 > idx) {
+        if (test > test2)
+          return false;
+      } else if (test < test2)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input array when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a an array
+   * @param ranking a ranking
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+   * @see #isValid
+   */
+  public static boolean sorts(int[] ranking, double[] a) {
+    if (a.length < ranking.length)
+      lengthFailure();
+    if (a.length < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    double test = a[0];
+    for (int i = 1; i < a.length; i++) {
+      int idx2 = apply(ranking, i);
+      double test2 = a[i];
+      if (idx2 > idx) {
+        if (test > test2)
+          return false;
+      } else if (test < test2)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input array when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a an array
+   * @param ranking a ranking
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+   * @see #isValid
+   * @throws java.lang.NullPointerException if {@code a} contains a {@code null} element
+   */
+  public static <E extends Comparable<E>> boolean sorts(int[] ranking, E[] a) {
+    if (a.length < ranking.length)
+      lengthFailure();
+    if (a.length < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    E test = a[0];
+    for (int i = 1; i < a.length; i++) {
+      int idx2 = apply(ranking, i);
+      E test2 = a[i];
+      int comparison = test.compareTo(test2);
+      if (idx2 > idx) {
+        if (comparison > 0)
+          return false;
+      } else if (comparison < 0)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input array when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a an array
+   * @param ranking a ranking
+   * @param comparator a Comparator
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted array
+   * @see #isValid
+   * @throws java.lang.NullPointerException if {@code a} contains a {@code null} element
+   */
+  public static <E> boolean sorts(int[] ranking, E[] a, Comparator<E> comparator) {
+    if (a.length < ranking.length)
+      lengthFailure();
+    if (a.length < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    E test = a[0];
+    for (int i = 1; i < a.length; i++) {
+      int idx2 = apply(ranking, i);
+      E test2 = a[i];
+      int comparison = comparator.compare(test, test2);
+      if (idx2 > idx) {
+        if (comparison > 0)
+          return false;
+      } else if (comparison < 0)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input list when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a a list
+   * @param ranking a ranking
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted list
+   * @see #isValid
+   * @throws java.lang.NullPointerException if {@code a} contains a {@code null} element
+   */
+  public static <E extends Comparable<E>> boolean sorts(int[] ranking, List<E> a) {
+    if (a.size() < ranking.length)
+      lengthFailure();
+    if (a.size() < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    E test = a.get(0);
+    for (int i = 1; i < a.size(); i++) {
+      int idx2 = apply(ranking, i);
+      E test2 = a.get(i);
+      int comparison = test.compareTo(test2);
+      if (idx2 > idx) {
+        if (comparison > 0)
+          return false;
+      } else if (comparison < 0)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
+  }
+
+  /**
+   * Check if the input ranking will sort the input list when applied to it.
+   * This method does not check if the first argument is indeed a valid ranking, and will have unexpected results otherwise.
+   * @param a a list
+   * @param ranking a ranking
+   * @param comparator a Comparator
+   * @return true if the return value of {@code apply(ranking, a)} is a sorted list
+   * @see #isValid
+   * @throws java.lang.NullPointerException if {@code a} contains a {@code null} element
+   */
+  public static <E> boolean sorts(int[] ranking, List<E> a, Comparator<E> comparator) {
+    if (a.size() < ranking.length)
+      lengthFailure();
+    if (a.size() < 2)
+      return true;
+    int idx = apply(ranking, 0);
+    E test = a.get(0);
+    for (int i = 1; i < a.size(); i++) {
+      int idx2 = apply(ranking, i);
+      E test2 = a.get(i);
+      int comparison = comparator.compare(test, test2);
+      if (idx2 > idx) {
+        if (comparison > 0)
+          return false;
+      } else if (comparison < 0)
+        return false;
+      idx = idx2;
+      test = test2;
+    }
+    return true;
   }
 
 }

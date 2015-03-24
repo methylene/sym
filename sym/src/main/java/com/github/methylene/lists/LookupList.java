@@ -32,6 +32,12 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
   protected final Permutation unsort;
   protected final Permutation sort;
 
+  static int checkNonnegative(int i) {
+    if (i < 0)
+      throw new IllegalArgumentException("negative number is not allowed");
+    return i;
+  }
+
   protected LookupList(Permutation sort, Permutation unsort) {
     this.sort = sort;
     this.unsort = unsort;
@@ -164,8 +170,8 @@ public abstract class LookupList<E> extends AbstractList<E> implements RandomAcc
    * @return the empty list
    */
   @SuppressWarnings("unchecked")
-  public static <E extends Comparable> LookupList<E> of() {
-    return (LookupList<E>) ComparableList.EMPTY;
+  public static <E> LookupList<E> of() {
+    return (LookupList<E>) EmptyLookupList.EMPTY;
   }
 
   /**

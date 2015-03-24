@@ -1,6 +1,7 @@
 package com.github.methylene.sym;
 
 import static com.github.methylene.sym.Util.checkLength;
+import static com.github.methylene.sym.Util.lengthFailure;
 import static com.github.methylene.sym.Util.negativeFailure;
 import com.github.methylene.lists.LookupList;
 
@@ -15,10 +16,11 @@ import java.util.List;
  */
 public final class Permutation implements Comparable<Permutation> {
 
+  public static final DestructiveTransposition[] DESTRUCTIVE_0 = new DestructiveTransposition[0];
   /*
-   *  An array of N integers where each of the integers between 0 and N-1 appears exactly once.
-   *  This array is never modified.
-   */
+       *  An array of N integers where each of the integers between 0 and N-1 appears exactly once.
+       *  This array is never modified.
+       */
   private final int[] ranking;
 
   private static final Permutation IDENTITY = new Permutation(new int[0], false);
@@ -32,7 +34,7 @@ public final class Permutation implements Comparable<Permutation> {
    * Return the permutation defined by the given array.
    * @param ranking a list of numbers that specifies the permutation in zero-based
    *               <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
-   *               For example, {@code perm(1,2,0)} creates the permutation
+   *               For example, {@code perm(1, 2, 0)} creates the permutation
    *               that maps {@code "abc"} to {@code "cab"}.
    * @throws java.lang.IllegalArgumentException if the input is not a ranking
    */
@@ -217,19 +219,6 @@ public final class Permutation implements Comparable<Permutation> {
     return cycle(Util.sequence(insert, delete, true));
   }
 
-
-  /**
-   * Calculate the number of times this must be applied to given index until
-   * it is in its original position again, also know as the orbit length of the index.
-   * @param i a non negative number which is less than {@code this.length()}
-   * @return the length of the orbit of {@code i}
-   * @throws java.lang.IllegalArgumentException if {@code i < 0} or {@code i >= this.length}
-   * @see com.github.methylene.sym.Permutation#orbit
-   */
-  public int orbitLength(int i) {
-    return Cycles.orbitLength(ranking, i);
-  }
-
   /**
    * <p>Calculate the orbit of given index.
    * The orbit is an array of distinct integers that contains all indexes</p>
@@ -242,7 +231,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException if {@code i < 0} or {@code i >= this.length}.
    */
   public int[] orbit(int i) {
-    return Cycles.orbit(ranking, i, orbitLength(i));
+    return Cycles.orbit(ranking, i);
   }
 
   /**
@@ -315,6 +304,29 @@ public final class Permutation implements Comparable<Permutation> {
     return permutations;
   }
 
+  /**
+   * Write this permutation as a product of destructive transpositions.
+   * @return a decomposition of this permutation into destructive transpositions
+   */
+  private DestructiveTransposition[] toDestructiveTranspositions() {
+    if (this.ranking.length == 0)
+      return DESTRUCTIVE_0;
+    List<int[]> t = Cycles.toTranspositions(ranking);
+    DestructiveTransposition[] result = new DestructiveTransposition[t.size()];
+    for (int i = 0; i < t.size(); i++)
+      result[i] = DestructiveTransposition.create(t.get(i)[0], t.get(i)[1]);
+    return result;
+  }
+
+  /**
+   * Compile a destructive version of this permutation.
+   * @return a destructive version of this instance
+   */
+  public DestructivePermutation toDestructivePermutation() {
+    if (this.ranking.length == 0)
+      return DestructivePermutation.IDENTITY;
+    return DestructivePermutation.create(toDestructiveTranspositions());
+  }
 
   /**
    * Calculate the <a href="http://en.wikipedia.org/wiki/Parity_of_a_permutation">signature</a> of this permutation.
@@ -344,10 +356,10 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Determine whether this permutation reverses its input.
+   * Check if this permutation reverses its input.
    * @return true if this permutation reverses or "flips" an input of length {@code n}
    * @param n a nonnegative number
-   * @see com.github.methylene.sym.Permutation#reverse
+   * @see #reverse
    * @throws java.lang.IllegalArgumentException if {@code n} is negative
    */
   public boolean reverses(int n) {
@@ -458,7 +470,7 @@ public final class Permutation implements Comparable<Permutation> {
 
   /**
    * Move an index. The following is true for arrays {@code a} of any type and of length
-   * {@code a.length == this.length}, and all indexes {@code 0 <= i < a.length}:
+   * {@code a.length >= this.length}, and all indexes {@code 0 <= i < a.length}:
    * <code><pre>
    *   apply(a)[apply(i)] == a[i];
    * </pre></code>
@@ -469,7 +481,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public int apply(int i) {
     if (i < 0)
-      throw new IllegalArgumentException("negative index: " + i);
+      negativeFailure();
     if (i >= ranking.length)
       return i;
     return ranking[i];
@@ -655,12 +667,7 @@ public final class Permutation implements Comparable<Permutation> {
     checkLength(ranking.length, length);
     if (input instanceof LookupList)
       return ((LookupList<E>) input).shuffle(this);
-    ArrayList<E> result = new ArrayList<E>(length);
-    for (int i = 0; i < length; i += 1)
-      result.add(null);
-    for (int i = 0; i < length; i += 1)
-      result.set(apply(i), input.get(i));
-    return result;
+    return Rankings.apply(ranking, input);
   }
 
   /**
@@ -811,95 +818,249 @@ public final class Permutation implements Comparable<Permutation> {
 
   /* ================= sorts ================= */
 
-  public boolean sorts(int[] input) {
-    if (input.length < 2) {return true;}
-    int test = input[0];
-    for (int i : input) {
-      if (i < test) {return false;}
-      test = i;
-    }
-    return true;
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a an array
+   * @return true if {@code this.apply(a)} is sorted
+   */
+  public boolean sorts(int[] a) {
+    return Rankings.sorts(ranking, a);
   }
 
-  public boolean sorts(byte[] input) {
-    if (input.length < 2) {return true;}
-    byte test = input[0];
-    for (byte i : input) {
-      if (i < test) {return false;}
-      test = i;
-    }
-    return true;
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a an array
+   * @return true if {@code this.apply(a)} is sorted
+   */
+  public boolean sorts(byte[] a) {
+    return Rankings.sorts(ranking, a);
   }
 
-  public boolean sorts(short[] input) {
-    if (input.length < 2) {return true;}
-    short test = input[0];
-    for (short i : input) {
-      if (i < test) {return false;}
-      test = i;
-    }
-    return true;
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a an array
+   * @return true if {@code this.apply(a)} is sorted
+   */
+  public boolean sorts(short[] a) {
+    return Rankings.sorts(ranking, a);
   }
 
-  public boolean sorts(char[] input) {
-    if (input.length < 2) {return true;}
-    char test = input[0];
-    for (char i : input) {
-      if (i < test) {return false;}
-      test = i;
-    }
-    return true;
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a an array
+   * @return true if {@code this.apply(a)} is sorted
+   */
+  public boolean sorts(char[] a) {
+    return Rankings.sorts(ranking, a);
   }
 
-  public boolean sorts(long[] input) {
-    if (input.length < 2) {return true;}
-    long test = input[0];
-    for (long i : input) {
-      if (i < test) {return false;}
-      test = i;
-    }
-    return true;
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a an array
+   * @return true if {@code this.apply(a)} is sorted
+   */
+  public boolean sorts(long[] a) {
+    return Rankings.sorts(ranking, a);
   }
 
-  public boolean sorts(float[] input) {
-    if (input.length < 2) {return true;}
-    float test = input[0];
-    for (float i : input) {
-      if (i < test) {return false;}
-      test = i;
-    }
-    return true;
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a an array
+   * @return true if {@code this.apply(a)} is sorted
+   */
+  public boolean sorts(float[] a) {
+    return Rankings.sorts(ranking, a);
   }
 
-  public boolean sorts(double[] input) {
-    if (input.length < 2) {return true;}
-    double test = input[0];
-    for (double i : input) {
-      if (i < test) {return false;}
-      test = i;
-    }
-    return true;
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a an array
+   * @return true if {@code this.apply(a)} is sorted
+   */
+  public boolean sorts(double[] a) {
+    return Rankings.sorts(ranking, a);
   }
 
-  public <E extends Comparable<E>> boolean sorts(E[] input) {
-    if (input.length < 2) {return true;}
-    E test = input[0];
-    for (E el : input) {
-      if (el.compareTo(test) < 0) {return false;}
-      test = el;
-    }
-    return true;
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a an array
+   * @return true if {@code this.apply(a)} is sorted
+   */
+  public <E extends Comparable<E>> boolean sorts(E[] a) {
+    return Rankings.sorts(ranking, a);
   }
 
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a a list
+   * @return true if {@code this.apply(a)} is sorted
+   */
+  public <E extends Comparable<E>> boolean sorts(List<E> a) {
+    return Rankings.sorts(ranking, a);
+  }
+
+  /**
+   * Check if this permutation will sort the input when applied to it.
+   * @param a an array
+   * @param comparator a Comparator
+   * @return true if {@code this.apply(a)} is sorted
+   */
   @SuppressWarnings("unchecked")
-  public <E> boolean sorts(Comparator<E> comparator, Object[] input) {
-    if (input.length < 2) {return true;}
-    Object test = input[0];
-    for (Object el : input) {
-      if (comparator.compare((E) el, (E) test) < 0) {return false;}
-      test = el;
+  public <E> boolean sorts(Comparator<E> comparator, Object[] a) {
+    return Rankings.sorts(ranking, a, (Comparator) comparator);
+  }
+
+  /**
+   * A permutation that modifies the things it it applied to
+   */
+  public static final class DestructivePermutation {
+
+    static final DestructivePermutation IDENTITY = new DestructivePermutation(new DestructiveTransposition[0]);
+
+    private final DestructiveTransposition[] transpositions;
+    private final int length;
+
+    private DestructivePermutation(DestructiveTransposition[] transpositions) {
+      int length = 0;
+      for (DestructiveTransposition t : transpositions)
+        length = Math.max(length, t.length());
+      this.transpositions = transpositions;
+      this.length = length;
     }
-    return true;
+
+    private static DestructivePermutation create(DestructiveTransposition[] transpositions) {
+      return new DestructivePermutation(transpositions);
+    }
+
+    /**
+     * Apply this operation by modifying the input array.
+     * @param array an array
+     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
+     */
+    public void apply(int[] array) {
+      checkLength(length, array.length);
+      for (int i = transpositions.length - 1; i != -1; i--)
+        transpositions[i].apply(array);
+    }
+
+    /**
+     * Apply this operation by modifying the input array.
+     * @param array an array
+     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
+     */
+    public void apply(byte[] array) {
+      checkLength(length, array.length);
+      for (int i = transpositions.length - 1; i != -1; i--)
+        transpositions[i].apply(array);
+    }
+
+    /**
+     * Apply this operation by modifying the input array.
+     * @param array an array
+     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
+     */
+    public void apply(char[] array) {
+      checkLength(length, array.length);
+      for (int i = transpositions.length - 1; i != -1; i--)
+        transpositions[i].apply(array);
+    }
+
+    /**
+     * Apply this operation by modifying the input array.
+     * @param array an array
+     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
+     */
+    public void apply(short[] array) {
+      checkLength(length, array.length);
+      for (int i = transpositions.length - 1; i != -1; i--)
+        transpositions[i].apply(array);
+    }
+
+    /**
+     * Apply this operation by modifying the input array.
+     * @param array an array
+     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
+     */
+    public void apply(float[] array) {
+      checkLength(length, array.length);
+      for (int i = transpositions.length - 1; i != -1; i--)
+        transpositions[i].apply(array);
+    }
+
+    /**
+     * Apply this operation by modifying the input array.
+     * @param array an array
+     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
+     */
+    public void apply(double[] array) {
+      checkLength(length, array.length);
+      for (int i = transpositions.length - 1; i != -1; i--)
+        transpositions[i].apply(array);
+    }
+
+    /**
+     * Apply this operation by modifying the input array.
+     * @param array an array
+     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
+     */
+    public void apply(long[] array) {
+      checkLength(length, array.length);
+      for (int i = transpositions.length - 1; i != -1; i--)
+        transpositions[i].apply(array);
+    }
+
+    /**
+     * Apply this operation by modifying the input array.
+     * @param array an array
+     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
+     */
+    public void apply(Object[] array) {
+      checkLength(length, array.length);
+      for (int i = transpositions.length - 1; i != -1; i--)
+        transpositions[i].apply(array);
+    }
+
+    /**
+     * Apply this operation by modifying the input list.
+     * The input list must support {@link java.util.List#set(int, Object)}.
+     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
+     * @param list an array
+     * @throws java.lang.UnsupportedOperationException if the input list is not mutable
+     * @throws java.lang.IllegalArgumentException if {@code list.size() < this.length()}
+     */
+    public void apply(List<?> list) {
+      checkLength(length, list.size());
+      for (int i = transpositions.length - 1; i != -1; i--)
+        transpositions[i].apply(list);
+    }
+
+    /**
+     * Get the transposition that define this operation.
+     * @return a copy of the array of transpositions
+     */
+    public DestructiveTransposition[] getTranspositions() {
+      return Arrays.copyOf(transpositions, transpositions.length);
+    }
+
+    /**
+     * Get a nondestructive version of this operation.
+     * @return a nondestructive version of this operation
+     */
+    public Permutation toPermutation() {
+      Permutation p = Permutation.identity();
+      for (DestructiveTransposition t : transpositions)
+        p = p.comp(Permutation.swap(t.getFirst(), t.getSecond()));
+      return p;
+    }
+
+    public String toString() {
+      return Arrays.toString(transpositions);
+    }
+
+    public int length() {
+      return length;
+    }
+
   }
 
 }

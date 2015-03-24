@@ -24,8 +24,6 @@ import java.util.Objects;
  */
 public final class ComparableList<E extends Comparable> extends LookupList<E> {
 
-  static final ComparableList<Comparable> EMPTY = createNewList(new Comparable[0]);
-
   private final Comparable[] sorted;
 
   private final boolean unique;

@@ -1,9 +1,7 @@
 package com.github.methylene.sym;
 
 import static com.github.methylene.sym.Util.duplicateFailure;
-import static com.github.methylene.sym.Util.indexFailure;
 import static com.github.methylene.sym.Util.indexOf;
-import static com.github.methylene.sym.Util.lengthFailure;
 import static com.github.methylene.sym.Util.negativeFailure;
 
 import java.util.ArrayList;
@@ -39,12 +37,31 @@ public final class Cycles {
   }
 
   /**
+   * Check if the input defines a cycle.
+   * @param a an array
+   * @return true if the input defines a cycle, because it contains no negative
+   * numbers or duplicates
+   */
+  public static boolean isCycle(int[] a) {
+    boolean[] used = new boolean[Util.max(a) + 1];
+    for (int i : a) {
+      if (i < 0)
+        return false;
+      if (used[i])
+        return false;
+      used[i] = true;
+    }
+    return true;
+  }
+
+  /**
    * Create a ranking from a cycle in cycle notation.
    * @param cycle a cycle in cycle notation
    * @return the cycle as a ranking
    * @throws java.lang.IllegalArgumentException if the input does not define a cycle
+   * @see #isCycle
    */
-  static public int[] cycle(int... cycle) {
+  public static int[] cycle(int... cycle) {
     boolean[] moved = movedIndexes(cycle);
     int[] ranking = new int[moved.length];
     for (int i = 0; i < moved.length; i += 1)
@@ -52,26 +69,12 @@ public final class Cycles {
     return ranking;
   }
 
-  static int orbitLength(int[] ranking, int i) {
-    if (i < 0 || i >= ranking.length)
-      lengthFailure();
+  public static int order(int[] ranking, final int i) {
     int length = 1;
     int j = i;
     while ((j = ranking[j]) != i)
       length++;
     return length;
-  }
-
-  static int[] orbit(int[] ranking, int i, int orbitLength) {
-    if (i < 0)
-      indexFailure();
-    if (i >= ranking.length)
-      return new int[]{i};
-    int[] result = new int[orbitLength];
-    result[0] = i;
-    for (int k = 1; k < orbitLength; k += 1)
-      result[k] = (i = ranking[i]);
-    return result;
   }
 
   /**
@@ -82,7 +85,16 @@ public final class Cycles {
    * @throws java.lang.IllegalArgumentException if {@code i} is negative
    */
   public static int[] orbit(int[] ranking, int i) {
-    return orbit(ranking, i, orbitLength(ranking, i));
+    if (i < 0)
+      negativeFailure();
+    if (i >= ranking.length || ranking[i] == i)
+      return new int[]{i};
+    int[] result = new int[order(ranking, i)];
+    result[0] = i;
+    for (int k = 1; k < result.length; k += 1)
+      result[k] = (i = ranking[i]);
+    return result;
+
   }
 
   public static boolean isCyclicRanking(int[] ranking) {
