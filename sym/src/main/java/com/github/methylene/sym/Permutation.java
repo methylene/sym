@@ -64,7 +64,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException if {@code cycle} contains negative numbers or duplicates
    */
   public static Permutation cycle(int... cycle) {
-    return perm(Cycles.cycle(cycle), false);
+    return perm(Cycles.asRanking(cycle), false);
   }
 
 
@@ -283,7 +283,18 @@ public final class Permutation implements Comparable<Permutation> {
       result.add(cycle(orbit));
     return result;
   }
-
+  /**
+   * Write this permutation as a product of transpositions.
+   * @return a decomposition of this permutation into transpositions
+   * @param factory transposition factory
+   * @see Permutation#prod
+   * @see Permutation#swap
+   */
+  public List<Transposition> toTranspositions(Transposition.Factory factory) {
+    if (this.ranking.length == 0)
+      return Collections.emptyList();
+    return Cycles.toTranspositions(ranking, factory);
+  }
 
   /**
    * Write this permutation as a product of transpositions.
@@ -291,48 +302,27 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Permutation#prod
    * @see Permutation#swap
    */
-  public List<Permutation> toTranspositions() {
-    if (this.ranking.length == 0)
-      return Collections.emptyList();
-    List<int[]> transpositions = Cycles.toTranspositions(ranking);
-    List<Permutation> permutations = new ArrayList<Permutation>(transpositions.size());
-    for (int[] transposition : transpositions)
-      permutations.add(perm(Cycles.cycle(transposition), false));
-    return permutations;
+  public List<Transposition> toTranspositions() {
+    return toTranspositions(NON_CACHING_FACTORY);
   }
 
   /**
-   * Write this permutation as a product of destructive transpositions.
-   * @param factory a caching factory for destructive transpositions
-   * @return a decomposition of this permutation into destructive transpositions
-   */
-  private Transposition[] toDestructiveTranspositions(Transposition.Factory factory) {
-    if (this.ranking.length == 0)
-      return DESTRUCTIVE_0;
-    List<int[]> t = Cycles.toTranspositions(ranking);
-    Transposition[] result = new Transposition[t.size()];
-    for (int i = 0; i < t.size(); i++)
-      result[i] = factory.create(t.get(i)[0], t.get(i)[1]);
-    return result;
-  }
-
-  /**
-   * Compile a destructive version of this permutation.
-   * @param factory a caching factory for destructive transpositions
+   * Get a compiled version of this operation, which may use less memory and can be used to change arrays in place.
+   * @param factory transposition factory
    * @return a destructive version of this instance
    */
-  public CompiledPermutation toDestructivePermutation(Transposition.Factory factory) {
+  public CompiledPermutation compile(Transposition.Factory factory) {
     if (this.ranking.length == 0)
       return CompiledPermutation.IDENTITY;
-    return CompiledPermutation.create(toDestructiveTranspositions(factory));
+    return CompiledPermutation.create(toTranspositions(factory));
   }
 
   /**
-   * Compile a destructive version of this permutation, using no caching.
+   * Get a compiled version of this operation, which may use less memory and can be used to change arrays in place.
    * @return a destructive version of this instance
    */
-  public CompiledPermutation toDestructivePermutation() {
-    return toDestructivePermutation(NON_CACHING_FACTORY);
+  public CompiledPermutation compile() {
+    return compile(NON_CACHING_FACTORY);
   }
 
   /**
@@ -342,7 +332,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#toTranspositions
    */
   public int signature() {
-    return toTranspositions().size() % 2 == 0 ? 1 : -1;
+    return signature(NON_CACHING_FACTORY);
+  }
+
+  public int signature(Transposition.Factory factory) {
+    return toTranspositions(factory).size() % 2 == 0 ? 1 : -1;
   }
 
   /**
@@ -939,8 +933,10 @@ public final class Permutation implements Comparable<Permutation> {
       this.length = length;
     }
 
-    private static CompiledPermutation create(Transposition[] transpositions) {
-      return new CompiledPermutation(transpositions);
+    public static CompiledPermutation create(List<Transposition> transpositions) {
+      if (transpositions.isEmpty())
+        return IDENTITY;
+      return new CompiledPermutation(transpositions.toArray(new Transposition[transpositions.size()]));
     }
 
     /**
@@ -1045,6 +1041,67 @@ public final class Permutation implements Comparable<Permutation> {
         transpositions[i].clobber(list);
     }
 
+    public int[] apply(int[] a) {
+      int[] copy = Arrays.copyOf(a, a.length);
+      clobber(copy);
+      return copy;
+    }
+
+    public byte[] apply(byte[] a) {
+      byte[] copy = Arrays.copyOf(a, a.length);
+      clobber(copy);
+      return copy;
+    }
+
+    public char[] apply(char[] a) {
+      char[] copy = Arrays.copyOf(a, a.length);
+      clobber(copy);
+      return copy;
+    }
+
+    public short[] apply(short[] a) {
+      short[] copy = Arrays.copyOf(a, a.length);
+      clobber(copy);
+      return copy;
+    }
+
+    public float[] apply(float[] a) {
+      float[] copy = Arrays.copyOf(a, a.length);
+      clobber(copy);
+      return copy;
+    }
+
+    public double[] apply(double[] a) {
+      double[] copy = Arrays.copyOf(a, a.length);
+      clobber(copy);
+      return copy;
+    }
+
+    public long[] apply(long[] a) {
+      long[] copy = Arrays.copyOf(a, a.length);
+      clobber(copy);
+      return copy;
+    }
+
+    public <E> E[] apply(E[] a) {
+      E[] copy = Arrays.copyOf(a, a.length);
+      clobber(copy);
+      return copy;
+    }
+
+    public <E> List<E> apply(List<E> a) {
+      ArrayList<E> copy = new ArrayList<E>(a.size());
+      for (int i = 0; i < a.size(); i++)
+        copy.set(i, a.get(apply(i)));
+      return copy;
+    }
+
+    public int apply(int j) {
+      for (int i = transpositions.length - 1; i != -1; i--)
+        j = transpositions[i].apply(j);
+      return j;
+    }
+
     /**
      * Get the transposition that define this operation.
      * @return a copy of the array of transpositions
@@ -1054,8 +1111,8 @@ public final class Permutation implements Comparable<Permutation> {
     }
 
     /**
-     * Get a nondestructive version of this operation.
-     * @return a nondestructive version of this operation
+     * Uncompile this operation.
+     * @return an uncompiled version of this operation
      */
     public Permutation toPermutation() {
       Permutation p = Permutation.identity();

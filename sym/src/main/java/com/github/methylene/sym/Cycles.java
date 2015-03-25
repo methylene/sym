@@ -61,7 +61,7 @@ public final class Cycles {
    * @throws java.lang.IllegalArgumentException if the input does not define a cycle
    * @see #isCycle
    */
-  public static int[] cycle(int... cycle) {
+  public static int[] asRanking(int... cycle) {
     boolean[] moved = movedIndexes(cycle);
     int[] ranking = new int[moved.length];
     for (int i = 0; i < moved.length; i += 1)
@@ -70,6 +70,7 @@ public final class Cycles {
   }
 
   public static int order(int[] ranking, final int i) {
+    Rankings.checkRanking(ranking);
     int length = 1;
     int j = i;
     while ((j = ranking[j]) != i)
@@ -133,12 +134,29 @@ public final class Cycles {
     return orbits;
   }
 
-  public static List<int[]> toTranspositions(int[] ranking) {
-    List<int[]> transpositions = new ArrayList<int[]>(ranking.length);
+  /**
+   * Write the input ranking as a list of transpositions.
+   * This method does not check if the input is indeed a valid ranking and may have unexpected results otherwise.
+   * @param ranking a ranking
+   * @param factory a transposition factory
+   * @return a list of transpositionst that is equivalent to the input {@code ranking}
+   */
+  public static List<Transposition> toTranspositions(int[] ranking, Transposition.Factory factory) {
+    ArrayList<Transposition> transpositions = new ArrayList<Transposition>(ranking.length);
     for (int[] orbit : toOrbits(ranking))
       for (int i = 0; i < orbit.length - 1; i += 1)
-        transpositions.add(new int[]{orbit[i], orbit[i + 1]});
+        transpositions.add(factory.create(orbit[i], orbit[i + 1]));
     return transpositions;
+  }
+
+  /**
+   * Write the input ranking as a list of transpositions.
+   * This method does not check if the input is indeed a valid ranking and may have unexpected results otherwise.
+   * @param ranking a ranking
+   * @return a list of transpositionst that is equivalent to the input {@code ranking}
+   */
+  public static List<Transposition> toTranspositions(int[] ranking) {
+    return toTranspositions(ranking, new Transposition.Factory(0));
   }
 
 

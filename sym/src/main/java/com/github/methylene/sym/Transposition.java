@@ -1,14 +1,16 @@
 package com.github.methylene.sym;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * A transposition that modifies the things it is applied to.
+ * A transposition that swaps two elements.
  */
 public final class Transposition {
 
-  private final int j;
-  private final int k;
+  final int j;
+  final int k;
 
   public static final class Factory {
 
@@ -173,6 +175,65 @@ public final class Transposition {
     ((List) list).set(j, temp);
   }
 
+  public int[] apply(int[] a) {
+    int[] copy = Arrays.copyOf(a, a.length);
+    clobber(copy);
+    return copy;
+  }
+
+  public byte[] apply(byte[] a) {
+    byte[] copy = Arrays.copyOf(a, a.length);
+    clobber(copy);
+    return copy;
+  }
+
+  public char[] apply(char[] a) {
+    char[] copy = Arrays.copyOf(a, a.length);
+    clobber(copy);
+    return copy;
+  }
+
+  public short[] apply(short[] a) {
+    short[] copy = Arrays.copyOf(a, a.length);
+    clobber(copy);
+    return copy;
+  }
+
+  public float[] apply(float[] a) {
+    float[] copy = Arrays.copyOf(a, a.length);
+    clobber(copy);
+    return copy;
+  }
+
+  public double[] apply(double[] a) {
+    double[] copy = Arrays.copyOf(a, a.length);
+    clobber(copy);
+    return copy;
+  }
+
+  public long[] apply(long[] a) {
+    long[] copy = Arrays.copyOf(a, a.length);
+    clobber(copy);
+    return copy;
+  }
+
+  public <E> E[] apply(E[] a) {
+    E[] copy = Arrays.copyOf(a, a.length);
+    clobber(copy);
+    return copy;
+  }
+
+  public <E> List<E> apply(List<E> a) {
+    ArrayList<E> copy = new ArrayList<E>(a.size());
+    for (int i = 0; i < a.size(); i++)
+      copy.set(i, a.get(apply(i)));
+    return copy;
+  }
+
+  public int apply(int i) {
+    return i == j ? k : i == k ? j : i;
+  }
+
   /**
    * Return the minimum number of elements that an array or list must have, in order for this operation to
    * be applicable.
@@ -199,8 +260,8 @@ public final class Transposition {
   }
 
   /**
-   * Get a nondestructive version of this operation.
-   * @return a nondestructive version of this operation
+   * Get a permutation version of this operation.
+   * @return a permutation
    */
   public Permutation toPermutation() {
     return Permutation.swap(j, k);

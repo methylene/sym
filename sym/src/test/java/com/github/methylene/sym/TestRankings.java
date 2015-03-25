@@ -9,10 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static com.github.methylene.sym.Rankings.*;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class TestRankings {
 
@@ -119,7 +116,7 @@ public class TestRankings {
       int[] hopefullyIdentity = comp(sort, unsort);
       assertTrue(Util.isSorted(hopefullyIdentity));
       assertTrue(Util.isSorted(sorted));
-      for (int el: a) {
+      for (int el : a) {
         assertEquals(Util.indexOf(a, el, 0), unsort[Arrays.binarySearch(sorted, el)]);
       }
     }
@@ -145,7 +142,7 @@ public class TestRankings {
     for (int _ = 0; _ < 100; _++) {
       Permutation p = Permutation.random(100);
       assertEquals(p, Permutation.prod(p.toCycles()));
-      assertEquals(p, Permutation.prod(p.toTranspositions()));
+      assertEquals(p, p.compile().toPermutation());
     }
   }
 

@@ -345,7 +345,7 @@ public class PermutationTest {
       sign += p.signature();
       List<Permutation> cycles = p.toCycles();
       assertEquals(p, Permutation.prod(cycles));
-      assertEquals(p, Permutation.prod(p.toTranspositions()));
+      assertEquals(p, p.compile().toPermutation());
       if (p.reverses(5)) {
         assertEquals(2, order);
         assertEquals(1, p.signature());
@@ -427,7 +427,7 @@ public class PermutationTest {
       int[] copy = Arrays.copyOf(a, a.length);
       List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
       Permutation p = Permutation.random(5);
-      CompiledPermutation d = p.toDestructivePermutation();
+      CompiledPermutation d = p.compile();
       d.clobber(copy);
       d.clobber(listCopy);
       int[] expected = p.apply(a);
@@ -445,7 +445,7 @@ public class PermutationTest {
       int[] copy = Arrays.copyOf(a, a.length);
       List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
       Permutation p = Permutation.random(100);
-      CompiledPermutation d = p.toDestructivePermutation(factory);
+      CompiledPermutation d = p.compile(factory);
       d.clobber(copy);
       d.clobber(listCopy);
       int[] expected = p.apply(a);

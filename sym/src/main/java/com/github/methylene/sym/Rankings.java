@@ -110,8 +110,13 @@ public final class Rankings {
    * @see #isValid
    */
   public static int[] checkRanking(int[] a) {
-    if (!isValid(a))
-      throw new IllegalArgumentException("argument is not a ranking");
+    if (!isValid(a)) {
+      String msg = "argument is not a ranking";
+      if (a.length < 20) {
+        msg += ": " + Arrays.toString(a);
+      }
+      throw new IllegalArgumentException(msg);
+    }
     return a;
   }
 
