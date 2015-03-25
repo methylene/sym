@@ -283,6 +283,7 @@ public final class Permutation implements Comparable<Permutation> {
       result.add(cycle(orbit));
     return result;
   }
+
   /**
    * Write this permutation as a product of transpositions.
    * @return a decomposition of this permutation into transpositions
@@ -1090,9 +1091,8 @@ public final class Permutation implements Comparable<Permutation> {
     }
 
     public <E> List<E> apply(List<E> a) {
-      ArrayList<E> copy = new ArrayList<E>(a.size());
-      for (int i = 0; i < a.size(); i++)
-        copy.set(i, a.get(apply(i)));
+      ArrayList<E> copy = new ArrayList<E>(a);
+      clobber(copy);
       return copy;
     }
 

@@ -168,11 +168,10 @@ public final class Transposition {
    * @throws java.lang.UnsupportedOperationException if the input list is not mutable
    * @throws java.lang.IndexOutOfBoundsException if {@code list.size() < this.length()}
    */
-  @SuppressWarnings("unchecked")
-  public void clobber(List<?> list) {
-    Object temp = list.get(k);
-    ((List) list).set(k, list.get(j));
-    ((List) list).set(j, temp);
+  public <E> void clobber(List<E> list) {
+    E temp = list.get(k);
+    list.set(k, list.get(j));
+    list.set(j, temp);
   }
 
   public int[] apply(int[] a) {

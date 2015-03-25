@@ -62,17 +62,31 @@ public class PermutationTest {
 
   @Test
   public void testIterable() {
-    MyInt[] a = MyInt.box(randomNumbers(100, 200));
-    Permutation p = Permutation.random((int) (Math.random() * a.length));
-    List<MyInt> arrayList = new ArrayList<MyInt>(a.length);
-    List<MyInt> linkedList = new LinkedList<MyInt>();
-    Collections.addAll(arrayList, a);
-    Collections.addAll(linkedList, a);
-    arrayList = p.apply(arrayList);
-    linkedList = p.apply(linkedList);
-    for (int i = 0; i < a.length; i += 1) {
-      assertEquals(p.apply(a)[i], arrayList.get(i));
-      assertEquals(p.apply(a)[i], linkedList.get(i));
+    for (int _ = 0; _ < 100; _++) {
+      MyInt[] a = MyInt.box(randomNumbers(100, 50 + (int) (Math.random() * 100)));
+      Permutation p = Permutation.random((int) (Math.random() * a.length));
+      Object[] applied = p.apply(a);
+      List<MyInt> arrayList = new ArrayList<MyInt>(a.length);
+      List<MyInt> linkedList = new LinkedList<MyInt>();
+      Collections.addAll(arrayList, a);
+      Collections.addAll(linkedList, a);
+      List<MyInt> arrayListApplied, linkedListApplied;
+      List<MyInt> arrayListApplied2, linkedListApplied2;
+
+      // standard
+      arrayListApplied = p.apply(arrayList);
+      linkedListApplied = p.apply(linkedList);
+      for (int i = 0; i < a.length; i += 1) {
+        assertEquals(applied[i], arrayListApplied.get(i));
+        assertEquals(applied[i], linkedListApplied.get(i));
+      }
+
+      // compiled
+      CompiledPermutation compiled = p.compile();
+      arrayListApplied2 = compiled.apply(arrayList);
+      linkedListApplied2 = compiled.apply(linkedList);
+      assertEquals(arrayListApplied, arrayListApplied2);
+      assertEquals(linkedListApplied, linkedListApplied2);
     }
   }
 
