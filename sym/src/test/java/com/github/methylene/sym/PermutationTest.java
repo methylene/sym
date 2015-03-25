@@ -440,11 +440,12 @@ public class PermutationTest {
   @Test
   public void testDestructive2() {
     for (int _ = 0; _ < 100; _++) {
+      DestructiveTransposition.Factory factory = new DestructiveTransposition.Factory(Math.random() < 0.5 ? 0 : (int) (Math.random() * 200));
       int[] a = Util.randomNumbers(100, 100);
       int[] copy = Arrays.copyOf(a, a.length);
       List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
       Permutation p = Permutation.random(100);
-      DestructivePermutation d = p.toDestructivePermutation();
+      DestructivePermutation d = p.toDestructivePermutation(factory);
       d.apply(copy);
       d.apply(listCopy);
       int[] expected = p.apply(a);

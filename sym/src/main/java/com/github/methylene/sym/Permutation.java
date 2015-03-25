@@ -1,15 +1,10 @@
 package com.github.methylene.sym;
 
 import static com.github.methylene.sym.Util.checkLength;
-import static com.github.methylene.sym.Util.lengthFailure;
 import static com.github.methylene.sym.Util.negativeFailure;
 import com.github.methylene.lists.LookupList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>A permutation that can be used to rearrange arrays.</p>
@@ -17,10 +12,12 @@ import java.util.List;
 public final class Permutation implements Comparable<Permutation> {
 
   public static final DestructiveTransposition[] DESTRUCTIVE_0 = new DestructiveTransposition[0];
+  public static final DestructiveTransposition.Factory NON_CACHING_FACTORY = new DestructiveTransposition.Factory(0);
+
   /*
-       *  An array of N integers where each of the integers between 0 and N-1 appears exactly once.
-       *  This array is never modified.
-       */
+   *  An array of N integers where each of the integers between 0 and N-1 appears exactly once.
+   *  This array is never modified.
+   */
   private final int[] ranking;
 
   private static final Permutation IDENTITY = new Permutation(new int[0], false);
@@ -306,26 +303,36 @@ public final class Permutation implements Comparable<Permutation> {
 
   /**
    * Write this permutation as a product of destructive transpositions.
+   * @param factory a caching factory for destructive transpositions
    * @return a decomposition of this permutation into destructive transpositions
    */
-  private DestructiveTransposition[] toDestructiveTranspositions() {
+  private DestructiveTransposition[] toDestructiveTranspositions(DestructiveTransposition.Factory factory) {
     if (this.ranking.length == 0)
       return DESTRUCTIVE_0;
     List<int[]> t = Cycles.toTranspositions(ranking);
     DestructiveTransposition[] result = new DestructiveTransposition[t.size()];
     for (int i = 0; i < t.size(); i++)
-      result[i] = DestructiveTransposition.create(t.get(i)[0], t.get(i)[1]);
+      result[i] = factory.create(t.get(i)[0], t.get(i)[1]);
     return result;
   }
 
   /**
    * Compile a destructive version of this permutation.
+   * @param factory a caching factory for destructive transpositions
+   * @return a destructive version of this instance
+   */
+  public DestructivePermutation toDestructivePermutation(DestructiveTransposition.Factory factory) {
+    if (this.ranking.length == 0)
+      return DestructivePermutation.IDENTITY;
+    return DestructivePermutation.create(toDestructiveTranspositions(factory));
+  }
+
+  /**
+   * Compile a destructive version of this permutation, using no caching.
    * @return a destructive version of this instance
    */
   public DestructivePermutation toDestructivePermutation() {
-    if (this.ranking.length == 0)
-      return DestructivePermutation.IDENTITY;
-    return DestructivePermutation.create(toDestructiveTranspositions());
+    return toDestructivePermutation(NON_CACHING_FACTORY);
   }
 
   /**
@@ -411,9 +418,11 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Get the length an array must have in order for this permutation to rearrange its elements.
-   * @return the length of this permutation
+   * Return the minimum number of elements that an array or list must have, in order for this operation to
+   * be applicable.
+   * @return the length of this operation
    */
+
   public int length() {
     return ranking.length;
   }
@@ -1057,6 +1066,11 @@ public final class Permutation implements Comparable<Permutation> {
       return Arrays.toString(transpositions);
     }
 
+    /**
+     * Return the minimum number of elements that an array or list must have, in order for this operation to
+     * be applicable.
+     * @return the length of this operation
+     */
     public int length() {
       return length;
     }
