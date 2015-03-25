@@ -173,13 +173,15 @@ public class PermutationTest {
     }
   }
 
-  @Test public void cycleEquality() {
+  @Test
+  public void cycleEquality() {
     Assert.assertEquals(Permutation.cycle1(1, 5, 3, 2), Permutation.cycle1(5, 3, 2, 1));
     Assert.assertEquals(Permutation.cycle1(1, 5, 3, 2), Permutation.cycle1(2, 1, 5, 3));
     Assert.assertNotEquals(Permutation.cycle1(1, 5, 3, 2), Permutation.cycle1(1, 5, 2, 3));
   }
 
-  @Test public void cycleApply() {
+  @Test
+  public void cycleApply() {
     Assert.assertArrayEquals(new String[]{"b", "c", "e", "d", "a"},
         Permutation.cycle1(1, 5, 3, 2).apply(Util.symbols(5)));
     Assert.assertArrayEquals(new String[]{"c", "b", "e", "d", "a"},
@@ -188,7 +190,8 @@ public class PermutationTest {
         Permutation.cycle1(1, 2, 3).apply(Util.symbols(3)));
   }
 
-  @Test public void testCycleApply() throws Exception {
+  @Test
+  public void testCycleApply() throws Exception {
     Assert.assertArrayEquals(new String[]{"c", "a", "b"},
         Permutation.prod(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3)).apply(Util.symbols(3)));
     Assert.assertArrayEquals(new String[]{"c", "a", "b"}, Permutation.cycle1(1, 2, 3).apply(Util.symbols(3)));
@@ -210,7 +213,8 @@ public class PermutationTest {
         Permutation.cycle1(4, 1, 11, 3)), longest);
   }
 
-  @Test public void testSort() throws Exception {
+  @Test
+  public void testSort() throws Exception {
     int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
@@ -238,7 +242,8 @@ public class PermutationTest {
   }
 
   /* check example from README */
-  @Test public void testSortInvert() {
+  @Test
+  public void testSortInvert() {
     int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
     Permutation unsort = Permutation.sort(x).invert();
     int[] y = Arrays.copyOf(x, x.length);
@@ -250,7 +255,8 @@ public class PermutationTest {
   }
 
   /* check defining property of sort */
-  @Test public void testSortRandom() {
+  @Test
+  public void testSortRandom() {
     int size = (int) (100 * Math.random());
     int[] distinct = distinctInts(size, 8);
     int[] sorted = Arrays.copyOf(distinct, distinct.length);
@@ -290,14 +296,15 @@ public class PermutationTest {
   }
 
   /* Another way of checking that duplicateRejectingFactory().sort(a).apply(a) sorts a, for distinct array a */
-  @Test public void testSort1024() {
+  @Test
+  public void testSort1024() {
     int[] a = distinctInts(1024, 8);
     assertArrayEquals(classicSort(a), Permutation.sort(a).apply(a));
   }
 
   @Test
   public void testCycleLength() {
-    Permutation swap01 = Permutation.swap(0, 1);
+    Permutation swap01 = Transposition.swap(0, 1).toPermutation();
     assertEquals(2, swap01.length());
   }
 
@@ -357,8 +364,8 @@ public class PermutationTest {
     for (Permutation p : TestUtil.sym(5)) {
       int order = p.order();
       sign += p.signature();
-      List<Permutation> cycles = p.toCycles();
-      assertEquals(p, Permutation.prod(cycles));
+      List<CompiledPermutation> cycles = p.toCycles();
+      assertEquals(p, CompiledPermutation.prod(cycles).toPermutation());
       assertEquals(p, p.compile().toPermutation());
       if (p.reverses(5)) {
         assertEquals(2, order);
@@ -472,7 +479,7 @@ public class PermutationTest {
   @Test
   public void testSorts() {
     for (int _ = 0; _ < 100; _++) {
-      int[] a = Util.randomNumbers(100, 100);
+      int[] a = Util.randomNumbers(100, 50 + (int) (Math.random() * 100));
       Permutation p = Permutation.sort(a);
       assertTrue(p.sorts(a));
     }

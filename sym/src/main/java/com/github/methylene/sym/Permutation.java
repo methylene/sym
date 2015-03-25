@@ -7,12 +7,15 @@ import com.github.methylene.lists.LookupList;
 import java.util.*;
 
 /**
- * <p>A permutation that can be used to rearrange arrays.</p>
+ * An operation that shuffles arrays and lists.
+ * Instances of this class are immutable, and none of the apply methods modify the input.
+ * The compile method returns a destructive variant.
+ *
+ * @see #compile
  */
 public final class Permutation implements Comparable<Permutation> {
 
   public static final Transposition[] DESTRUCTIVE_0 = new Transposition[0];
-  public static final Transposition.Factory NON_CACHING_FACTORY = new Transposition.Factory(0);
 
   /*
    *  An array of N integers where each of the integers between 0 and N-1 appears exactly once.
@@ -76,18 +79,6 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public static Permutation cycle1(int... cycle1based) {
     return cycle(Util.add(cycle1based, -1));
-  }
-
-  /**
-   * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">transposition</a>.
-   * @param i a positive integer
-   * @param j a positive integer
-   * @return the permutation of length {@code Math.max(i, j)} that swaps the elements at indexes {@code i}
-   * and {@code j}
-   * @see com.github.methylene.sym.Permutation#cycle
-   */
-  public static Permutation swap(int i, int j) {
-    return cycle(i, j);
   }
 
   /**
@@ -263,8 +254,22 @@ public final class Permutation implements Comparable<Permutation> {
     return Cycles.isCyclicRanking(ranking);
   }
 
+
   /**
-   * <p>Write this permutation as a product of cycles.</p>
+   * Write this permutation as a product of cyclic permutations.
+   * @param factory the transposition factory
+   * @return a cycle decomposition of this permutation
+   * @see com.github.methylene.sym.Permutation#cycle
+   * @see com.github.methylene.sym.Permutation#isCycle
+   */
+  public List<CompiledPermutation> toCycles(Transposition.Factory factory) {
+    if (this.ranking.length == 0)
+      return Collections.emptyList();
+    return Cycles.toCycles(ranking, factory);
+  }
+
+  /**
+   * <p>Write this permutation as a product of cyclic permutations.</p>
    * <p>For every permutation {@code p} in the returned list, the following are true:</p>
    * <pre><code>
    *   p.isCycle() == true;
@@ -274,14 +279,8 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#cycle
    * @see com.github.methylene.sym.Permutation#isCycle
    */
-  public List<Permutation> toCycles() {
-    if (this.ranking.length == 0)
-      return Collections.emptyList();
-    List<int[]> orbits = Cycles.toOrbits(ranking);
-    ArrayList<Permutation> result = new ArrayList<Permutation>(orbits.size());
-    for (int[] orbit : orbits)
-      result.add(cycle(orbit));
-    return result;
+  public List<CompiledPermutation> toCycles() {
+    return toCycles(Transposition.NON_CACHING_FACTORY);
   }
 
   /**
@@ -289,7 +288,6 @@ public final class Permutation implements Comparable<Permutation> {
    * @return a decomposition of this permutation into transpositions
    * @param factory transposition factory
    * @see Permutation#prod
-   * @see Permutation#swap
    */
   public List<Transposition> toTranspositions(Transposition.Factory factory) {
     if (this.ranking.length == 0)
@@ -301,10 +299,9 @@ public final class Permutation implements Comparable<Permutation> {
    * Write this permutation as a product of transpositions.
    * @return a decomposition of this permutation into transpositions
    * @see Permutation#prod
-   * @see Permutation#swap
    */
   public List<Transposition> toTranspositions() {
-    return toTranspositions(NON_CACHING_FACTORY);
+    return toTranspositions(Transposition.NON_CACHING_FACTORY);
   }
 
   /**
@@ -323,19 +320,24 @@ public final class Permutation implements Comparable<Permutation> {
    * @return a destructive version of this instance
    */
   public CompiledPermutation compile() {
-    return compile(NON_CACHING_FACTORY);
+    return compile(Transposition.NON_CACHING_FACTORY);
   }
 
   /**
    * Calculate the <a href="http://en.wikipedia.org/wiki/Parity_of_a_permutation">signature</a> of this permutation.
    * @return {@code 1} if this permutation can be written as an even number of transpositions, {@code -1} otherwise
-   * @see com.github.methylene.sym.Permutation#swap
    * @see com.github.methylene.sym.Permutation#toTranspositions
    */
   public int signature() {
-    return signature(NON_CACHING_FACTORY);
+    return signature(Transposition.NON_CACHING_FACTORY);
   }
 
+  /**
+   * Calculate the <a href="http://en.wikipedia.org/wiki/Parity_of_a_permutation">signature</a> of this permutation.
+   * @param factory the transposition factory
+   * @return {@code 1} if this permutation can be written as an even number of transpositions, {@code -1} otherwise
+   * @see com.github.methylene.sym.Permutation#toTranspositions
+   */
   public int signature(Transposition.Factory factory) {
     return toTranspositions(factory).size() % 2 == 0 ? 1 : -1;
   }
@@ -496,12 +498,16 @@ public final class Permutation implements Comparable<Permutation> {
   /* ============== apply to arrays ============== */
 
   /**
-   * Rearrange an array. Each element of the return value of this method can be safely cast to the element type
-   * of the input.
+   * <p>Rearrange an array. This method does not modify its input array.</p>
+   * <p>Each element of the return value of this method can be safely cast to the element type
+   * of the input. Alternatively, this operation can be compiled to an object which has a more typesafe apply method for
+   * all subclasses of {@code Object[]}.</p>
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see #compile()
+   * @see CompiledPermutation#apply(Object[])
    */
   public Object[] apply(Object[] input) {
     if (this.ranking.length == 0)
@@ -511,12 +517,17 @@ public final class Permutation implements Comparable<Permutation> {
 
 
   /**
-   * Rearrange an array. Each element of the return value of this method can be safely cast to the element type
-   * of the input.
+   * <p>Rearrange an array. This method does not modify its input array.</p>
+   * <p>Each element of the return value of this method can be safely cast to the element type
+   * of the input. Alternatively, this operation can be compiled to an object which has a more typesafe apply method for
+   * all subclasses of {@code Comparable[]}.</p>
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see #compile()
+   * @see CompiledPermutation#apply(Object[])
+   * @see CompiledPermutation#clobber(Object[])
    */
   public Comparable[] apply(Comparable[] input) {
     if (this.ranking.length == 0)
@@ -525,11 +536,13 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see CompiledPermutation#apply(Object[])
+   * @see CompiledPermutation#clobber(Object[])
+   * @see #apply(int)
    */
   public String[] apply(String[] input) {
     if (this.ranking.length == 0)
@@ -538,10 +551,11 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
+   * @see CompiledPermutation#clobber(byte[])
    * @see com.github.methylene.sym.Permutation#apply(int)
    */
   public byte[] apply(byte[] input) {
@@ -552,11 +566,12 @@ public final class Permutation implements Comparable<Permutation> {
 
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see CompiledPermutation#clobber(short[])
+   * @see #apply(int)
    */
   public short[] apply(short[] input) {
     if (this.ranking.length == 0)
@@ -565,11 +580,12 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see CompiledPermutation#clobber(int[])
+   * @see #apply(int)
    */
   public int[] apply(int[] input) {
     if (this.ranking.length == 0)
@@ -579,11 +595,12 @@ public final class Permutation implements Comparable<Permutation> {
 
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see CompiledPermutation#clobber(long[])
+   * @see #apply(int)
    */
   public long[] apply(long[] input) {
     if (this.ranking.length == 0)
@@ -592,11 +609,12 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see CompiledPermutation#clobber(float[])
+   * @see #apply(int)
    */
   public float[] apply(float[] input) {
     if (this.ranking.length == 0)
@@ -606,11 +624,12 @@ public final class Permutation implements Comparable<Permutation> {
 
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see #apply(int)
+   * @see CompiledPermutation#clobber(double[])
    */
   public double[] apply(double[] input) {
     if (this.ranking.length == 0)
@@ -619,11 +638,11 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see #apply(int)
    */
   public boolean[] apply(boolean[] input) {
     if (this.ranking.length == 0)
@@ -632,11 +651,12 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Rearrange an array.
+   * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see CompiledPermutation#clobber(char[])
+   * @see #apply(int)
    */
   public char[] apply(char[] input) {
     if (this.ranking.length == 0)
@@ -649,7 +669,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @param s a string of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code s}
    * @throws java.lang.IllegalArgumentException if {@code s.length() < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see #apply(int)
    */
   public String apply(String s) {
     if (this.ranking.length == 0)
@@ -660,11 +680,12 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Rearrange a list.
+   * Rearrange a list. This method does not modify the input list.
    * @param input a list that must have at least {@code this.length()} elements
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input} has less than {@code this.length()} elements
-   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see CompiledPermutation#clobber(List)
+   * @see #apply(int)
    */
   public <E> List<E> apply(List<E> input) {
     if (ranking.length == 0)
@@ -677,33 +698,44 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Returns a permutation that sorts the input.
-   * @param input an array
-   * @see com.github.methylene.sym.Permutation#sort(char[])
+   * Returns a certain permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sort(byte[])
    */
   public static Permutation sort(byte[] input) {
     return perm(Rankings.sort(input), false);
   }
 
   /**
-   * Returns a permutation that sorts the input.
-   * @param input an array
-   * @see com.github.methylene.sym.Permutation#sort(char[]) */
+   * Returns a certain permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sort(short[])
+   */
   public static Permutation sort(short[] input) {
     return perm(Rankings.sort(input), false);
   }
 
   /**
-   * Returns a permutation that sorts the input.
-   * @see com.github.methylene.sym.Permutation#sort(char[])
+   * Returns a certain permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sort(long[])
    */
   public static Permutation sort(long[] input) {
     return perm(Rankings.sort(input), false);
   }
 
   /**
-   * Returns a permutation that sorts the input.
-   * @see com.github.methylene.sym.Permutation#sort(char[])
+   * Returns a certain permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sort(float[])
    */
   public static Permutation sort(float[] input) {
     return perm(Rankings.sort(input), false);
@@ -711,16 +743,22 @@ public final class Permutation implements Comparable<Permutation> {
 
 
   /**
-   * Returns a permutation that sorts the input.
-   * @see com.github.methylene.sym.Permutation#sort(char[])
+   * Returns a certain permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sort(double[])
    */
   public static Permutation sort(double[] input) {
     return perm(Rankings.sort(input), false);
   }
 
   /**
-   * Returns a permutation that sorts the input.
-   * @see com.github.methylene.sym.Permutation#sort(char[])
+   * Returns a certain permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sort(Comparable[])
    */
   public static <E extends Comparable> Permutation sort(E[] input) {
     return perm(Rankings.sort(input), false);
@@ -729,22 +767,35 @@ public final class Permutation implements Comparable<Permutation> {
 
   /**
    * Returns a certain permutation that sorts the input array.
-   * TODO describe more precisely which permutation is chosen if there is a choice
    * @param input an array, not necessarily distinct
    * @return a permutation that sorts the input
    * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sort(char[])
    */
   public static Permutation sort(char[] input) {
     return perm(Rankings.sort(input), false);
   }
 
-  /** @see com.github.methylene.sym.Permutation#sort(char[]) */
+  /**
+   * Returns a certain permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @param comp a Comparator for the elements in the input
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sort(Object[], Comparator)
+   */
   public static <E> Permutation sort(Object[] input, Comparator<E> comp) {
     return perm(Rankings.sort(input, comp), false);
   }
 
 
-  /** @see com.github.methylene.sym.Permutation#sort(char[]) */
+  /**
+   * Returns a certain permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sort(int[])
+   */
   public static Permutation sort(int[] input) {
     return perm(Rankings.sort(input), false);
   }
@@ -914,226 +965,6 @@ public final class Permutation implements Comparable<Permutation> {
   @SuppressWarnings("unchecked")
   public <E> boolean sorts(Comparator<E> comparator, Object[] a) {
     return Rankings.sorts(ranking, a, (Comparator) comparator);
-  }
-
-  /**
-   * A list of transpositions
-   */
-  public static final class CompiledPermutation {
-
-    static final CompiledPermutation IDENTITY = new CompiledPermutation(new Transposition[0]);
-
-    private final Transposition[] transpositions;
-    private final int length;
-
-    private CompiledPermutation(Transposition[] transpositions) {
-      int length = 0;
-      for (Transposition t : transpositions)
-        length = Math.max(length, t.length());
-      this.transpositions = transpositions;
-      this.length = length;
-    }
-
-    public static CompiledPermutation create(List<Transposition> transpositions) {
-      if (transpositions.isEmpty())
-        return IDENTITY;
-      return new CompiledPermutation(transpositions.toArray(new Transposition[transpositions.size()]));
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(int[] array) {
-      checkLength(length, array.length);
-      for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].clobber(array);
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(byte[] array) {
-      checkLength(length, array.length);
-      for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].clobber(array);
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(char[] array) {
-      checkLength(length, array.length);
-      for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].clobber(array);
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(short[] array) {
-      checkLength(length, array.length);
-      for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].clobber(array);
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(float[] array) {
-      checkLength(length, array.length);
-      for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].clobber(array);
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(double[] array) {
-      checkLength(length, array.length);
-      for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].clobber(array);
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(long[] array) {
-      checkLength(length, array.length);
-      for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].clobber(array);
-    }
-
-    /**
-     * Apply this operation by modifying the input array.
-     * @param array an array
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     */
-    public void clobber(Object[] array) {
-      checkLength(length, array.length);
-      for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].clobber(array);
-    }
-
-    /**
-     * Apply this operation by modifying the input list.
-     * The input list must support {@link java.util.List#set(int, Object)}.
-     * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
-     * @param list an array
-     * @throws java.lang.UnsupportedOperationException if the input list is not mutable
-     * @throws java.lang.IllegalArgumentException if {@code list.size() < this.length()}
-     */
-    public void clobber(List<?> list) {
-      checkLength(length, list.size());
-      for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].clobber(list);
-    }
-
-    public int[] apply(int[] a) {
-      int[] copy = Arrays.copyOf(a, a.length);
-      clobber(copy);
-      return copy;
-    }
-
-    public byte[] apply(byte[] a) {
-      byte[] copy = Arrays.copyOf(a, a.length);
-      clobber(copy);
-      return copy;
-    }
-
-    public char[] apply(char[] a) {
-      char[] copy = Arrays.copyOf(a, a.length);
-      clobber(copy);
-      return copy;
-    }
-
-    public short[] apply(short[] a) {
-      short[] copy = Arrays.copyOf(a, a.length);
-      clobber(copy);
-      return copy;
-    }
-
-    public float[] apply(float[] a) {
-      float[] copy = Arrays.copyOf(a, a.length);
-      clobber(copy);
-      return copy;
-    }
-
-    public double[] apply(double[] a) {
-      double[] copy = Arrays.copyOf(a, a.length);
-      clobber(copy);
-      return copy;
-    }
-
-    public long[] apply(long[] a) {
-      long[] copy = Arrays.copyOf(a, a.length);
-      clobber(copy);
-      return copy;
-    }
-
-    public <E> E[] apply(E[] a) {
-      E[] copy = Arrays.copyOf(a, a.length);
-      clobber(copy);
-      return copy;
-    }
-
-    public <E> List<E> apply(List<E> a) {
-      ArrayList<E> copy = new ArrayList<E>(a);
-      clobber(copy);
-      return copy;
-    }
-
-    public int apply(int j) {
-      for (int i = transpositions.length - 1; i != -1; i--)
-        j = transpositions[i].apply(j);
-      return j;
-    }
-
-    /**
-     * Get the transposition that define this operation.
-     * @return a copy of the array of transpositions
-     */
-    public Transposition[] getTranspositions() {
-      return Arrays.copyOf(transpositions, transpositions.length);
-    }
-
-    /**
-     * Uncompile this operation.
-     * @return an uncompiled version of this operation
-     */
-    public Permutation toPermutation() {
-      Permutation p = Permutation.identity();
-      for (Transposition t : transpositions)
-        p = p.comp(Permutation.swap(t.getFirst(), t.getSecond()));
-      return p;
-    }
-
-    public String toString() {
-      return Arrays.toString(transpositions);
-    }
-
-    /**
-     * Return the minimum number of elements that an array or list must have, in order for this operation to
-     * be applicable.
-     * @return the length of this operation
-     */
-    public int length() {
-      return length;
-    }
-
   }
 
 }

@@ -134,6 +134,22 @@ public final class Cycles {
     return orbits;
   }
 
+  public static ArrayList<CompiledPermutation> toCycles(int[] ranking, Transposition.Factory factory) {
+    List<int[]> orbits = toOrbits(ranking);
+    ArrayList<CompiledPermutation> result = new ArrayList<CompiledPermutation>(orbits.size());
+    for (int[] orbit : orbits) {
+      ArrayList<Transposition> cycles = new ArrayList<Transposition>(orbit.length - 1);
+      for (int i = 0; i < orbit.length - 1; i += 1)
+        cycles.add(factory.swap(orbit[i], orbit[i + 1]));
+      result.add(CompiledPermutation.create(cycles));
+    }
+    return result;
+  }
+
+  public static ArrayList<CompiledPermutation> toCycles(int[] ranking) {
+    return toCycles(ranking, Transposition.NON_CACHING_FACTORY);
+  }
+
   /**
    * Write the input ranking as a list of transpositions.
    * This method does not check if the input is indeed a valid ranking and may have unexpected results otherwise.
@@ -145,7 +161,7 @@ public final class Cycles {
     ArrayList<Transposition> transpositions = new ArrayList<Transposition>(ranking.length);
     for (int[] orbit : toOrbits(ranking))
       for (int i = 0; i < orbit.length - 1; i += 1)
-        transpositions.add(factory.create(orbit[i], orbit[i + 1]));
+        transpositions.add(factory.swap(orbit[i], orbit[i + 1]));
     return transpositions;
   }
 

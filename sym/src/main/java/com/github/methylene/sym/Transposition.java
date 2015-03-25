@@ -9,9 +9,14 @@ import java.util.List;
  */
 public final class Transposition {
 
-  final int j;
-  final int k;
+  public static final Transposition.Factory NON_CACHING_FACTORY = new Transposition.Factory(0);
 
+  public final int j;
+  public final int k;
+
+  /**
+   * A factory that maintains a cache of transpositions.
+   */
   public static final class Factory {
 
     private final Transposition[][] cache;
@@ -29,7 +34,7 @@ public final class Transposition {
      * @return a transposition operation
      * @throws java.lang.IllegalArgumentException if the arguments are equal or negative
      */
-    public Transposition create(int j, int k) {
+    public Transposition swap(int j, int k) {
       if (j < 0 || k < 0)
         Util.negativeFailure();
       if (j == k)
@@ -48,6 +53,10 @@ public final class Transposition {
       return new Transposition(j, k);
     }
 
+  }
+
+  public static Transposition swap(int j, int k) {
+    return NON_CACHING_FACTORY.swap(j, k);
   }
 
   private Transposition(int j, int k) {
@@ -263,7 +272,7 @@ public final class Transposition {
    * @return a permutation
    */
   public Permutation toPermutation() {
-    return Permutation.swap(j, k);
+    return Permutation.cycle(j, k);
   }
 
   public String toString() {

@@ -141,7 +141,7 @@ public class TestRankings {
   public void testDecompose() {
     for (int _ = 0; _ < 100; _++) {
       Permutation p = Permutation.random(100);
-      assertEquals(p, Permutation.prod(p.toCycles()));
+      assertEquals(p, CompiledPermutation.prod(p.toCycles()).toPermutation());
       assertEquals(p, p.compile().toPermutation());
     }
   }
