@@ -1,11 +1,14 @@
 package com.github.methylene.sym;
 
+import static com.github.methylene.sym.Util.checkLength;
+import static com.github.methylene.sym.Util.negativeFailure;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * A transposition that swaps two elements.
+ * An operation that swaps two elements of an array or list.
  */
 public final class Transposition {
 
@@ -15,15 +18,21 @@ public final class Transposition {
   public final int k;
 
   /**
-   * A factory that maintains a cache of transpositions.
+   * A factory that optionally maintains a cache of transpositions.
    */
   public static final class Factory {
 
     private final Transposition[][] cache;
 
-    public Factory(int cacheSize) {
-      this.cache = new Transposition[cacheSize][];
-      for (int j = 1; j < cacheSize; j++)
+    /**
+     * Create a new factory. If {@code maxCachedLength > 0}, the transpositions returned by the
+     * {@code swap} method will be cached and reused if their {@code length} is {@code <= maxCachedLength}.
+     * The cache will permanently store up to {@code maxCachedLength * (maxCachedLength - 1)} transpositions.
+     * @param maxCachedLength the maximum index that is moved by a cached transposition
+     */
+    public Factory(int maxCachedLength) {
+      this.cache = new Transposition[maxCachedLength][];
+      for (int j = 1; j < maxCachedLength; j++)
         cache[j] = new Transposition[j];
     }
 
@@ -40,7 +49,7 @@ public final class Transposition {
       if (j == k)
         throw new IllegalArgumentException("arguments must not be equal");
       if (k > j) {
-        // keep cache small: make sure that k is less than j
+        // make sure that j is larger than k
         int temp = k;
         k = j;
         j = temp;
@@ -55,23 +64,30 @@ public final class Transposition {
 
   }
 
+  /**
+   * Create a new transposition operation that swaps the elements at the given indexes.
+   * @param j a non-negative number
+   * @param k a non-negative number
+   * @return the transposition that swaps the elements at {@code j} and {@code k}
+   * @throws IllegalArgumentException if {@code j < 0}, {@code k < 0} or {@code j == k}
+   */
   public static Transposition swap(int j, int k) {
     return NON_CACHING_FACTORY.swap(j, k);
   }
 
   private Transposition(int j, int k) {
+    assert j > k;
     this.j = j;
     this.k = k;
   }
 
   /**
    * Apply this operation by modifying the input array.
-   * This method does not validate the length condition {@code array.length >= this.length()},
-   * an ArrayIndexOutOfBoundsException will be the consequence if it is not satisfied.
    * @param array an array
-   * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
   public void clobber(int[] array) {
+    checkLength(j, array.length);
     int temp = array[k];
     array[k] = array[j];
     array[j] = temp;
@@ -79,10 +95,8 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
-   * This method does not check the length condition {@code array.length >= this.length()},
-   * an ArrayIndexOutOfBoundsException will be the consequence if it is not satisfied.
    * @param array an array
-   * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
   public void clobber(byte[] array) {
     byte temp = array[k];
@@ -92,10 +106,8 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
-   * This method does not check the length condition {@code array.length >= this.length()},
-   * an ArrayIndexOutOfBoundsException will be the consequence if it is not satisfied.
    * @param array an array
-   * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
   public void clobber(char[] array) {
     char temp = array[k];
@@ -105,10 +117,8 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
-   * This method does not check the length condition {@code array.length >= this.length()},
-   * an ArrayIndexOutOfBoundsException will be the consequence if it is not satisfied.
    * @param array an array
-   * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
   public void clobber(short[] array) {
     short temp = array[k];
@@ -118,10 +128,8 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
-   * This method does not check the length condition {@code array.length >= this.length()},
-   * an ArrayIndexOutOfBoundsException will be the consequence if it is not satisfied.
    * @param array an array
-   * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
   public void clobber(float[] array) {
     float temp = array[k];
@@ -131,10 +139,8 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
-   * This method does not check the length condition {@code array.length >= this.length()},
-   * an ArrayIndexOutOfBoundsException will be the consequence if it is not satisfied.
    * @param array an array
-   * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
   public void clobber(double[] array) {
     double temp = array[k];
@@ -144,10 +150,8 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
-   * This method does not check the length condition {@code array.length >= this.length()},
-   * an ArrayIndexOutOfBoundsException will be the consequence if it is not satisfied.
    * @param array an array
-   * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
   public void clobber(long[] array) {
     long temp = array[k];
@@ -157,10 +161,8 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
-   * This method does not check the length condition {@code array.length >= this.length()},
-   * an ArrayIndexOutOfBoundsException will be the consequence if it is not satisfied.
    * @param array an array
-   * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
   public void clobber(Object[] array) {
     Object temp = array[k];
@@ -171,11 +173,9 @@ public final class Transposition {
   /**
    * Apply this operation by modifying the input list.
    * The input list must support {@link java.util.List#set(int, Object)}.
-   * This method does not check the length condition {@code list.size() >= this.length()},
-   * an IndexOutOfBoundsException will be the consequence if it is not satisfied.
    * @param list an array
    * @throws java.lang.UnsupportedOperationException if the input list is not mutable
-   * @throws java.lang.IndexOutOfBoundsException if {@code list.size() < this.length()}
+   * @throws java.lang.IllegalArgumentException if {@code list.size() < this.length()}
    */
   public <E> void clobber(List<E> list) {
     E temp = list.get(k);
@@ -183,62 +183,124 @@ public final class Transposition {
     list.set(j, temp);
   }
 
+  /**
+   * Apply this operation to produce a new array. This method does not modify the input.
+   * @param a an array of length not less than {@code this.length()}
+   * @return the result of applying this permutation to {@code a}
+   * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
+   */
   public int[] apply(int[] a) {
     int[] copy = Arrays.copyOf(a, a.length);
     clobber(copy);
     return copy;
   }
 
+  /**
+   * Apply this operation to produce a new array. This method does not modify the input.
+   * @param a an array of length not less than {@code this.length()}
+   * @return the result of applying this permutation to {@code a}
+   * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
+   */
   public byte[] apply(byte[] a) {
     byte[] copy = Arrays.copyOf(a, a.length);
     clobber(copy);
     return copy;
   }
 
+  /**
+   * Apply this operation to produce a new array. This method does not modify the input.
+   * @param a an array of length not less than {@code this.length()}
+   * @return the result of applying this permutation to {@code a}
+   * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
+   */
   public char[] apply(char[] a) {
     char[] copy = Arrays.copyOf(a, a.length);
     clobber(copy);
     return copy;
   }
 
+  /**
+   * Apply this operation to produce a new array. This method does not modify the input.
+   * @param a an array of length not less than {@code this.length()}
+   * @return the result of applying this permutation to {@code a}
+   * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
+   */
   public short[] apply(short[] a) {
     short[] copy = Arrays.copyOf(a, a.length);
     clobber(copy);
     return copy;
   }
 
+  /**
+   * Apply this operation to produce a new array. This method does not modify the input.
+   * @param a an array of length not less than {@code this.length()}
+   * @return the result of applying this permutation to {@code a}
+   * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
+   */
   public float[] apply(float[] a) {
     float[] copy = Arrays.copyOf(a, a.length);
     clobber(copy);
     return copy;
   }
 
+  /**
+   * Apply this operation to produce a new array. This method does not modify the input.
+   * @param a an array of length not less than {@code this.length()}
+   * @return the result of applying this permutation to {@code a}
+   * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
+   */
   public double[] apply(double[] a) {
     double[] copy = Arrays.copyOf(a, a.length);
     clobber(copy);
     return copy;
   }
 
+  /**
+   * Apply this operation to produce a new array. This method does not modify the input.
+   * @param a an array of length not less than {@code this.length()}
+   * @return the result of applying this permutation to {@code a}
+   * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
+   */
   public long[] apply(long[] a) {
     long[] copy = Arrays.copyOf(a, a.length);
     clobber(copy);
     return copy;
   }
 
+  /**
+   * Apply this operation to produce a new array. This method does not modify the input.
+   * @param a an array of length not less than {@code this.length()}
+   * @return the result of applying this permutation to {@code a}
+   * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
+   */
   public <E> E[] apply(E[] a) {
     E[] copy = Arrays.copyOf(a, a.length);
     clobber(copy);
     return copy;
   }
 
+  /**
+   * Apply this operation to produce a new list. This method does not modify the input.
+   * @param a an list of size not less than {@code this.length()}
+   * @return the result of applying this permutation to {@code a}
+   * @throws java.lang.IllegalArgumentException if {@code a.size() < this.length()}
+   */
   public <E> List<E> apply(List<E> a) {
-    ArrayList<E> copy = new ArrayList<E>(a.size());
-    for (int i = 0; i < a.size(); i++)
-      copy.set(i, a.get(apply(i)));
-    return copy;
+  ArrayList<E> copy = new ArrayList<E>(a.size());
+  for (int i = 0; i < a.size(); i++)
+  copy.set(i, a.get(apply(i)));
+  return copy;
   }
 
+  /**
+   * Move an index.
+   * @param i a non-negative number
+   * @return the moved index
+   * @throws IllegalArgumentException if {@code i} is negative
+   */
   public int apply(int i) {
+    if (i < 0)
+      negativeFailure();
     return i == j ? k : i == k ? j : i;
   }
 
@@ -248,7 +310,7 @@ public final class Transposition {
    * @return the length of this operation
    */
   public int length() {
-    return Math.max(j, k);
+    return j; // always larger than k
   }
 
   /**

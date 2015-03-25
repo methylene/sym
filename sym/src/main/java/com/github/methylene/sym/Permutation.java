@@ -7,9 +7,10 @@ import com.github.methylene.lists.LookupList;
 import java.util.*;
 
 /**
- * An operation that shuffles arrays and lists.
+ * An ranking based permutation operation that can be used to shuffle arrays and lists.
+ *
  * Instances of this class are immutable, and none of the apply methods modify the input.
- * The compile method returns a destructive variant.
+ * The compile method can be used to obtain the destructive version of an instance.
  *
  * @see #compile
  */
@@ -311,7 +312,7 @@ public final class Permutation implements Comparable<Permutation> {
    */
   public CompiledPermutation compile(Transposition.Factory factory) {
     if (this.ranking.length == 0)
-      return CompiledPermutation.IDENTITY;
+      return CompiledPermutation.identity();
     return CompiledPermutation.create(toTranspositions(factory));
   }
 
