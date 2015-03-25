@@ -11,8 +11,8 @@ import java.util.*;
  */
 public final class Permutation implements Comparable<Permutation> {
 
-  public static final DestructiveTransposition[] DESTRUCTIVE_0 = new DestructiveTransposition[0];
-  public static final DestructiveTransposition.Factory NON_CACHING_FACTORY = new DestructiveTransposition.Factory(0);
+  public static final Transposition[] DESTRUCTIVE_0 = new Transposition[0];
+  public static final Transposition.Factory NON_CACHING_FACTORY = new Transposition.Factory(0);
 
   /*
    *  An array of N integers where each of the integers between 0 and N-1 appears exactly once.
@@ -306,11 +306,11 @@ public final class Permutation implements Comparable<Permutation> {
    * @param factory a caching factory for destructive transpositions
    * @return a decomposition of this permutation into destructive transpositions
    */
-  private DestructiveTransposition[] toDestructiveTranspositions(DestructiveTransposition.Factory factory) {
+  private Transposition[] toDestructiveTranspositions(Transposition.Factory factory) {
     if (this.ranking.length == 0)
       return DESTRUCTIVE_0;
     List<int[]> t = Cycles.toTranspositions(ranking);
-    DestructiveTransposition[] result = new DestructiveTransposition[t.size()];
+    Transposition[] result = new Transposition[t.size()];
     for (int i = 0; i < t.size(); i++)
       result[i] = factory.create(t.get(i)[0], t.get(i)[1]);
     return result;
@@ -321,17 +321,17 @@ public final class Permutation implements Comparable<Permutation> {
    * @param factory a caching factory for destructive transpositions
    * @return a destructive version of this instance
    */
-  public DestructivePermutation toDestructivePermutation(DestructiveTransposition.Factory factory) {
+  public CompiledPermutation toDestructivePermutation(Transposition.Factory factory) {
     if (this.ranking.length == 0)
-      return DestructivePermutation.IDENTITY;
-    return DestructivePermutation.create(toDestructiveTranspositions(factory));
+      return CompiledPermutation.IDENTITY;
+    return CompiledPermutation.create(toDestructiveTranspositions(factory));
   }
 
   /**
    * Compile a destructive version of this permutation, using no caching.
    * @return a destructive version of this instance
    */
-  public DestructivePermutation toDestructivePermutation() {
+  public CompiledPermutation toDestructivePermutation() {
     return toDestructivePermutation(NON_CACHING_FACTORY);
   }
 
@@ -449,18 +449,20 @@ public final class Permutation implements Comparable<Permutation> {
     return Arrays.equals(ranking, ((Permutation) other).ranking);
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return Arrays.hashCode(ranking);
   }
 
   /**
-   * Standard java comparison, compatible with {@code equals} in the sense that permutations compare as {@code 0}
+   * A compare method compatible with {@code equals}: permutations compare to {@code 0}
    * if and only they are equal.
    * @param other a permutation, not necessarily of the same length
    * @return the result of lexicographic comparison of {@code this.ranking} and {@code other.ranking}
    * @see com.github.methylene.sym.Permutation#equals
    */
-  @Override public int compareTo(Permutation other) {
+  @Override
+  public int compareTo(Permutation other) {
     if (this == other)
       return 0;
     for (int i = 0; i < Math.min(this.ranking.length, other.ranking.length); i += 1)
@@ -920,25 +922,25 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * A permutation that modifies the things it it applied to
+   * A list of transpositions
    */
-  public static final class DestructivePermutation {
+  public static final class CompiledPermutation {
 
-    static final DestructivePermutation IDENTITY = new DestructivePermutation(new DestructiveTransposition[0]);
+    static final CompiledPermutation IDENTITY = new CompiledPermutation(new Transposition[0]);
 
-    private final DestructiveTransposition[] transpositions;
+    private final Transposition[] transpositions;
     private final int length;
 
-    private DestructivePermutation(DestructiveTransposition[] transpositions) {
+    private CompiledPermutation(Transposition[] transpositions) {
       int length = 0;
-      for (DestructiveTransposition t : transpositions)
+      for (Transposition t : transpositions)
         length = Math.max(length, t.length());
       this.transpositions = transpositions;
       this.length = length;
     }
 
-    private static DestructivePermutation create(DestructiveTransposition[] transpositions) {
-      return new DestructivePermutation(transpositions);
+    private static CompiledPermutation create(Transposition[] transpositions) {
+      return new CompiledPermutation(transpositions);
     }
 
     /**
@@ -946,10 +948,10 @@ public final class Permutation implements Comparable<Permutation> {
      * @param array an array
      * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
      */
-    public void apply(int[] array) {
+    public void clobber(int[] array) {
       checkLength(length, array.length);
       for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].apply(array);
+        transpositions[i].clobber(array);
     }
 
     /**
@@ -957,10 +959,10 @@ public final class Permutation implements Comparable<Permutation> {
      * @param array an array
      * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
      */
-    public void apply(byte[] array) {
+    public void clobber(byte[] array) {
       checkLength(length, array.length);
       for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].apply(array);
+        transpositions[i].clobber(array);
     }
 
     /**
@@ -968,10 +970,10 @@ public final class Permutation implements Comparable<Permutation> {
      * @param array an array
      * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
      */
-    public void apply(char[] array) {
+    public void clobber(char[] array) {
       checkLength(length, array.length);
       for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].apply(array);
+        transpositions[i].clobber(array);
     }
 
     /**
@@ -979,10 +981,10 @@ public final class Permutation implements Comparable<Permutation> {
      * @param array an array
      * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
      */
-    public void apply(short[] array) {
+    public void clobber(short[] array) {
       checkLength(length, array.length);
       for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].apply(array);
+        transpositions[i].clobber(array);
     }
 
     /**
@@ -990,10 +992,10 @@ public final class Permutation implements Comparable<Permutation> {
      * @param array an array
      * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
      */
-    public void apply(float[] array) {
+    public void clobber(float[] array) {
       checkLength(length, array.length);
       for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].apply(array);
+        transpositions[i].clobber(array);
     }
 
     /**
@@ -1001,10 +1003,10 @@ public final class Permutation implements Comparable<Permutation> {
      * @param array an array
      * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
      */
-    public void apply(double[] array) {
+    public void clobber(double[] array) {
       checkLength(length, array.length);
       for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].apply(array);
+        transpositions[i].clobber(array);
     }
 
     /**
@@ -1012,10 +1014,10 @@ public final class Permutation implements Comparable<Permutation> {
      * @param array an array
      * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
      */
-    public void apply(long[] array) {
+    public void clobber(long[] array) {
       checkLength(length, array.length);
       for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].apply(array);
+        transpositions[i].clobber(array);
     }
 
     /**
@@ -1023,10 +1025,10 @@ public final class Permutation implements Comparable<Permutation> {
      * @param array an array
      * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
      */
-    public void apply(Object[] array) {
+    public void clobber(Object[] array) {
       checkLength(length, array.length);
       for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].apply(array);
+        transpositions[i].clobber(array);
     }
 
     /**
@@ -1037,17 +1039,17 @@ public final class Permutation implements Comparable<Permutation> {
      * @throws java.lang.UnsupportedOperationException if the input list is not mutable
      * @throws java.lang.IllegalArgumentException if {@code list.size() < this.length()}
      */
-    public void apply(List<?> list) {
+    public void clobber(List<?> list) {
       checkLength(length, list.size());
       for (int i = transpositions.length - 1; i != -1; i--)
-        transpositions[i].apply(list);
+        transpositions[i].clobber(list);
     }
 
     /**
      * Get the transposition that define this operation.
      * @return a copy of the array of transpositions
      */
-    public DestructiveTransposition[] getTranspositions() {
+    public Transposition[] getTranspositions() {
       return Arrays.copyOf(transpositions, transpositions.length);
     }
 
@@ -1057,7 +1059,7 @@ public final class Permutation implements Comparable<Permutation> {
      */
     public Permutation toPermutation() {
       Permutation p = Permutation.identity();
-      for (DestructiveTransposition t : transpositions)
+      for (Transposition t : transpositions)
         p = p.comp(Permutation.swap(t.getFirst(), t.getSecond()));
       return p;
     }

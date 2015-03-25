@@ -5,19 +5,19 @@ import java.util.List;
 /**
  * A transposition that modifies the things it is applied to.
  */
-public final class DestructiveTransposition {
+public final class Transposition {
 
   private final int j;
   private final int k;
 
   public static final class Factory {
 
-    private final DestructiveTransposition[][] cache;
+    private final Transposition[][] cache;
 
     public Factory(int cacheSize) {
-      this.cache = new DestructiveTransposition[cacheSize][];
+      this.cache = new Transposition[cacheSize][];
       for (int j = 1; j < cacheSize; j++)
-        cache[j] = new DestructiveTransposition[j];
+        cache[j] = new Transposition[j];
     }
 
     /**
@@ -27,7 +27,7 @@ public final class DestructiveTransposition {
      * @return a transposition operation
      * @throws java.lang.IllegalArgumentException if the arguments are equal or negative
      */
-    public DestructiveTransposition create(int j, int k) {
+    public Transposition create(int j, int k) {
       if (j < 0 || k < 0)
         Util.negativeFailure();
       if (j == k)
@@ -40,15 +40,15 @@ public final class DestructiveTransposition {
       }
       if (j < cache.length) {
         if (cache[j][k] == null)
-          cache[j][k] = new DestructiveTransposition(j, k);
+          cache[j][k] = new Transposition(j, k);
         return cache[j][k];
       }
-      return new DestructiveTransposition(j, k);
+      return new Transposition(j, k);
     }
 
   }
 
-  private DestructiveTransposition(int j, int k) {
+  private Transposition(int j, int k) {
     this.j = j;
     this.k = k;
   }
@@ -60,7 +60,7 @@ public final class DestructiveTransposition {
    * @param array an array
    * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
    */
-  public void apply(int[] array) {
+  public void clobber(int[] array) {
     int temp = array[k];
     array[k] = array[j];
     array[j] = temp;
@@ -73,7 +73,7 @@ public final class DestructiveTransposition {
    * @param array an array
    * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
    */
-  public void apply(byte[] array) {
+  public void clobber(byte[] array) {
     byte temp = array[k];
     array[k] = array[j];
     array[j] = temp;
@@ -86,7 +86,7 @@ public final class DestructiveTransposition {
    * @param array an array
    * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
    */
-  public void apply(char[] array) {
+  public void clobber(char[] array) {
     char temp = array[k];
     array[k] = array[j];
     array[j] = temp;
@@ -99,7 +99,7 @@ public final class DestructiveTransposition {
    * @param array an array
    * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
    */
-  public void apply(short[] array) {
+  public void clobber(short[] array) {
     short temp = array[k];
     array[k] = array[j];
     array[j] = temp;
@@ -112,7 +112,7 @@ public final class DestructiveTransposition {
    * @param array an array
    * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
    */
-  public void apply(float[] array) {
+  public void clobber(float[] array) {
     float temp = array[k];
     array[k] = array[j];
     array[j] = temp;
@@ -125,7 +125,7 @@ public final class DestructiveTransposition {
    * @param array an array
    * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
    */
-  public void apply(double[] array) {
+  public void clobber(double[] array) {
     double temp = array[k];
     array[k] = array[j];
     array[j] = temp;
@@ -138,7 +138,7 @@ public final class DestructiveTransposition {
    * @param array an array
    * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
    */
-  public void apply(long[] array) {
+  public void clobber(long[] array) {
     long temp = array[k];
     array[k] = array[j];
     array[j] = temp;
@@ -151,7 +151,7 @@ public final class DestructiveTransposition {
    * @param array an array
    * @throws java.lang.ArrayIndexOutOfBoundsException if {@code array.length < this.length()}
    */
-  public void apply(Object[] array) {
+  public void clobber(Object[] array) {
     Object temp = array[k];
     array[k] = array[j];
     array[j] = temp;
@@ -167,7 +167,7 @@ public final class DestructiveTransposition {
    * @throws java.lang.IndexOutOfBoundsException if {@code list.size() < this.length()}
    */
   @SuppressWarnings("unchecked")
-  public void apply(List<?> list) {
+  public void clobber(List<?> list) {
     Object temp = list.get(k);
     ((List) list).set(k, list.get(j));
     ((List) list).set(j, temp);
@@ -214,7 +214,7 @@ public final class DestructiveTransposition {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    DestructiveTransposition that = (DestructiveTransposition) o;
+    Transposition that = (Transposition) o;
     return  (j == that.j && k == that.k);
   }
 

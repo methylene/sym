@@ -427,9 +427,9 @@ public class PermutationTest {
       int[] copy = Arrays.copyOf(a, a.length);
       List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
       Permutation p = Permutation.random(5);
-      DestructivePermutation d = p.toDestructivePermutation();
-      d.apply(copy);
-      d.apply(listCopy);
+      CompiledPermutation d = p.toDestructivePermutation();
+      d.clobber(copy);
+      d.clobber(listCopy);
       int[] expected = p.apply(a);
       assertArrayEquals(expected, copy);
       assertArrayEquals(Util.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
@@ -440,14 +440,14 @@ public class PermutationTest {
   @Test
   public void testDestructive2() {
     for (int _ = 0; _ < 100; _++) {
-      DestructiveTransposition.Factory factory = new DestructiveTransposition.Factory(Math.random() < 0.5 ? 0 : (int) (Math.random() * 200));
+      Transposition.Factory factory = new Transposition.Factory(Math.random() < 0.5 ? 0 : (int) (Math.random() * 200));
       int[] a = Util.randomNumbers(100, 100);
       int[] copy = Arrays.copyOf(a, a.length);
       List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
       Permutation p = Permutation.random(100);
-      DestructivePermutation d = p.toDestructivePermutation(factory);
-      d.apply(copy);
-      d.apply(listCopy);
+      CompiledPermutation d = p.toDestructivePermutation(factory);
+      d.clobber(copy);
+      d.clobber(listCopy);
       int[] expected = p.apply(a);
       assertArrayEquals(expected, copy);
       assertArrayEquals(Util.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
