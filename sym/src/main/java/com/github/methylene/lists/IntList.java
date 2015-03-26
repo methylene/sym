@@ -175,6 +175,14 @@ public final class IntList extends LookupList<Integer> {
       return this;
     }
 
+    @Override
+    public ListBuilder<Integer> addAll(Integer... elements) {
+      ensureCapacity(size + elements.length);
+      for (int el : elements)
+        add(el);
+      return this;
+    }
+
     public Builder add(int element) {
       ensureCapacity(size + 1);
       contents[size++] = element;

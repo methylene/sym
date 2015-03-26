@@ -499,53 +499,15 @@ public final class Permutation implements Comparable<Permutation> {
   /* ============== apply to arrays ============== */
 
   /**
-   * <p>Rearrange an array. This method does not modify its input array.</p>
-   * <p>Each element of the return value of this method can be safely cast to the element type
-   * of the input. Alternatively, this operation can be compiled to an object which has a more typesafe apply method for
-   * all subclasses of {@code Object[]}.</p>
-   * @param input an array of length not less than {@code this.length()}
-   * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
-   * @see #compile()
-   * @see CompiledPermutation#apply(Object[])
-   */
-  public Object[] apply(Object[] input) {
-    if (this.ranking.length == 0)
-      return input;
-    return Rankings.apply(ranking, input);
-  }
-
-
-  /**
-   * <p>Rearrange an array. This method does not modify its input array.</p>
-   * <p>Each element of the return value of this method can be safely cast to the element type
-   * of the input. Alternatively, this operation can be compiled to an object which has a more typesafe apply method for
-   * all subclasses of {@code Comparable[]}.</p>
-   * @param input an array of length not less than {@code this.length()}
-   * @return the result of applying this permutation to {@code input}
-   * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
-   * @see com.github.methylene.sym.Permutation#apply(int)
-   * @see #compile()
-   * @see CompiledPermutation#apply(Object[])
-   * @see CompiledPermutation#clobber(Object[])
-   */
-  public Comparable[] apply(Comparable[] input) {
-    if (this.ranking.length == 0)
-      return input;
-    return Rankings.apply(ranking, input);
-  }
-
-  /**
    * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
+   * @see com.github.methylene.sym.Permutation#apply(int)
+   * @see #compile()
    * @see CompiledPermutation#apply(Object[])
-   * @see CompiledPermutation#clobber(Object[])
-   * @see #apply(int)
    */
-  public String[] apply(String[] input) {
+  public <T> T[] apply(T[] input) {
     if (this.ranking.length == 0)
       return input;
     return Rankings.apply(ranking, input);
@@ -564,7 +526,6 @@ public final class Permutation implements Comparable<Permutation> {
       return input;
     return Rankings.apply(ranking, input);
   }
-
 
   /**
    * Rearrange an array. This method does not modify its input array.
@@ -594,7 +555,6 @@ public final class Permutation implements Comparable<Permutation> {
     return Rankings.apply(ranking, input);
   }
 
-
   /**
    * Rearrange an array. This method does not modify its input array.
    * @param input an array of length not less than {@code this.length()}
@@ -622,7 +582,6 @@ public final class Permutation implements Comparable<Permutation> {
       return input;
     return Rankings.apply(ranking, input);
   }
-
 
   /**
    * Rearrange an array. This method does not modify its input array.
@@ -872,7 +831,6 @@ public final class Permutation implements Comparable<Permutation> {
   public static <E> Permutation from(E[] a, E[] b, Comparator<E> comp) {
     return perm(Rankings.from(a, b, comp), false);
   }
-
 
   /* ================= sorts ================= */
 

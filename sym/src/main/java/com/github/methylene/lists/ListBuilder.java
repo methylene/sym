@@ -14,6 +14,10 @@ public abstract class ListBuilder<E> {
 
   protected int size = 0;
 
+  protected void incrementSize(int n) {
+    size += n;
+  }
+
   public static int extendedCapacity(int oldCapacity, int minCapacity) {
     if (minCapacity < 0)
       throw new IllegalArgumentException("min capacity can not be negative");
@@ -54,12 +58,7 @@ public abstract class ListBuilder<E> {
    * @param elements
    * @return the builder
    */
-  @SafeVarargs
-  public final ListBuilder<E> addAll(E... elements) {
-    ensureCapacity(size + elements.length);
-    for (E el : elements) {add(el); }
-    return this;
-  }
+  public abstract ListBuilder<E> addAll(E... elements);
 
   /**
    * Add all elements of {@code elements} to the list

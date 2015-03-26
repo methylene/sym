@@ -188,6 +188,13 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
       return this;
     }
 
+    @Override public ListBuilder<E> addAll(E... elements) {
+      ensureCapacity(size + elements.length);
+      System.arraycopy(elements, 0, contents, size, elements.length);
+      incrementSize(elements.length);
+      return this;
+    }
+
   }
 
 

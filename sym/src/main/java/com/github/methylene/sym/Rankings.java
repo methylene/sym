@@ -6,6 +6,7 @@ import static java.util.Arrays.binarySearch;
 
 import com.github.methylene.lists.LookupList;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -994,58 +995,17 @@ public final class Rankings {
    * @return the result of applying the ranking to the input
    * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
    */
-  public static Object[] apply(int[] ranking, Object[] input) {
+  public static <T> T[] apply(int[] ranking, T[] input) {
     checkLength(ranking.length, input.length);
-    Object[] result = new Object[input.length];
+    Class<?> type = input.getClass().getComponentType();
+    @SuppressWarnings("unchecked")
+    T[] result = (T[]) Array.newInstance(type, input.length);
     for (int i = 0; i < ranking.length; i += 1)
       result[ranking[i]] = input[i];
     if (input.length > ranking.length)
       arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
     return result;
   }
-
-
-  /**
-   * Apply the ranking to the input array. An element at {@code i} is moved to {@code ranking[i]}.
-   * Indexes that are greater or equal to the length of the ranking are not moved.
-   * This method does not validate that the first argument is indeed a ranking.
-   * @param ranking a ranking
-   * @param input an input array
-   * @return the result of applying the ranking to the input
-   * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
-   * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   */
-  public static Comparable[] apply(int[] ranking, Comparable[] input) {
-    checkLength(ranking.length, input.length);
-    Comparable[] result = new Comparable[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
-  }
-
-
-  /**
-   * Apply the ranking to the input array. An element at {@code i} is moved to {@code ranking[i]}.
-   * Indexes that are greater or equal to the length of the ranking are not moved.
-   * This method does not validate that the first argument is indeed a ranking.
-   * @param ranking a ranking
-   * @param input an input array
-   * @return the result of applying the ranking to the input
-   * @throws java.lang.IllegalArgumentException if the length of {@code input} is less than the length of {@code ranking}
-   * @throws java.lang.ArrayIndexOutOfBoundsException can be thrown if the {@code ranking} argument is not a ranking
-   */
-  public static String[] apply(int[] ranking, String[] input) {
-    checkLength(ranking.length, input.length);
-    String[] result = new String[input.length];
-    for (int i = 0; i < ranking.length; i += 1)
-      result[ranking[i]] = input[i];
-    if (input.length > ranking.length)
-      arraycopy(input, ranking.length, result, ranking.length, input.length - ranking.length);
-    return result;
-  }
-
 
   /**
    * Apply the ranking to the input array. An element at {@code i} is moved to {@code ranking[i]}.

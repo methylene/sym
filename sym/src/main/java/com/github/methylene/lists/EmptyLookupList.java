@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class EmptyLookupList<E> extends LookupList<E> {
 
-  static final LookupList<Object> EMPTY = new EmptyLookupList<Object>();
+  static final LookupList<Object> INSTANCE = new EmptyLookupList<Object>();
 
   private EmptyLookupList() {
     super(Permutation.identity(), Permutation.identity());
