@@ -257,19 +257,6 @@ public final class Permutation implements Comparable<Permutation> {
 
 
   /**
-   * Write this permutation as a product of cyclic permutations.
-   * @param factory the transposition factory
-   * @return a cycle decomposition of this permutation
-   * @see com.github.methylene.sym.Permutation#cycle
-   * @see com.github.methylene.sym.Permutation#isCycle
-   */
-  public List<CompiledPermutation> toCycles(Transposition.Factory factory) {
-    if (this.ranking.length == 0)
-      return Collections.emptyList();
-    return Cycles.toCycles(ranking, factory);
-  }
-
-  /**
    * <p>Write this permutation as a product of cyclic permutations.</p>
    * <p>For every permutation {@code p} in the returned list, the following are true:</p>
    * <pre><code>
@@ -280,8 +267,10 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#cycle
    * @see com.github.methylene.sym.Permutation#isCycle
    */
-  public List<CompiledPermutation> toCycles() {
-    return toCycles(Transposition.NON_CACHING_FACTORY);
+  public int[][] toCycles() {
+    if (this.ranking.length == 0)
+      return new int[0][];
+    return Cycles.toOrbits(ranking);
   }
 
   /**
@@ -290,7 +279,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @param factory transposition factory
    * @see Permutation#prod
    */
-  public List<Transposition> toTranspositions(Transposition.Factory factory) {
+  public List<Transposition> toTranspositions(Transposition.TranspositionFactory factory) {
     if (this.ranking.length == 0)
       return Collections.emptyList();
     return Cycles.toTranspositions(ranking, factory);
@@ -310,10 +299,10 @@ public final class Permutation implements Comparable<Permutation> {
    * @param factory transposition factory
    * @return a destructive version of this instance
    */
-  public CompiledPermutation compile(Transposition.Factory factory) {
+  public CompiledPermutation compile(Transposition.TranspositionFactory factory) {
     if (this.ranking.length == 0)
       return CompiledPermutation.identity();
-    return CompiledPermutation.create(toTranspositions(factory));
+    return CompiledPermutation.create(toTranspositions(factory), new Orbits(toCycles()));
   }
 
   /**
@@ -339,7 +328,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return {@code 1} if this permutation can be written as an even number of transpositions, {@code -1} otherwise
    * @see com.github.methylene.sym.Permutation#toTranspositions
    */
-  public int signature(Transposition.Factory factory) {
+  public int signature(Transposition.TranspositionFactory factory) {
     return toTranspositions(factory).size() % 2 == 0 ? 1 : -1;
   }
 
@@ -924,6 +913,12 @@ public final class Permutation implements Comparable<Permutation> {
   @SuppressWarnings("unchecked")
   public <E> boolean sorts(Comparator<E> comparator, Object[] a) {
     return Rankings.sorts(ranking, a, (Comparator) comparator);
+  }
+
+  static class Orbits {
+    static Orbits EMPTY = new Orbits(new int[0][]);
+    final int[][] orbits;
+    private Orbits(int[][] orbits) {this.orbits = orbits;}
   }
 
 }

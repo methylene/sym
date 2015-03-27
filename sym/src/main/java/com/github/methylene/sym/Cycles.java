@@ -115,39 +115,24 @@ public final class Cycles {
   }
 
 
-  public static List<int[]> toOrbits(int[] ranking) {
-    LinkedList<int[]> orbits = new LinkedList<int[]>();
+  public static int[][] toOrbits(int[] ranking) {
+    int[][] orbits = new int[ranking.length / 2][];
     boolean[] done = new boolean[ranking.length];
+    int cnt = 0;
     outer:
     for (int i = 0; i < ranking.length; i += 1) {
       if (!done[i] && ranking[i] != i) {
         int[] candidate = orbit(ranking, i);
         for (int k : candidate)
           done[k] = true;
-        for (int[] orbit : orbits)
-          if (orbit.length == candidate.length
-              && indexOf(orbit, candidate[0]) >= 0)
+        for (int j = 0; j < cnt; j++)
+          if (orbits[j].length == candidate.length
+              && indexOf(orbits[j], candidate[0]) >= 0)
             continue outer;
-        orbits.push(candidate);
+        orbits[cnt++] = candidate;
       }
     }
-    return orbits;
-  }
-
-  public static ArrayList<CompiledPermutation> toCycles(int[] ranking, Transposition.Factory factory) {
-    List<int[]> orbits = toOrbits(ranking);
-    ArrayList<CompiledPermutation> result = new ArrayList<CompiledPermutation>(orbits.size());
-    for (int[] orbit : orbits) {
-      ArrayList<Transposition> cycles = new ArrayList<Transposition>(orbit.length - 1);
-      for (int i = 0; i < orbit.length - 1; i += 1)
-        cycles.add(factory.swap(orbit[i], orbit[i + 1]));
-      result.add(CompiledPermutation.create(cycles));
-    }
-    return result;
-  }
-
-  public static ArrayList<CompiledPermutation> toCycles(int[] ranking) {
-    return toCycles(ranking, Transposition.NON_CACHING_FACTORY);
+    return orbits.length == cnt ? orbits : Arrays.copyOf(orbits, cnt);
   }
 
   /**
@@ -157,10 +142,10 @@ public final class Cycles {
    * @param factory a transposition factory
    * @return a list of transpositionst that is equivalent to the input {@code ranking}
    */
-  public static List<Transposition> toTranspositions(int[] ranking, Transposition.Factory factory) {
+  public static List<Transposition> toTranspositions(int[] ranking, Transposition.TranspositionFactory factory) {
     ArrayList<Transposition> transpositions = new ArrayList<Transposition>(ranking.length);
     for (int[] orbit : toOrbits(ranking))
-      for (int i = 0; i < orbit.length - 1; i += 1)
+      for (int i = 0; i < orbit.length - 1; i++)
         transpositions.add(factory.swap(orbit[i], orbit[i + 1]));
     return transpositions;
   }
@@ -169,11 +154,10 @@ public final class Cycles {
    * Write the input ranking as a list of transpositions.
    * This method does not check if the input is indeed a valid ranking and may have unexpected results otherwise.
    * @param ranking a ranking
-   * @return a list of transpositionst that is equivalent to the input {@code ranking}
+   * @return a list of transpositions that is equivalent to the input {@code ranking}
    */
   public static List<Transposition> toTranspositions(int[] ranking) {
-    return toTranspositions(ranking, new Transposition.Factory(0));
+    return toTranspositions(ranking, Transposition.NON_CACHING_FACTORY);
   }
-
 
 }

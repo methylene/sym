@@ -12,15 +12,23 @@ import java.util.List;
  */
 public final class Transposition {
 
-  public static final Transposition.Factory NON_CACHING_FACTORY = new Transposition.Factory(0);
+  /**
+   * A factory that creates transpositions.
+   * Transpositions are immutable, so various caching strategies can be considered.
+   */
+  public interface TranspositionFactory {
+    Transposition swap(int j, int k);
+  }
 
-  public final int j;
-  public final int k;
+  public static final TranspositionFactory NON_CACHING_FACTORY = new DefaultTranspositionFactory(0);
+
+  final int j;
+  final int k;
 
   /**
-   * A factory that optionally maintains a cache of transpositions.
+   * A simple caching factory that maintains a permanent cache of transpositions below the configured length.
    */
-  public static final class Factory {
+  public static final class DefaultTranspositionFactory implements TranspositionFactory {
 
     private final Transposition[][] cache;
 
@@ -30,7 +38,7 @@ public final class Transposition {
      * The cache will permanently store up to {@code maxCachedLength * (maxCachedLength - 1)} transpositions.
      * @param maxCachedLength the maximum index that is moved by a cached transposition
      */
-    public Factory(int maxCachedLength) {
+    public DefaultTranspositionFactory(int maxCachedLength) {
       this.cache = new Transposition[maxCachedLength][];
       for (int j = 1; j < maxCachedLength; j++)
         cache[j] = new Transposition[j];
@@ -286,10 +294,10 @@ public final class Transposition {
    * @throws java.lang.IllegalArgumentException if {@code a.size() < this.length()}
    */
   public <E> List<E> apply(List<E> a) {
-  ArrayList<E> copy = new ArrayList<E>(a.size());
-  for (int i = 0; i < a.size(); i++)
-  copy.set(i, a.get(apply(i)));
-  return copy;
+    ArrayList<E> copy = new ArrayList<E>(a.size());
+    for (int i = 0; i < a.size(); i++)
+      copy.set(i, a.get(apply(i)));
+    return copy;
   }
 
   /**
@@ -304,20 +312,29 @@ public final class Transposition {
     return i == j ? k : i == k ? j : i;
   }
 
+  public boolean commutesWith(Transposition other) {
+    return this.j != other.j
+        && this.k != other.k
+        || this.j == other.j
+        && this.k == other.k;
+  }
+
   /**
    * Return the minimum number of elements that an array or list must have, in order for this operation to
    * be applicable.
    * @return the length of this operation
    */
   public int length() {
-    return j; // always larger than k
+    return j + 1;
   }
 
   /**
    * Return the first index to be swapped.
+   * This is always greater than the second.
    * @return a non-negative number
+   * @see #second()
    */
-  public int getFirst() {
+  public int first() {
     return j;
   }
 
@@ -325,7 +342,7 @@ public final class Transposition {
    * Return the second index to be swapped.
    * @return a non-negative number
    */
-  public int getSecond() {
+  public int second() {
     return k;
   }
 
@@ -346,7 +363,7 @@ public final class Transposition {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Transposition that = (Transposition) o;
-    return  (j == that.j && k == that.k);
+    return (j == that.j && k == that.k);
   }
 
   @Override
