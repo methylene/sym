@@ -10,9 +10,9 @@ import java.util.*;
  * An ranking based permutation operation that can be used to shuffle arrays and lists.
  *
  * Instances of this class are immutable, and none of the apply methods modify the input.
- * The compile method can be used to obtain the destructive version of an instance.
+ * The toCycles method can be used to obtain the destructive version of an instance.
  *
- * @see #compile
+ * @see #toCycles
  */
 public final class Permutation implements Comparable<Permutation> {
 
@@ -35,28 +35,19 @@ public final class Permutation implements Comparable<Permutation> {
    * Return the permutation defined by the given array.
    * @param ranking a list of numbers that specifies the permutation in zero-based
    *               <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
-   *               For example, {@code perm(1, 2, 0)} creates the permutation
+   *               For example, {@code define(1, 2, 0)} creates the permutation
    *               that maps {@code "abc"} to {@code "cab"}.
    * @throws java.lang.IllegalArgumentException if the input is not a ranking
    */
-  public static Permutation perm(int... ranking) {
-    return perm(ranking, true);
+  public static Permutation define(int... ranking) {
+    return define(ranking, true);
   }
 
-  private static Permutation perm(int[] ranking, boolean validate) {
+  private static Permutation define(int[] ranking, boolean validate) {
     int[] trimmed = Rankings.trim(ranking);
     if (trimmed.length == 0)
       return IDENTITY;
     return new Permutation(ranking == trimmed ? Arrays.copyOf(ranking, ranking.length) : trimmed, validate);
-  }
-
-  /**
-   * Creates a new permutation from the given array, using 1-based notation.
-   * @param ranking1based a permutation definition in 1-based one-line notation.
-   * @return The permutation defined by {@code ranking1based}.
-   */
-  public static Permutation perm1(int... ranking1based) {
-    return perm(Util.add(ranking1based, -1));
   }
 
   /**
@@ -67,8 +58,8 @@ public final class Permutation implements Comparable<Permutation> {
    * @return the cyclic permutation defined by {@code cycle}
    * @throws java.lang.IllegalArgumentException if {@code cycle} contains negative numbers or duplicates
    */
-  public static Permutation cycle(int... cycle) {
-    return perm(Cycles.asRanking(cycle), false);
+  public static Permutation defineCycle(int... cycle) {
+    return define(Cycles.asRanking(cycle), false);
   }
 
 
@@ -76,10 +67,10 @@ public final class Permutation implements Comparable<Permutation> {
    * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycle</a>.
    * @param cycle1based a list of numbers that defines a permutation in 1-based cycle notation
    * @return the cyclic permutation defined by {@code cycle1based}
-   * @see com.github.methylene.sym.Permutation#cycle
+   * @see com.github.methylene.sym.Permutation#defineCycle
    */
   public static Permutation cycle1(int... cycle1based) {
-    return cycle(Util.add(cycle1based, -1));
+    return defineCycle(Util.add(cycle1based, -1));
   }
 
   /**
@@ -88,7 +79,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return a random permutation that can be applied to an array of length {@code length}
    */
   public static Permutation random(int length) {
-    return perm(Rankings.random(length), false);
+    return define(Rankings.random(length), false);
   }
 
   /**
@@ -115,7 +106,7 @@ public final class Permutation implements Comparable<Permutation> {
       return other;
     if (other.ranking.length == 0)
       return this;
-    return perm(Rankings.comp(this.ranking, other.ranking), false);
+    return define(Rankings.comp(this.ranking, other.ranking), false);
   }
 
   /**
@@ -185,7 +176,7 @@ public final class Permutation implements Comparable<Permutation> {
   public Permutation invert() {
     if (this.ranking.length == 0)
       return this;
-    return perm(Rankings.invert(ranking), false);
+    return define(Rankings.invert(ranking), false);
   }
 
   /**
@@ -202,10 +193,10 @@ public final class Permutation implements Comparable<Permutation> {
    * @param delete a non-negative integer
    * @param insert a non-negative integer
    * @return a permutation of length {@code Math.max(delete, insert) + 1}
-   * @see com.github.methylene.sym.Permutation#cycle
+   * @see com.github.methylene.sym.Permutation#defineCycle
    */
   public static Permutation move(int delete, int insert) {
-    return cycle(Util.sequence(insert, delete, true));
+    return defineCycle(Util.sequence(insert, delete, true));
   }
 
   /**
@@ -247,31 +238,13 @@ public final class Permutation implements Comparable<Permutation> {
   /**
    * <p>Determine whether this permutation has at most one than one nontrivial orbit.</p>
    * @return true if this permutation is a cycle
-   * @see com.github.methylene.sym.Permutation#toCycles
-   * @see com.github.methylene.sym.Permutation#cycle
+   * @see com.github.methylene.sym.Permutation#defineCycle
    * @see com.github.methylene.sym.Permutation#orbit
    */
   public boolean isCycle() {
     return Cycles.isCyclicRanking(ranking);
   }
 
-
-  /**
-   * <p>Write this permutation as a product of cyclic permutations.</p>
-   * <p>For every permutation {@code p} in the returned list, the following are true:</p>
-   * <pre><code>
-   *   p.isCycle() == true;
-   *   p.isIdentity() == false;
-   * </code></pre>
-   * @return a cycle decomposition of this permutation
-   * @see com.github.methylene.sym.Permutation#cycle
-   * @see com.github.methylene.sym.Permutation#isCycle
-   */
-  public int[][] toCycles() {
-    if (this.ranking.length == 0)
-      return new int[0][];
-    return Cycles.toOrbits(ranking);
-  }
 
   /**
    * Write this permutation as a product of transpositions.
@@ -295,22 +268,13 @@ public final class Permutation implements Comparable<Permutation> {
   }
 
   /**
-   * Get a compiled version of this operation, which may use less memory and can be used to change arrays in place.
-   * @param factory transposition factory
+   * Get a cycle based version of this operation, which can be used to change arrays in place.
    * @return a destructive version of this instance
    */
-  public CompiledPermutation compile(Transposition.TranspositionFactory factory) {
+  public CompiledPermutation toCycles() {
     if (this.ranking.length == 0)
       return CompiledPermutation.identity();
-    return CompiledPermutation.create(toTranspositions(factory), new Orbits(toCycles()));
-  }
-
-  /**
-   * Get a compiled version of this operation, which may use less memory and can be used to change arrays in place.
-   * @return a destructive version of this instance
-   */
-  public CompiledPermutation compile() {
-    return compile(Transposition.NON_CACHING_FACTORY);
+    return CompiledPermutation.create(new Orbits(Cycles.toOrbits(ranking)));
   }
 
   /**
@@ -346,7 +310,7 @@ public final class Permutation implements Comparable<Permutation> {
     for (int i = 0; i < length; i += 1) {
       result[i] = length - i - 1;
     }
-    return perm(result, false);
+    return define(result, false);
   }
 
   /**
@@ -380,7 +344,7 @@ public final class Permutation implements Comparable<Permutation> {
   public Permutation shift(int n) {
     if (ranking.length == 0 && n == 0)
       return this;
-    return perm(Rankings.shift(n, ranking), false);
+    return define(Rankings.shift(n, ranking), false);
   }
 
   /**
@@ -493,7 +457,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
    * @see com.github.methylene.sym.Permutation#apply(int)
-   * @see #compile()
+   * @see #toCycles()
    * @see CompiledPermutation#apply(Object[])
    */
   public <T> T[] apply(T[] input) {
@@ -654,7 +618,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Rankings#sort(byte[])
    */
   public static Permutation sort(byte[] input) {
-    return perm(Rankings.sort(input), false);
+    return define(Rankings.sort(input), false);
   }
 
   /**
@@ -665,7 +629,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Rankings#sort(short[])
    */
   public static Permutation sort(short[] input) {
-    return perm(Rankings.sort(input), false);
+    return define(Rankings.sort(input), false);
   }
 
   /**
@@ -676,7 +640,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Rankings#sort(long[])
    */
   public static Permutation sort(long[] input) {
-    return perm(Rankings.sort(input), false);
+    return define(Rankings.sort(input), false);
   }
 
   /**
@@ -687,7 +651,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Rankings#sort(float[])
    */
   public static Permutation sort(float[] input) {
-    return perm(Rankings.sort(input), false);
+    return define(Rankings.sort(input), false);
   }
 
 
@@ -699,7 +663,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Rankings#sort(double[])
    */
   public static Permutation sort(double[] input) {
-    return perm(Rankings.sort(input), false);
+    return define(Rankings.sort(input), false);
   }
 
   /**
@@ -710,7 +674,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Rankings#sort(Comparable[])
    */
   public static <E extends Comparable> Permutation sort(E[] input) {
-    return perm(Rankings.sort(input), false);
+    return define(Rankings.sort(input), false);
   }
 
 
@@ -722,7 +686,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Rankings#sort(char[])
    */
   public static Permutation sort(char[] input) {
-    return perm(Rankings.sort(input), false);
+    return define(Rankings.sort(input), false);
   }
 
   /**
@@ -734,7 +698,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Rankings#sort(Object[], Comparator)
    */
   public static <E> Permutation sort(Object[] input, Comparator<E> comp) {
-    return perm(Rankings.sort(input, comp), false);
+    return define(Rankings.sort(input, comp), false);
   }
 
 
@@ -746,7 +710,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see Rankings#sort(int[])
    */
   public static Permutation sort(int[] input) {
-    return perm(Rankings.sort(input), false);
+    return define(Rankings.sort(input), false);
   }
 
   /**
@@ -768,7 +732,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException if {@code b} is not a rearrangement of {@code a}.
    */
   public static Permutation from(int[] a, int[] b) {
-    return perm(Rankings.from(a, b), false);
+    return define(Rankings.from(a, b), false);
   }
 
   /**
@@ -777,7 +741,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static <E extends Comparable> Permutation from(E[] a, E[] b) {
-    return perm(Rankings.from(a, b), false);
+    return define(Rankings.from(a, b), false);
   }
 
   /**
@@ -785,7 +749,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static Permutation from(byte[] a, byte[] b) {
-    return perm(Rankings.from(a, b), false);
+    return define(Rankings.from(a, b), false);
   }
 
   /**
@@ -793,7 +757,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static Permutation from(long[] a, long[] b) {
-    return perm(Rankings.from(a, b), false);
+    return define(Rankings.from(a, b), false);
   }
 
   /**
@@ -801,7 +765,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static Permutation from(float[] a, float[] b) {
-    return perm(Rankings.from(a, b), false);
+    return define(Rankings.from(a, b), false);
   }
 
 
@@ -810,7 +774,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static Permutation from(double[] a, double[] b) {
-    return perm(Rankings.from(a, b), false);
+    return define(Rankings.from(a, b), false);
   }
 
   /**
@@ -818,7 +782,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @see com.github.methylene.sym.Permutation#from(int[], int[])
    */
   public static <E> Permutation from(E[] a, E[] b, Comparator<E> comp) {
-    return perm(Rankings.from(a, b, comp), false);
+    return define(Rankings.from(a, b, comp), false);
   }
 
   /* ================= sorts ================= */

@@ -9,9 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static com.github.methylene.sym.Rankings.*;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class TestRankings {
 
@@ -143,7 +141,7 @@ public class TestRankings {
   public void testDecompose() {
     for (int _ = 0; _ < 100; _++) {
       Permutation p = Permutation.random(100);
-      assertEquals(p, p.compile().toPermutation());
+      assertEquals(p, p.toCycles().toPermutation());
     }
   }
 

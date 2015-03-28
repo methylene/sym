@@ -60,10 +60,10 @@ public class UtilTest {
 
   @Test
   public void testClosed() throws Exception {
-    Permutation id = Permutation.perm1(1, 2, 3, 4);
-    Permutation p = Permutation.perm1(2, 1, 3, 4);
-    Permutation k = Permutation.perm1(1, 2, 4, 3);
-    Permutation p2 = Permutation.perm1(2, 3, 1, 4);
+    Permutation id = Permutation.define(0, 1, 2, 3);
+    Permutation p = Permutation.define(1, 0, 2, 3);
+    Permutation k = Permutation.define(0, 1, 3, 2);
+    Permutation p2 = Permutation.define(1, 2, 0, 3);
     assertTrue(isClosed(Arrays.asList(id)));
     assertTrue(isClosed(Arrays.asList(id, p)));
     assertTrue(isClosed(Arrays.asList(id, p2, p2.pow(2))));

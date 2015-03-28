@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import com.github.methylene.sym.Permutation;
-import static com.github.methylene.sym.Permutation.perm;
+import static com.github.methylene.sym.Permutation.define;
 import com.github.methylene.sym.Rankings;
 import com.github.methylene.sym.TestUtil;
 import com.github.methylene.sym.Util;
@@ -468,7 +468,7 @@ public class ListsTest {
       int[] ranking = Rankings.random(b.length);
       int[] a = Rankings.apply(ranking, b);
       int el = a[TestUtil.duplicateIndexes(a)[0]];
-      IntList list = ((IntList) LookupList.of(b)).shuffle(perm(ranking));
+      IntList list = ((IntList) LookupList.of(b)).shuffle(define(ranking));
       int i = list.indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
@@ -483,7 +483,7 @@ public class ListsTest {
       int[] ranking = Rankings.random(b.length);
       int[] a = Rankings.apply(ranking, b);
       int el = a[((int) (Math.random() * b.length))];
-      IntList list = ((IntList) LookupList.of(b)).shuffle(perm(ranking));
+      IntList list = ((IntList) LookupList.of(b)).shuffle(define(ranking));
       int i = list.indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)

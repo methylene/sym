@@ -1,7 +1,6 @@
 package com.github.methylene.sym;
 
 import static com.github.methylene.sym.Util.checkLength;
-import static com.github.methylene.sym.Util.negativeFailure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +12,7 @@ import java.util.List;
  * </p>
  *
  * <p>
- *   This implementation is based on cyclic decomposition and will often use less memory than an equivalent
+ *   This implementation is based on cyclic decomposition and will sometimes use less memory than an equivalent
  *   {@link Permutation}. In some cases it can be faster when applied to a list or array, and it can optionally
  *   be applied in a destructive manner, see the {@code clobber} and {@code unclobber} methods.
  * </p>
@@ -25,24 +24,14 @@ import java.util.List;
  */
 public final class CompiledPermutation {
 
-  private static final CompiledPermutation IDENTITY = new CompiledPermutation(new Transposition[0], Permutation.Orbits.EMPTY);
+  private static final CompiledPermutation IDENTITY = new CompiledPermutation(Permutation.Orbits.EMPTY, 0);
 
-  //  private final Transposition[] transpositions;
-  private final int[] transp;
   private final int length;
   private final int[][] cycles;
 
-  private CompiledPermutation(Transposition[] transpositions, Permutation.Orbits orbits) {
-    int length = 0;
-    this.transp = new int[transpositions.length * 2];
-    for (int i = 0; i < transpositions.length; i++) {
-      Transposition t = transpositions[i];
-      length = Math.max(length, t.j);
-      transp[2 * i] = t.j;
-      transp[2 * i + 1] = t.k;
-    }
+  private CompiledPermutation(Permutation.Orbits orbits, int length) {
+    this.length = length;
     this.cycles = orbits.orbits;
-    this.length = length + 1;
   }
 
   /**
@@ -54,14 +43,18 @@ public final class CompiledPermutation {
   }
 
   /**
-   * Define a new operation as a list of transpositions.
-   * @param transpositions a list of transpositions
+   * Define a new operation as a list of cycles.
+   * @param orbits a list of cycles
    * @return the operation defined by the input
    */
-  public static CompiledPermutation create(List<Transposition> transpositions, Permutation.Orbits orbits) {
-    if (transpositions.isEmpty())
+  public static CompiledPermutation create(Permutation.Orbits orbits) {
+    if (orbits.orbits.length == 0)
       return IDENTITY;
-    return new CompiledPermutation(transpositions.toArray(new Transposition[transpositions.size()]), orbits);
+    int maxIndex = 0;
+    for (int[] orbit : orbits.orbits)
+      for (int i : orbit)
+        maxIndex = Math.max(maxIndex, i);
+    return new CompiledPermutation(orbits, maxIndex + 1);
   }
 
   /**
@@ -82,12 +75,23 @@ public final class CompiledPermutation {
 
   public void unclobber(int[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < transp.length; i += 2) {
-      int temp = array[transp[i + 1]];
-      array[transp[i + 1]] = array[transp[i]];
-      array[transp[i]] = temp;
+    for (int i = 0; i < cycles.length; i++) {
+      for (int j = 0; j < cycles[i].length - 1; j++) {
+        int temp = array[cycles[i][j + 1]];
+        array[cycles[i][j + 1]] = array[cycles[i][j]];
+        array[cycles[i][j]] = temp;
+      }
     }
   }
+
+//  public void unclobber(int[] array) {
+//    checkLength(length, array.length);
+//    for (int i = 0; i < transp.length; i += 2) {
+//      int temp = array[transp[i + 1]];
+//      array[transp[i + 1]] = array[transp[i]];
+//      array[transp[i]] = temp;
+//    }
+//  }
 
   /**
    * Apply this operation by modifying the input array.
@@ -96,10 +100,12 @@ public final class CompiledPermutation {
    */
   public void clobber(byte[] array) {
     checkLength(length, array.length);
-    for (int i = transp.length - 2; i != -2; i -= 2) {
-      byte temp = array[transp[i + 1]];
-      array[transp[i + 1]] = array[transp[i]];
-      array[transp[i]] = temp;
+    for (int i = 0; i < cycles.length; i++) {
+      for (int j = cycles[i].length - 2; j >= 0; j--) {
+        byte temp = array[cycles[i][j + 1]];
+        array[cycles[i][j + 1]] = array[cycles[i][j]];
+        array[cycles[i][j]] = temp;
+      }
     }
   }
 
@@ -110,10 +116,12 @@ public final class CompiledPermutation {
    */
   public void clobber(char[] array) {
     checkLength(length, array.length);
-    for (int i = transp.length - 2; i != -2; i -= 2) {
-      char temp = array[transp[i + 1]];
-      array[transp[i + 1]] = array[transp[i]];
-      array[transp[i]] = temp;
+    for (int i = 0; i < cycles.length; i++) {
+      for (int j = cycles[i].length - 2; j >= 0; j--) {
+        char temp = array[cycles[i][j + 1]];
+        array[cycles[i][j + 1]] = array[cycles[i][j]];
+        array[cycles[i][j]] = temp;
+      }
     }
   }
 
@@ -124,10 +132,12 @@ public final class CompiledPermutation {
    */
   public void clobber(short[] array) {
     checkLength(length, array.length);
-    for (int i = transp.length - 2; i != -2; i -= 2) {
-      short temp = array[transp[i + 1]];
-      array[transp[i + 1]] = array[transp[i]];
-      array[transp[i]] = temp;
+    for (int i = 0; i < cycles.length; i++) {
+      for (int j = cycles[i].length - 2; j >= 0; j--) {
+        short temp = array[cycles[i][j + 1]];
+        array[cycles[i][j + 1]] = array[cycles[i][j]];
+        array[cycles[i][j]] = temp;
+      }
     }
   }
 
@@ -138,10 +148,12 @@ public final class CompiledPermutation {
    */
   public void clobber(float[] array) {
     checkLength(length, array.length);
-    for (int i = transp.length - 2; i != -2; i -= 2) {
-      float temp = array[transp[i + 1]];
-      array[transp[i + 1]] = array[transp[i]];
-      array[transp[i]] = temp;
+    for (int i = 0; i < cycles.length; i++) {
+      for (int j = cycles[i].length - 2; j >= 0; j--) {
+        float temp = array[cycles[i][j + 1]];
+        array[cycles[i][j + 1]] = array[cycles[i][j]];
+        array[cycles[i][j]] = temp;
+      }
     }
   }
 
@@ -152,10 +164,12 @@ public final class CompiledPermutation {
    */
   public void clobber(double[] array) {
     checkLength(length, array.length);
-    for (int i = transp.length - 2; i != -2; i -= 2) {
-      double temp = array[transp[i + 1]];
-      array[transp[i + 1]] = array[transp[i]];
-      array[transp[i]] = temp;
+    for (int i = 0; i < cycles.length; i++) {
+      for (int j = cycles[i].length - 2; j >= 0; j--) {
+        double temp = array[cycles[i][j + 1]];
+        array[cycles[i][j + 1]] = array[cycles[i][j]];
+        array[cycles[i][j]] = temp;
+      }
     }
   }
 
@@ -166,10 +180,12 @@ public final class CompiledPermutation {
    */
   public void clobber(long[] array) {
     checkLength(length, array.length);
-    for (int i = transp.length - 2; i != -2; i -= 2) {
-      long temp = array[transp[i + 1]];
-      array[transp[i + 1]] = array[transp[i]];
-      array[transp[i]] = temp;
+    for (int i = 0; i < cycles.length; i++) {
+      for (int j = cycles[i].length - 2; j >= 0; j--) {
+        long temp = array[cycles[i][j + 1]];
+        array[cycles[i][j + 1]] = array[cycles[i][j]];
+        array[cycles[i][j]] = temp;
+      }
     }
   }
 
@@ -180,10 +196,12 @@ public final class CompiledPermutation {
    */
   public void clobber(Object[] array) {
     checkLength(length, array.length);
-    for (int i = transp.length - 2; i != -2; i -= 2) {
-      Object temp = array[transp[i + 1]];
-      array[transp[i + 1]] = array[transp[i]];
-      array[transp[i]] = temp;
+    for (int i = 0; i < cycles.length; i++) {
+      for (int j = cycles[i].length - 2; j >= 0; j--) {
+        Object temp = array[cycles[i][j + 1]];
+        array[cycles[i][j + 1]] = array[cycles[i][j]];
+        array[cycles[i][j]] = temp;
+      }
     }
   }
 
@@ -196,10 +214,12 @@ public final class CompiledPermutation {
    */
   public <E> void clobber(List<E> list) {
     checkLength(length, list.size());
-    for (int i = transp.length - 2; i != -2; i -= 2) {
-      E temp = list.get(transp[i + 1]);
-      list.set(transp[i + 1], list.get(transp[i]));
-      list.set(transp[i], temp);
+    for (int i = 0; i < cycles.length; i++) {
+      for (int j = cycles[i].length - 2; j >= 0; j--) {
+        E temp = list.get(cycles[i][j + 1]);
+        list.set(cycles[i][j + 1], list.get(cycles[i][j]));
+        list.set(cycles[i][j], temp);
+      }
     }
   }
 
@@ -313,13 +333,14 @@ public final class CompiledPermutation {
 
   /**
    * Move an index. This method will not fail if the input is negative, but just return it unchanged.
-   * @param i a number
+   * @param n a number
    * @return the moved index
    */
-  public int apply(int i) {
-    for (int n = transp.length - 2; n != -2; n -= 2)
-      i = i == transp[n] ? transp[n + 1] : i == transp[n + 1] ? transp[n] : i;
-    return i;
+  public int apply(int n) {
+    for (int i = 0; i < cycles.length; i++)
+      for (int j = cycles[i].length - 2; j >= 0; j--)
+        n = n == cycles[i][j] ? cycles[i][j + 1] : n == cycles[i][j + 1] ? cycles[i][j] : n;
+    return n;
   }
 
   /**
@@ -329,7 +350,7 @@ public final class CompiledPermutation {
   public Permutation toPermutation() {
     int[] ranking = Util.sequence(length);
     unclobber(ranking);
-    return Permutation.perm(ranking);
+    return Permutation.define(ranking);
   }
 
   /**
@@ -338,9 +359,9 @@ public final class CompiledPermutation {
    * @return the composition or product
    */
   public Permutation comp(CompiledPermutation other) {
-    if (transp.length == 0)
+    if (length == 0)
       return other.toPermutation();
-    if (other.transp.length == 0)
+    if (other.length == 0)
       return this.toPermutation();
     return this.toPermutation().comp(other.toPermutation());
   }
@@ -371,11 +392,11 @@ public final class CompiledPermutation {
 
   @Override
   public String toString() {
-    if (transp.length == 0)
+    if (cycles.length == 0)
       return "[]";
     StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < transp.length; i += 2)
-      sb.append(String.format(" (%d %d)", transp[i], transp[i + 1]));
+    for (int[] cycle : cycles)
+      sb.append(Arrays.toString(cycle)).append(' ');
     return '[' + sb.substring(1) + ']';
   }
 
@@ -386,6 +407,10 @@ public final class CompiledPermutation {
    */
   public int length() {
     return length;
+  }
+
+  public int numCycles() {
+    return cycles.length;
   }
 
 }

@@ -351,7 +351,7 @@ public final class Transposition {
    * @return a permutation
    */
   public Permutation toPermutation() {
-    return Permutation.cycle(j, k);
+    return Permutation.defineCycle(j, k);
   }
 
   public String toString() {
