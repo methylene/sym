@@ -83,7 +83,7 @@ public class PermutationTest {
       }
 
       // compiled
-      CompiledPermutation compiled = p.toCycles();
+      Cycles compiled = p.toCycles();
       arrayListApplied2 = compiled.apply(arrayList);
       linkedListApplied2 = compiled.apply(linkedList);
       assertEquals(arrayListApplied, arrayListApplied2);
@@ -365,7 +365,7 @@ public class PermutationTest {
     for (Permutation p : TestUtil.sym(5)) {
       int order = p.order();
       sign += p.signature();
-      CompiledPermutation cycles = p.toCycles();
+      Cycles cycles = p.toCycles();
 //      assertEquals(p, CompiledPermutation.prod(cycles));
       assertEquals(p, p.toCycles().toPermutation());
       if (p.reverses(5)) {
@@ -449,7 +449,7 @@ public class PermutationTest {
       int[] copy = Arrays.copyOf(a, a.length);
       List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
       Permutation p = Permutation.random(5);
-      CompiledPermutation d = p.toCycles();
+      Cycles d = p.toCycles();
       d.clobber(copy);
       d.clobber(listCopy);
       int[] expected = p.apply(a);
@@ -463,7 +463,7 @@ public class PermutationTest {
   public void testNonDestructive() {
     int[] a = {0,1,2,3,4};
     Permutation p = define(1, 2, 0, 3, 4).comp(define(0, 1, 2, 4, 3));
-    CompiledPermutation d = p.toCycles();
+    Cycles d = p.toCycles();
     assertArrayEquals(p.apply(a), d.apply(a));
   }
 
@@ -475,7 +475,7 @@ public class PermutationTest {
       int[] copy = Arrays.copyOf(a, a.length);
       List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
       Permutation p = Permutation.random(100);
-      CompiledPermutation d = p.toCycles();
+      Cycles d = p.toCycles();
       d.clobber(copy);
       d.clobber(listCopy);
       int[] expected = p.apply(a);

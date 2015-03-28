@@ -12,7 +12,7 @@ public class CompiledPermutationTest {
     for (int _ = 0; _ < 100; _++) {
       int[] a = Util.sequence(100);
       int[] b = Arrays.copyOf(a, a.length);
-      CompiledPermutation p = Permutation.random(a.length).toCycles();
+      Cycles p = Permutation.random(a.length).toCycles();
       p.clobber(a);
       p.unclobber(a);
       assertArrayEquals(b, a);
@@ -25,7 +25,7 @@ public class CompiledPermutationTest {
     for (int _ = 0; _ < 100; _++) {
       int[] a = Util.sequence(100);
       int[] b = Arrays.copyOf(a, a.length);
-      CompiledPermutation p = Permutation.random(a.length - 10).toCycles();
+      Cycles p = Permutation.random(a.length - 10).toCycles();
       int[] c = p.apply(a);
       for (int i = 0; i < a.length; i += 1) {
         assertEquals(c[p.apply(i)], a[i]);

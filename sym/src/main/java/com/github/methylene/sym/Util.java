@@ -1,5 +1,6 @@
 package com.github.methylene.sym;
 
+import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
@@ -1027,5 +1028,26 @@ public final class Util {
         return false;
     return true;
   }
+
+  /* ================= join ================= */
+
+  /**
+   * Concatenates multiple input arrays into one.
+   * @param src some arrays
+   * @return the concatenation of the input
+   */
+  public static int[] join(int[]... src) {
+    int length = 0;
+    for (int[] a : src)
+      length += a.length;
+    int[] target = new int[length];
+    int offset = 0;
+    for (int[] a: src) {
+      arraycopy(a, 0, target, offset, a.length);
+      offset += a.length;
+    }
+    return target;
+  }
+
 
 }

@@ -146,17 +146,6 @@ public class TestRankings {
   }
 
   @Test
-  public void testDecompose12() {
-    int[] ranking = Rankings.random(100);
-    int[][] cycles = Cycles.toOrbits(ranking);
-    String[] symbols = Util.symbols(ranking.length);
-    String[] s = Arrays.copyOf(symbols, symbols.length);
-    for (int[] c : cycles) {
-      assertArrayEquals(s, symbols);
-    }
-  }
-
-  @Test
   public void testSorts() {
     int[] ranking = {0, 3, 1, 4, 2};
     int[] a = {0, 4, 2, 4, 3};
@@ -173,6 +162,5 @@ public class TestRankings {
       assertTrue(Rankings.sorts(ranking, a));
     }
   }
-
 
 }

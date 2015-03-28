@@ -301,22 +301,22 @@ public final class Transposition {
   }
 
   /**
-   * Move an index.
-   * @param i a non-negative number
+   * Move an index. This method will not fail if the input is negative, but just return it unchanged.
+   * @param i a number
    * @return the moved index
-   * @throws IllegalArgumentException if {@code i} is negative
    */
   public int apply(int i) {
-    if (i < 0)
-      negativeFailure();
     return i == j ? k : i == k ? j : i;
   }
 
+  /**
+   * Check if this transposition commutes with the other.
+   * @param other a transposition
+   * @return true if {@code this.apply(other.apply(i)) == other.apply(this.apply(i))} for all integers {@code i}
+   */
   public boolean commutesWith(Transposition other) {
-    return this.j != other.j
-        && this.k != other.k
-        || this.j == other.j
-        && this.k == other.k;
+    return (this.j != other.j && this.k != other.k)
+        || (this.j == other.j && this.k == other.k);
   }
 
   /**

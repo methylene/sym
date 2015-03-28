@@ -4,8 +4,6 @@ import static com.github.methylene.sym.Util.*;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 
-import com.github.methylene.lists.LookupList;
-
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -711,7 +709,6 @@ public final class Rankings {
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
-   * @see #apply(int[], Comparable[])
    * @see com.github.methylene.sym.Util#indexOf
    * @throws java.lang.NullPointerException if {@code a} is {@code null} or contains a {@code null} element
    */
@@ -804,7 +801,6 @@ public final class Rankings {
    * @return a ranking that produces {@code b} when applied to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code b} can not be obtained by rearranging {@code a}
    * @throws java.lang.NullPointerException if any argument is {@code null}
-   * @see #apply(int[], java.lang.Comparable[])
    */
   public static <E extends Comparable> int[] from(E[] a, E[] b) {
     checkEqualLength(a, b);
@@ -1196,6 +1192,11 @@ public final class Rankings {
     return result;
   }
 
+  /* ================= shuffle ================= */
+
+  public static int[] shuffle(int[] ranking, int[]... args) {
+    return apply(ranking, join(args));
+  }
 
   /* ================= sorts ================= */
 
