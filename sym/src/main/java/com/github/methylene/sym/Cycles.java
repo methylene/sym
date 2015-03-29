@@ -5,6 +5,7 @@ import static com.github.methylene.sym.Util.checkLength;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -64,34 +65,30 @@ public final class Cycles {
    */
   public void clobber(int[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = cycles[i].length - 2; j >= 0; j--) {
-        int temp = array[cycles[i][j + 1]];
-        array[cycles[i][j + 1]] = array[cycles[i][j]];
-        array[cycles[i][j]] = temp;
+    for (int[] cycle: cycles) {
+      for (int j = cycle.length - 2; j >= 0; j--) {
+        int temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
       }
     }
   }
 
+  /**
+   * Undo the action of this operation by modifying the input array.
+   * @param array an array
+   * @throws IllegalArgumentException if {@code array.length < this.length()}
+   */
   public void unclobber(int[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = 0; j < cycles[i].length - 1; j++) {
-        int temp = array[cycles[i][j + 1]];
-        array[cycles[i][j + 1]] = array[cycles[i][j]];
-        array[cycles[i][j]] = temp;
+    for (int[] cycle: cycles) {
+      for (int j = 0; j < cycle.length - 1; j++) {
+        int temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
       }
     }
   }
-
-//  public void unclobber(int[] array) {
-//    checkLength(length, array.length);
-//    for (int i = 0; i < transp.length; i += 2) {
-//      int temp = array[transp[i + 1]];
-//      array[transp[i + 1]] = array[transp[i]];
-//      array[transp[i]] = temp;
-//    }
-//  }
 
   /**
    * Apply this operation by modifying the input array.
@@ -100,11 +97,27 @@ public final class Cycles {
    */
   public void clobber(byte[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = cycles[i].length - 2; j >= 0; j--) {
-        byte temp = array[cycles[i][j + 1]];
-        array[cycles[i][j + 1]] = array[cycles[i][j]];
-        array[cycles[i][j]] = temp;
+    for (int[] cycle: cycles) {
+      for (int j = cycle.length - 2; j >= 0; j--) {
+        byte temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
+      }
+    }
+  }
+
+  /**
+   * Undo the action of this operation by modifying the input array.
+   * @param array an array
+   * @throws IllegalArgumentException if {@code array.length < this.length()}
+   */
+  public void unclobber(byte[] array) {
+    checkLength(length, array.length);
+    for (int[] cycle: cycles) {
+      for (int j = 0; j < cycle.length - 1; j++) {
+        byte temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
       }
     }
   }
@@ -116,11 +129,27 @@ public final class Cycles {
    */
   public void clobber(char[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = cycles[i].length - 2; j >= 0; j--) {
-        char temp = array[cycles[i][j + 1]];
-        array[cycles[i][j + 1]] = array[cycles[i][j]];
-        array[cycles[i][j]] = temp;
+    for (int[] cycle: cycles) {
+      for (int j = cycle.length - 2; j >= 0; j--) {
+        char temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
+      }
+    }
+  }
+
+  /**
+   * Undo the action of this operation by modifying the input array.
+   * @param array an array
+   * @throws IllegalArgumentException if {@code array.length < this.length()}
+   */
+  public void unclobber(char[] array) {
+    checkLength(length, array.length);
+    for (int[] cycle: cycles) {
+      for (int j = 0; j < cycle.length - 1; j++) {
+        char temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
       }
     }
   }
@@ -132,11 +161,27 @@ public final class Cycles {
    */
   public void clobber(short[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = cycles[i].length - 2; j >= 0; j--) {
-        short temp = array[cycles[i][j + 1]];
-        array[cycles[i][j + 1]] = array[cycles[i][j]];
-        array[cycles[i][j]] = temp;
+    for (int[] cycle: cycles) {
+      for (int j = cycle.length - 2; j >= 0; j--) {
+        short temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
+      }
+    }
+  }
+
+  /**
+   * Undo the action of this operation by modifying the input array.
+   * @param array an array
+   * @throws IllegalArgumentException if {@code array.length < this.length()}
+   */
+  public void unclobber(short[] array) {
+    checkLength(length, array.length);
+    for (int[] cycle: cycles) {
+      for (int j = 0; j < cycle.length - 1; j++) {
+        short temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
       }
     }
   }
@@ -148,11 +193,27 @@ public final class Cycles {
    */
   public void clobber(float[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = cycles[i].length - 2; j >= 0; j--) {
-        float temp = array[cycles[i][j + 1]];
-        array[cycles[i][j + 1]] = array[cycles[i][j]];
-        array[cycles[i][j]] = temp;
+    for (int[] cycle: cycles) {
+      for (int j = cycle.length - 2; j >= 0; j--) {
+        float temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
+      }
+    }
+  }
+
+  /**
+   * Undo the action of this operation by modifying the input array.
+   * @param array an array
+   * @throws IllegalArgumentException if {@code array.length < this.length()}
+   */
+  public void unclobber(float[] array) {
+    checkLength(length, array.length);
+    for (int[] cycle: cycles) {
+      for (int j = 0; j < cycle.length - 1; j++) {
+        float temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
       }
     }
   }
@@ -164,11 +225,27 @@ public final class Cycles {
    */
   public void clobber(double[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = cycles[i].length - 2; j >= 0; j--) {
-        double temp = array[cycles[i][j + 1]];
-        array[cycles[i][j + 1]] = array[cycles[i][j]];
-        array[cycles[i][j]] = temp;
+    for (int[] cycle: cycles) {
+      for (int j = cycle.length - 2; j >= 0; j--) {
+        double temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
+      }
+    }
+  }
+
+  /**
+   * Undo the action of this operation by modifying the input array.
+   * @param array an array
+   * @throws IllegalArgumentException if {@code array.length < this.length()}
+   */
+  public void unclobber(double[] array) {
+    checkLength(length, array.length);
+    for (int[] cycle: cycles) {
+      for (int j = 0; j < cycle.length - 1; j++) {
+        double temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
       }
     }
   }
@@ -180,11 +257,27 @@ public final class Cycles {
    */
   public void clobber(long[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = cycles[i].length - 2; j >= 0; j--) {
-        long temp = array[cycles[i][j + 1]];
-        array[cycles[i][j + 1]] = array[cycles[i][j]];
-        array[cycles[i][j]] = temp;
+    for (int[] cycle: cycles) {
+      for (int j = cycle.length - 2; j >= 0; j--) {
+        long temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
+      }
+    }
+  }
+
+  /**
+   * Undo the action of this operation by modifying the input array.
+   * @param array an array
+   * @throws IllegalArgumentException if {@code array.length < this.length()}
+   */
+  public void unclobber(long[] array) {
+    checkLength(length, array.length);
+    for (int[] cycle: cycles) {
+      for (int j = 0; j < cycle.length - 1; j++) {
+        long temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
       }
     }
   }
@@ -196,11 +289,27 @@ public final class Cycles {
    */
   public void clobber(Object[] array) {
     checkLength(length, array.length);
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = cycles[i].length - 2; j >= 0; j--) {
-        Object temp = array[cycles[i][j + 1]];
-        array[cycles[i][j + 1]] = array[cycles[i][j]];
-        array[cycles[i][j]] = temp;
+    for (int[] cycle: cycles) {
+      for (int j = cycle.length - 2; j >= 0; j--) {
+        Object temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
+      }
+    }
+  }
+
+  /**
+   * Undo the action of this operation by modifying the input array.
+   * @param array an array
+   * @throws IllegalArgumentException if {@code array.length < this.length()}
+   */
+  public void unclobber(Object[] array) {
+    checkLength(length, array.length);
+    for (int[] cycle: cycles) {
+      for (int j = 0; j < cycle.length - 1; j++) {
+        Object temp = array[cycle[j + 1]];
+        array[cycle[j + 1]] = array[cycle[j]];
+        array[cycle[j]] = temp;
       }
     }
   }
@@ -214,11 +323,29 @@ public final class Cycles {
    */
   public <E> void clobber(List<E> list) {
     checkLength(length, list.size());
-    for (int i = 0; i < cycles.length; i++) {
-      for (int j = cycles[i].length - 2; j >= 0; j--) {
-        E temp = list.get(cycles[i][j + 1]);
-        list.set(cycles[i][j + 1], list.get(cycles[i][j]));
-        list.set(cycles[i][j], temp);
+    for (int[] cycle: cycles) {
+      for (int j = cycle.length - 2; j >= 0; j--) {
+        E temp = list.get(cycle[j + 1]);
+        list.set(cycle[j + 1], list.get(cycle[j]));
+        list.set(cycle[j], temp);
+      }
+    }
+  }
+
+  /**
+   * Undo the action of this operation by modifying the input list.
+   * The input list must support {@link List#set(int, Object)}.
+   * @param list a list
+   * @throws UnsupportedOperationException if the input list is not mutable
+   * @throws IllegalArgumentException if {@code list.size() < this.length()}
+   */
+  public <E> void unclobber(List<E> list) {
+    checkLength(length, list.size());
+    for (int[] cycle: cycles) {
+      for (int j = 0; j < cycle.length - 1; j++) {
+        E temp = list.get(cycle[j + 1]);
+        list.set(cycle[j + 1], list.get(cycle[j]));
+        list.set(cycle[j], temp);
       }
     }
   }
@@ -337,9 +464,21 @@ public final class Cycles {
    * @return the moved index
    */
   public int apply(int n) {
-    for (int i = 0; i < cycles.length; i++)
-      for (int j = cycles[i].length - 2; j >= 0; j--)
-        n = n == cycles[i][j] ? cycles[i][j + 1] : n == cycles[i][j + 1] ? cycles[i][j] : n;
+    for (int[] cycle: cycles)
+      for (int j = cycle.length - 2; j >= 0; j--)
+        n = n == cycle[j] ? cycle[j + 1] : n == cycle[j + 1] ? cycle[j] : n;
+    return n;
+  }
+
+  /**
+   * Move an index back. This method will not fail if the input is negative, but just return it unchanged.
+   * @param n a number
+   * @return the moved index
+   */
+  public int unApply(int n) {
+    for (int[] cycle: cycles)
+      for (int j = 0; j < cycle.length - 1; j++)
+        n = n == cycle[j] ? cycle[j + 1] : n == cycle[j + 1] ? cycle[j] : n;
     return n;
   }
 
@@ -409,8 +548,39 @@ public final class Cycles {
     return length;
   }
 
+  /**
+   * Get the number of cycles of this operation.
+   * @return the number of cycles
+   */
   public int numCycles() {
     return cycles.length;
+  }
+
+  /**
+   * Get the length of the {@code n}th cycle.
+   * @return the length of the {@code n}th cycle
+   * @throws java.lang.ArrayIndexOutOfBoundsException if the {@code n}th cycle does not exist
+   */
+  public int cycleLength(int n) {
+    return cycles[n].length;
+  }
+
+  /**
+   * Get a copy of the {@code n}th cycle.
+   * @return the {@code n}th cycle
+   * @throws java.lang.ArrayIndexOutOfBoundsException if the {@code n}th cycle does not exist
+   */
+  public int[] getCycle(int n) {
+    return Arrays.copyOf(cycles[n], cycles[n].length);
+  }
+
+  /**
+   * Get the {@code m}th element of the {@code n}th cycle.
+   * @return the {@code m}th element of the {@code n}th cycle
+   * @throws java.lang.ArrayIndexOutOfBoundsException if the {@code m}th element of the {@code n}th cycle does not exist
+   */
+  public int getCycleElement(int n, int m) {
+    return cycles[n][m];
   }
 
 }
