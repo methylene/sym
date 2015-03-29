@@ -9,12 +9,10 @@ import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Rankings;
 import com.github.methylene.sym.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -136,10 +134,10 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> {
   @SuppressWarnings("unchecked")
   public ComparableList<E> shuffle(Permutation p) {
     if (unique) {
-      Permutation punsort = p.comp(unsort);
+      Permutation punsort = p.compose(unsort);
       return new ComparableList<E>(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
     } else {
-      Comparable[] a = p.comp(super.unsort).apply(sorted);
+      Comparable[] a = p.compose(super.unsort).apply(sorted);
       return createNewList(a, Permutation.sort(a));
     }
   }

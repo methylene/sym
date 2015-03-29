@@ -8,12 +8,10 @@ import static com.github.methylene.sym.Rankings.sort;
 import static java.util.Arrays.copyOf;
 
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Rankings;
 import com.github.methylene.sym.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -145,10 +143,10 @@ public final class ComparatorList<E> extends LookupList<E> {
   @Override
   public ComparatorList<E> shuffle(Permutation p) {
     if (unique) {
-      Permutation punsort = p.comp(unsort);
+      Permutation punsort = p.compose(unsort);
       return new ComparatorList<E>(sorted, punsort.sorts(comparator, sorted), punsort.invert(), punsort, comparator);
     } else {
-      Object[] a = p.comp(super.unsort).apply(sorted);
+      Object[] a = p.compose(super.unsort).apply(sorted);
       return createNewList(comparator, a, Permutation.sort(a, comparator));
     }
   }

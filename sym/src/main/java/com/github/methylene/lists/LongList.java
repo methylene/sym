@@ -14,7 +14,6 @@ import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -117,10 +116,10 @@ public final class LongList extends LookupList<Long> {
   @Override
   public LongList shuffle(Permutation p) {
     if (unique) {
-      Permutation punsort = p.comp(unsort);
+      Permutation punsort = p.compose(unsort);
       return new LongList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
     } else {
-      long[] a = p.comp(super.unsort).apply(sorted);
+      long[] a = p.compose(super.unsort).apply(sorted);
       return createNewList(a, Permutation.sort(a));
     }
   }

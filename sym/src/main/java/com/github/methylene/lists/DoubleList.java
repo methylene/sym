@@ -13,7 +13,6 @@ import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -117,10 +116,10 @@ public final class DoubleList extends LookupList<Double> {
   @Override
   public DoubleList shuffle(Permutation p) {
     if (unique) {
-      Permutation punsort = p.comp(unsort);
+      Permutation punsort = p.compose(unsort);
       return new DoubleList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
     } else {
-      double[] a = p.comp(super.unsort).apply(sorted);
+      double[] a = p.compose(super.unsort).apply(sorted);
       return createNewList(a, Permutation.sort(a));
     }
   }

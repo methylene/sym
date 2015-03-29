@@ -5,7 +5,6 @@ import static com.github.methylene.sym.Util.checkLength;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * <p>
@@ -502,7 +501,7 @@ public final class Cycles {
       return other.toPermutation();
     if (other.length == 0)
       return this.toPermutation();
-    return this.toPermutation().comp(other.toPermutation());
+    return this.toPermutation().compose(other.toPermutation());
   }
 
   /**
@@ -513,7 +512,7 @@ public final class Cycles {
   public static Permutation prod(Cycles... permutations) {
     Permutation result = Permutation.identity();
     for (Cycles permutation : permutations)
-      result = result.comp(permutation.toPermutation());
+      result = result.compose(permutation.toPermutation());
     return result;
   }
 
@@ -525,7 +524,7 @@ public final class Cycles {
   public static Permutation prod(List<Cycles> permutations) {
     Permutation result = Permutation.identity();
     for (Cycles permutation : permutations)
-      result = result.comp(permutation.toPermutation());
+      result = result.compose(permutation.toPermutation());
     return result;
   }
 

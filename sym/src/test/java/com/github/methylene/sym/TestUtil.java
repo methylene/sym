@@ -1,19 +1,6 @@
 package com.github.methylene.sym;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 public class TestUtil {
 
@@ -111,7 +98,7 @@ public class TestUtil {
 
           @Override public Permutation next() {
             Permutation[] p = cartesian.next();
-            return Permutation.prod(p[0].invert(), p[1].invert(), p[0], p[1]);
+            return Permutation.product(p[0].invert(), p[1].invert(), p[0], p[1]);
           }
 
           @Override public void remove() {
@@ -158,7 +145,7 @@ public class TestUtil {
     outer:
     for (Permutation a : input) {
       for (Permutation b : input)
-        if (!a.comp(b).equals(b.comp(a)))
+        if (!a.compose(b).equals(b.compose(a)))
           continue outer;
       result.push(a);
     }
@@ -170,7 +157,7 @@ public class TestUtil {
     for (Permutation p : permutations)
       set.add(p);
     for (Permutation[] p : cartesian(permutations, permutations))
-      if (!set.contains(p[0].comp(p[1])) || !set.contains(p[1].comp(p[0])))
+      if (!set.contains(p[0].compose(p[1])) || !set.contains(p[1].compose(p[0])))
         return false;
     return true;
   }
@@ -205,7 +192,7 @@ public class TestUtil {
   static <E extends Comparable> boolean isDistinct(Iterable<E> input) {
     Iterable<E> distinct = distinct(input);
     Iterator it = distinct.iterator();
-    for(E _: input) {
+    for(E __: input) {
       if (!it.hasNext())
         return false;
       it.next();
@@ -243,7 +230,7 @@ public class TestUtil {
       max = Math.max(max, j);
     int[] test = new int[max + 1];
     Arrays.fill(test, -1);
-    for (int _ : input) {
+    for (int __ : input) {
       if (test[input[start]] == -1)
         test[input[start]] = start;
       else
@@ -261,7 +248,7 @@ public class TestUtil {
     @SuppressWarnings("unchecked")
     Map<Object, Integer> test = new TreeMap<Object, Integer>(comp);
     int start = (int) (Math.random() * input.length);
-    for (Object _ : input) {
+    for (Object __ : input) {
       if (!test.containsKey(input[start])) {
         test.put(input[start], start);
       } else {
@@ -278,7 +265,7 @@ public class TestUtil {
       max = Math.max(max, (int) j);
     int[] test = new int[max + 1];
     Arrays.fill(test, -1);
-    for (long _ : input) {
+    for (long __ : input) {
       if (test[(int) input[start]] == -1)
         test[(int) input[start]] = start;
       else

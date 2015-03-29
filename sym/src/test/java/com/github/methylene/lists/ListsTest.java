@@ -40,7 +40,7 @@ public class ListsTest {
    */
   @Test
   public void testIndexOf() throws Exception {
-    for (int _ = 0; _ < 10000; _ += 1) {
+    for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       int[] pair = TestUtil.duplicateIndexes(a);
@@ -72,7 +72,7 @@ public class ListsTest {
    */
   @Test
   public void testLastIndexOf() throws Exception {
-    for (int _ = 0; _ < 10000; _ += 1) {
+    for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       int[] pair = TestUtil.duplicateIndexes(a);
@@ -93,7 +93,7 @@ public class ListsTest {
    */
   @Test
   public void testFirstComparator() throws Exception {
-    for (int _ = 0; _ < 10000; _ += 1) {
+    for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
       int[] pair = TestUtil.duplicateIndexes(a, MyInt.COMP);
@@ -114,7 +114,7 @@ public class ListsTest {
    */
   @Test
   public void testLastComparator() throws Exception {
-    for (int _ = 0; _ < 10000; _ += 1) {
+    for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
       int[] pair = TestUtil.duplicateIndexes(a, MyInt.COMP);
@@ -130,7 +130,7 @@ public class ListsTest {
 
   @Test
   public void testRandom() throws Exception {
-    for (int _ = 0; _ < 1000; _ += 1) {
+    for (int __ = 0; __ < 1000; __ += 1) {
       int maxNumber = (int) (Math.random() * 100);
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       LookupList<Integer> searchable = LookupList.of(a);
@@ -179,7 +179,7 @@ public class ListsTest {
 
   @Test
   public void testSubList() {
-    for (int _ = 0; _ < 100; _ += 1) {
+    for (int __ = 0; __ < 100; __ += 1) {
       int size = 100;
       int[] a = Util.randomNumbers(1000, size);
       LookupList<Integer> lookupList = LookupList.of(a);
@@ -200,7 +200,7 @@ public class ListsTest {
 
   @Test
   public void testIndexesOf2() {
-    for (int _ = 0; _ < 100; _ += 1) {
+    for (int __ = 0; __ < 100; __ += 1) {
       int size = 10;
       int maxNumber = 4;
       int[] a = Util.randomNumbers(maxNumber, size);
@@ -222,7 +222,7 @@ public class ListsTest {
 
   @Test
   public void testIndexOfLimit() {
-    for (int _ = 0; _ < 100; _ += 1) {
+    for (int __ = 0; __ < 100; __ += 1) {
       int size = 1000;
       int maxNumber = 100;
       int[] a = Util.randomNumbers(maxNumber, size);
@@ -250,7 +250,7 @@ public class ListsTest {
 
   @Test
   public void testIndexesOfComparable() {
-    for (int _ = 0; _ < 100; _ += 1) {
+    for (int __ = 0; __ < 100; __ += 1) {
       int size = 1000;
       int maxNumber = 100;
       Integer[] a = Util.box(Util.randomNumbers(maxNumber, size));
@@ -270,7 +270,7 @@ public class ListsTest {
 
   @Test
   public void testIndexesOfComparator() {
-    for (int _ = 0; _ < 100; _ += 1) {
+    for (int __ = 0; __ < 100; __ += 1) {
       int size = 1000;
       int maxNumber = 100;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, size));
@@ -312,7 +312,7 @@ public class ListsTest {
 
   @Test
   public void testFindDuplicate() {
-    for (int _ = 0; _ < 100; _++) {
+    for (int __ = 0; __ < 100; __++) {
       int[] a = Util.randomNumbers(100, 50);
       int[] duplicate = findDuplicate(LookupList.of(a));
       if (duplicate == null) {
@@ -326,7 +326,7 @@ public class ListsTest {
 
   @Test
   public void testFindDuplicateComparable() {
-    for (int _ = 0; _ < 100; _++) {
+    for (int __ = 0; __ < 100; __++) {
       Integer[] a = Util.box(Util.randomNumbers(100, 50));
       int[] duplicate = findDuplicate(LookupList.copyOf(a));
       if (duplicate == null) {
@@ -340,7 +340,7 @@ public class ListsTest {
 
   @Test
   public void testFindDuplicateComparator() {
-    for (int _ = 0; _ < 100; _++) {
+    for (int __ = 0; __ < 100; __++) {
       MyInt[] a = MyInt.box(Util.randomNumbers(100, 50));
       int[] duplicate = findDuplicate(LookupList.copyOf(MyInt.COMP, a));
       if (duplicate == null) {
@@ -369,7 +369,7 @@ public class ListsTest {
 
   @Test
   public void testPartitions2() {
-    for (int _ = 0; _ < 100; _++) {
+    for (int __ = 0; __ < 100; __++) {
       int size = 100;
       int[] a = Util.randomNumbers(1000, size);
       IntList lookupList = (IntList) LookupList.of(a);
@@ -380,7 +380,7 @@ public class ListsTest {
 
   @Test
   public void testPartitionsBoxed() {
-    for (int _ = 0; _ < 100; _++) {
+    for (int __ = 0; __ < 100; __++) {
       int size = 100;
       MyInt[] a = MyInt.box(Util.randomNumbers(1000, size));
       LookupList<MyInt> lookupList = LookupList.copyOf(MyInt.COMP, a);
@@ -401,7 +401,7 @@ public class ListsTest {
 
   @Test
   public void testUnique2() {
-    for (int _ = 0; _ < 100; _++) {
+    for (int __ = 0; __ < 100; __++) {
       int size = 1000;
       int[] a = Util.randomNumbers(100, size);
       LookupList<Integer> lookupList = LookupList.of(a);
@@ -416,7 +416,7 @@ public class ListsTest {
 
   @Test
   public void testUnique3() {
-    for (int _ = 0; _ < 100; _++) {
+    for (int __ = 0; __ < 100; __++) {
       int size = 1000;
       int[] a = Util.randomNumbers(100, size);
       LookupList<MyInt> lookupList = LookupList.copyOf(MyInt.COMP, MyInt.box(a));
@@ -462,7 +462,7 @@ public class ListsTest {
 
   @Test
   public void testIndexOfShuffle() throws Exception {
-    for (int _ = 0; _ < 10000; _ += 1) {
+    for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
       int[] b = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       int[] ranking = Rankings.random(b.length);
@@ -478,7 +478,7 @@ public class ListsTest {
 
   @Test
   public void testIndexOfShuffleUnique() throws Exception {
-    for (int _ = 0; _ < 10000; _ += 1) {
+    for (int __ = 0; __ < 10000; __ += 1) {
       int[] b = Util.distinctInts(100, 2);
       int[] ranking = Rankings.random(b.length);
       int[] a = Rankings.apply(ranking, b);

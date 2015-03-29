@@ -10,12 +10,9 @@ import static com.github.methylene.sym.Util.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Rankings;
 import com.github.methylene.sym.Util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -120,10 +117,10 @@ public final class IntList extends LookupList<Integer> {
   @Override
   public IntList shuffle(Permutation p) {
     if (unique) {
-      Permutation punsort = p.comp(unsort);
+      Permutation punsort = p.compose(unsort);
       return new IntList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
     } else {
-      int[] a = p.comp(super.unsort).apply(sorted);
+      int[] a = p.compose(super.unsort).apply(sorted);
       return createNewList(a, Permutation.sort(a));
     }
   }

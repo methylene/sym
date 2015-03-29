@@ -14,7 +14,6 @@ import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -119,10 +118,10 @@ public final class ShortList extends LookupList<Short> {
   @Override
   public ShortList shuffle(Permutation p) {
     if (unique) {
-      Permutation punsort = p.comp(unsort);
+      Permutation punsort = p.compose(unsort);
       return new ShortList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
     } else {
-      short[] a = p.comp(super.unsort).apply(sorted);
+      short[] a = p.compose(super.unsort).apply(sorted);
       return createNewList(a, Permutation.sort(a));
     }
   }

@@ -60,11 +60,11 @@ public class UtilTest {
     assertTrue(isClosed(Arrays.asList(id)));
     assertTrue(isClosed(Arrays.asList(id, p)));
     assertTrue(isClosed(Arrays.asList(id, p2, p2.pow(2))));
-    assertTrue(isClosed(Arrays.asList(id, p, k, Permutation.prod(p, k))));
+    assertTrue(isClosed(Arrays.asList(id, p, k, Permutation.product(p, k))));
     assertFalse(isClosed(Arrays.asList(id, p2)));
     assertFalse(isClosed(Arrays.asList(p)));
     assertFalse(isClosed(Arrays.asList(id, p, p2)));
-    assertTrue(Permutation.prod(p, k).pow(2).isIdentity());
+    assertTrue(Permutation.product(p, k).pow(2).isIdentity());
   }
 
   @Test

@@ -13,7 +13,7 @@ public class ListBuilderTest {
   @Test
   public void testExtendedCapacity() {
     int safe = Integer.MAX_VALUE / 3;
-    for (int _ = 0; _ < 10000; _ += 1) {
+    for (int __ = 0; __ < 10000; __ += 1) {
       int oldCapacity = (int) (Math.random() * Integer.MAX_VALUE);
       int minCapacity = oldCapacity + (int) (Math.random() * (Integer.MAX_VALUE - oldCapacity));
       int extended = ListBuilder.extendedCapacity(oldCapacity, minCapacity);
@@ -27,7 +27,7 @@ public class ListBuilderTest {
 
   @Test
   public void testBuilder() {
-    for (int _ = 0; _ < 10000; _ += 1) {
+    for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
       Integer[] a = Util.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
       List<Integer> asList = LookupList.copyOf(a);

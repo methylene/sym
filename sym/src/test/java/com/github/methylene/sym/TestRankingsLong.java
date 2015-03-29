@@ -1,6 +1,9 @@
 package com.github.methylene.sym;
 
 import static org.junit.Assert.assertArrayEquals;
+import static com.github.methylene.sym.Rankings.*;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Test;
 
 /* like PermutationFactoryTest, but use the long versions of sort and from */
@@ -58,7 +61,7 @@ public class TestRankingsLong {
     }
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testMismatch() {
     long[] a = randomNumbers(100, 110);
     long[] b = Permutation.random(a.length).apply(a);
@@ -71,7 +74,9 @@ public class TestRankingsLong {
         break;
       }
     }
-    Permutation.from(a, b).apply(a);
+
+    // null because b is not a rearrangement of a
+    assertNull(from(a, b));
   }
 
 }

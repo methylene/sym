@@ -14,7 +14,6 @@ import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -118,10 +117,10 @@ public final class FloatList extends LookupList<Float> {
   @Override
   public FloatList shuffle(Permutation p) {
     if (unique) {
-      Permutation punsort = p.comp(unsort);
+      Permutation punsort = p.compose(unsort);
       return new FloatList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
     } else {
-      float[] a = p.comp(super.unsort).apply(sorted);
+      float[] a = p.compose(super.unsort).apply(sorted);
       return createNewList(a, Permutation.sort(a));
     }
   }

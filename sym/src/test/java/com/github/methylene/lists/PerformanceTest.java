@@ -31,7 +31,7 @@ public class PerformanceTest {
     IntList asList = (IntList) LookupList.of(a);
     List<Integer> jdk = Arrays.asList(Util.box(a));
     long check;
-    for (int _ = 0; _ < repeat; _ += 1) {
+    for (int __ = 0; __ < repeat; __ += 1) {
 
       check = nanoTime();
       asList.indexOf(candidate);

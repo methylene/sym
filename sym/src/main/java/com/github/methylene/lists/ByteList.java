@@ -116,10 +116,10 @@ public final class ByteList extends LookupList<Byte> {
   @Override
   public ByteList shuffle(Permutation p) {
     if (unique) {
-      Permutation punsort = p.comp(unsort);
+      Permutation punsort = p.compose(unsort);
       return new ByteList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
     } else {
-      byte[] a = p.comp(super.unsort).apply(sorted);
+      byte[] a = p.compose(super.unsort).apply(sorted);
       return createNewList(a, Permutation.sort(a));
     }
   }

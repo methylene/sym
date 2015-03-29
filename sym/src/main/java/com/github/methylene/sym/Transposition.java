@@ -36,6 +36,7 @@ public final class Transposition {
      * Create a new factory. If {@code maxCachedLength > 0}, the transpositions returned by the
      * {@code swap} method will be cached and reused if their {@code length} is {@code <= maxCachedLength}.
      * The cache will permanently store up to {@code maxCachedLength * (maxCachedLength - 1)} transpositions.
+     *
      * @param maxCachedLength the maximum index that is moved by a cached transposition
      */
     public DefaultTranspositionFactory(int maxCachedLength) {
@@ -46,6 +47,7 @@ public final class Transposition {
 
     /**
      * Get a transposition operation that swaps the element at the given indexes.
+     *
      * @param j a non-negative number
      * @param k a non-negative number that must not be the same as {@code j}
      * @return a transposition operation
@@ -73,7 +75,8 @@ public final class Transposition {
   }
 
   /**
-   * Create a new transposition operation that swaps the elements at the given indexes.
+   * Return an operation that swaps the elements at the given indexes.
+   *
    * @param j a non-negative number
    * @param k a non-negative number
    * @return the transposition that swaps the elements at {@code j} and {@code k}
@@ -91,6 +94,7 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
+   *
    * @param array an array
    * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
@@ -103,6 +107,7 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
+   *
    * @param array an array
    * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
@@ -114,6 +119,7 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
+   *
    * @param array an array
    * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
@@ -125,6 +131,7 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
+   *
    * @param array an array
    * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
@@ -136,6 +143,7 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
+   *
    * @param array an array
    * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
@@ -147,6 +155,7 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
+   *
    * @param array an array
    * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
@@ -158,6 +167,7 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
+   *
    * @param array an array
    * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
@@ -169,6 +179,7 @@ public final class Transposition {
 
   /**
    * Apply this operation by modifying the input array.
+   *
    * @param array an array
    * @throws java.lang.IllegalArgumentException if {@code array.length < this.length()}
    */
@@ -181,9 +192,10 @@ public final class Transposition {
   /**
    * Apply this operation by modifying the input list.
    * The input list must support {@link java.util.List#set(int, Object)}.
+   *
    * @param list an array
    * @throws java.lang.UnsupportedOperationException if the input list is not mutable
-   * @throws java.lang.IllegalArgumentException if {@code list.size() < this.length()}
+   * @throws java.lang.IllegalArgumentException      if {@code list.size() < this.length()}
    */
   public <E> void clobber(List<E> list) {
     E temp = list.get(k);
@@ -193,6 +205,7 @@ public final class Transposition {
 
   /**
    * Apply this operation to produce a new array. This method does not modify the input.
+   *
    * @param a an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
@@ -205,6 +218,7 @@ public final class Transposition {
 
   /**
    * Apply this operation to produce a new array. This method does not modify the input.
+   *
    * @param a an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
@@ -217,6 +231,7 @@ public final class Transposition {
 
   /**
    * Apply this operation to produce a new array. This method does not modify the input.
+   *
    * @param a an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
@@ -229,6 +244,7 @@ public final class Transposition {
 
   /**
    * Apply this operation to produce a new array. This method does not modify the input.
+   *
    * @param a an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
@@ -241,6 +257,7 @@ public final class Transposition {
 
   /**
    * Apply this operation to produce a new array. This method does not modify the input.
+   *
    * @param a an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
@@ -253,6 +270,7 @@ public final class Transposition {
 
   /**
    * Apply this operation to produce a new array. This method does not modify the input.
+   *
    * @param a an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
@@ -265,6 +283,7 @@ public final class Transposition {
 
   /**
    * Apply this operation to produce a new array. This method does not modify the input.
+   *
    * @param a an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
@@ -277,6 +296,7 @@ public final class Transposition {
 
   /**
    * Apply this operation to produce a new array. This method does not modify the input.
+   *
    * @param a an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code a.length < this.length()}
@@ -289,6 +309,7 @@ public final class Transposition {
 
   /**
    * Apply this operation to produce a new list. This method does not modify the input.
+   *
    * @param a an list of size not less than {@code this.length()}
    * @return the result of applying this permutation to {@code a}
    * @throws java.lang.IllegalArgumentException if {@code a.size() < this.length()}
@@ -302,6 +323,7 @@ public final class Transposition {
 
   /**
    * Move an index. This method will not fail if the input is negative, but just return it unchanged.
+   *
    * @param i a number
    * @return the moved index
    */
@@ -311,6 +333,7 @@ public final class Transposition {
 
   /**
    * Check if this transposition commutes with the other.
+   *
    * @param other a transposition
    * @return true if {@code this.apply(other.apply(i)) == other.apply(this.apply(i))} for all integers {@code i}
    */
@@ -322,6 +345,7 @@ public final class Transposition {
   /**
    * Return the minimum number of elements that an array or list must have, in order for this operation to
    * be applicable.
+   *
    * @return the length of this operation
    */
   public int length() {
@@ -331,6 +355,7 @@ public final class Transposition {
   /**
    * Return the first index to be swapped.
    * This is always greater than the second.
+   *
    * @return a non-negative number
    * @see #second()
    */
@@ -340,6 +365,7 @@ public final class Transposition {
 
   /**
    * Return the second index to be swapped.
+   *
    * @return a non-negative number
    */
   public int second() {
@@ -348,10 +374,29 @@ public final class Transposition {
 
   /**
    * Get a permutation version of this operation.
+   *
    * @return a permutation
    */
   public Permutation toPermutation() {
     return Permutation.defineCycle(j, k);
+  }
+
+  /**
+   * Take the product of the given transpositions.
+   * @param transpositions an array of transpositions
+   * @return the product of the input
+   */
+  public static Permutation product(Transposition... transpositions) {
+    int maxIndex = 0;
+    for (Transposition t : transpositions)
+      maxIndex = Math.max(maxIndex, t.j);
+    int[] ranking = Util.sequence(maxIndex + 1);
+    for (Transposition t: transpositions) {
+      int temp = ranking[t.k];
+      ranking[t.k] = ranking[t.j];
+      ranking[t.j] = temp;
+    }
+    return Permutation.define(ranking);
   }
 
   public String toString() {

@@ -385,74 +385,58 @@ public final class Rankings {
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final int[] sorted) {
     if (shiftedOffset == 0)
-      return 0;
+      return 1;
     int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-    if (offset == 0)
-      slotFailure();
-    return offset;
+    return offset == 0 ? 0 : shift(offset);
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final byte[] sorted) {
     if (shiftedOffset == 0)
-      return 0;
+      return 1;
     int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-    if (offset == 0)
-      slotFailure();
-    return offset;
+    return offset == 0 ? 0 : shift(offset);
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final short[] sorted) {
     if (shiftedOffset == 0)
-      return 0;
+      return 1;
     int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-    if (offset == 0)
-      slotFailure();
-    return offset;
+    return offset == 0 ? 0 : shift(offset);
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final long[] sorted) {
     if (shiftedOffset == 0)
-      return 0;
+      return 1;
     int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-    if (offset == 0)
-      slotFailure();
-    return offset;
+    return offset == 0 ? 0 : shift(offset);
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final char[] sorted) {
     if (shiftedOffset == 0)
-      return 0;
+      return 1;
     int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-    if (offset == 0)
-      slotFailure();
-    return offset;
+    return offset == 0 ? 0 : shift(offset);
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final float[] sorted) {
     if (shiftedOffset == 0)
-      return 0;
+      return 1;
     int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-    if (offset == 0)
-      slotFailure();
-    return offset;
+    return offset == 0 ? 0 : shift(offset);
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final double[] sorted) {
     if (shiftedOffset == 0)
-      return 0;
+      return 1;
     int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-    if (offset == 0)
-      slotFailure();
-    return offset;
+    return offset == 0 ? 0 : shift(offset);
   }
 
   static int nextOffsetShifting(final int idx, int shiftedOffset, final Object[] sorted) {
     if (shiftedOffset == 0)
-      return 0;
+      return 1;
     int offset = nextOffset(idx, unshift(shiftedOffset), sorted);
-    if (offset == 0)
-      slotFailure();
-    return offset;
+    return offset == 0 ? 0 : shift(offset);
   }
 
   /* ================= sort ================= */
@@ -484,9 +468,10 @@ public final class Rankings {
     for (int i = 0; i < a.length; i++) {
       int idx = binarySearch(sorted, a[i]);
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = idx + offset;
-      offsets[idx] = shift(offset);
+      ranking[i] = idx + unshift(offset);
+      offsets[idx] = offset;
     }
+    checkRanking(ranking);
     return ranking;
   }
 
@@ -517,8 +502,8 @@ public final class Rankings {
     for (int i = 0; i < a.length; i++) {
       int idx = binarySearch(sorted, a[i]);
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = idx + offset;
-      offsets[idx] = shift(offset);
+      ranking[i] = idx + unshift(offset);
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -551,8 +536,8 @@ public final class Rankings {
     for (int i = 0; i < a.length; i++) {
       int idx = binarySearch(sorted, a[i]);
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = idx + offset;
-      offsets[idx] = shift(offset);
+      ranking[i] = idx + unshift(offset);
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -585,8 +570,8 @@ public final class Rankings {
     for (int i = 0; i < a.length; i++) {
       int idx = binarySearch(sorted, a[i]);
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = idx + offset;
-      offsets[idx] = shift(offset);
+      ranking[i] = idx + unshift(offset);
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -619,8 +604,8 @@ public final class Rankings {
     for (int i = 0; i < a.length; i++) {
       int idx = binarySearch(sorted, a[i]);
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = idx + offset;
-      offsets[idx] = shift(offset);
+      ranking[i] = idx + unshift(offset);
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -652,8 +637,8 @@ public final class Rankings {
     for (int i = 0; i < a.length; i++) {
       int idx = binarySearch(sorted, a[i]);
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = idx + offset;
-      offsets[idx] = shift(offset);
+      ranking[i] = idx + unshift(offset);
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -686,8 +671,8 @@ public final class Rankings {
     for (int i = 0; i < a.length; i++) {
       int idx = binarySearch(sorted, a[i]);
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = idx + offset;
-      offsets[idx] = shift(offset);
+      ranking[i] = idx + unshift(offset);
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -719,8 +704,8 @@ public final class Rankings {
     for (int i = 0; i < a.length; i++) {
       int idx = binarySearch(sorted, a[i]);
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = idx + offset;
-      offsets[idx] = shift(offset);
+      ranking[i] = idx + unshift(offset);
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -756,8 +741,8 @@ public final class Rankings {
       @SuppressWarnings("unchecked")
       int idx = binarySearch(sorted, a[i], (Comparator) comp);
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = idx + offset;
-      offsets[idx] = shift(offset);
+      ranking[i] = idx + unshift(offset);
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -783,12 +768,14 @@ public final class Rankings {
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int idx = binarySearch(sorted, a[i]);
+      if (idx < 0)
+        return null;
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = unsort[idx + offset];
-      offsets[idx] = shift(offset);
-      if (a[i] != b[ranking[i]])
-        slotFailure();
+      if (offset == 0)
+        return null;
+      ranking[i] = unsort[idx + unshift(offset)];
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -810,12 +797,16 @@ public final class Rankings {
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int idx = binarySearch(sorted, a[i]);
+      if (idx < 0)
+        return null;
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = unsort[idx + offset];
-      offsets[idx] = shift(offset);
-      if (!a[i].equals(b[ranking[i]]))
-        slotFailure();
+      if (offset == 0)
+        return null;
+      ranking[i] = unsort[idx + unshift(offset)];
+      offsets[idx] = offset;
+//      if (!a[i].equals(b[ranking[i]]))
+//        slotFailure();
     }
     return ranking;
   }
@@ -838,12 +829,14 @@ public final class Rankings {
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int idx = binarySearch(sorted, a[i]);
+      if (idx < 0)
+        return null;
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = unsort[idx + offset];
-      offsets[idx] = shift(offset);
-      if (a[i] != b[ranking[i]])
-        slotFailure();
+      if (offset == 0)
+        return null;
+      ranking[i] = unsort[idx + unshift(offset)];
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -866,12 +859,14 @@ public final class Rankings {
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int idx = binarySearch(sorted, a[i]);
+      if (idx < 0)
+        return null;
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = unsort[idx + offset];
-      offsets[idx] = shift(offset);
-      if (a[i] != b[ranking[i]])
-        slotFailure();
+      if (offset == 0)
+        return null;
+      ranking[i] = unsort[idx + unshift(offset)];
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -894,12 +889,14 @@ public final class Rankings {
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int idx = binarySearch(sorted, a[i]);
+      if (idx < 0)
+        return null;
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = unsort[idx + offset];
-      offsets[idx] = shift(offset);
-      if (a[i] != b[ranking[i]])
-        slotFailure();
+      if (offset == 0)
+        return null;
+      ranking[i] = unsort[idx + unshift(offset)];
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -922,12 +919,14 @@ public final class Rankings {
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      int idx = exceptionalBinarySearch(sorted, a[i]);
+      int idx = binarySearch(sorted, a[i]);
+      if (idx < 0)
+        return null;
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = unsort[idx + offset];
-      offsets[idx] = shift(offset);
-      if (a[i] != b[ranking[i]])
-        slotFailure();
+      if (offset == 0)
+        return null;
+      ranking[i] = unsort[idx + unshift(offset)];
+      offsets[idx] = offset;
     }
     return ranking;
   }
@@ -951,12 +950,15 @@ public final class Rankings {
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
     for (int i = 0; i < a.length; i += 1) {
-      int idx = exceptionalBinarySearch(sorted, a[i], comp);
+      @SuppressWarnings("unchecked")
+      int idx = binarySearch(sorted, a[i], (Comparator) comp);
+      if (idx < 0)
+        return null;
       int offset = nextOffsetShifting(idx, offsets[idx], sorted);
-      ranking[i] = unsort[idx + offset];
-      offsets[idx] = shift(offset);
-      if (!a[i].equals(b[ranking[i]]))
-        slotFailure();
+      if (offset == 0)
+        return null;
+      ranking[i] = unsort[idx + unshift(offset)];
+      offsets[idx] = offset;
     }
     return ranking;
   }

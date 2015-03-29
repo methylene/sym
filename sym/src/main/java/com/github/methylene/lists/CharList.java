@@ -116,10 +116,10 @@ public final class CharList extends LookupList<Character> {
   @Override
   public CharList shuffle(Permutation p) {
     if (unique) {
-      Permutation punsort = p.comp(unsort);
+      Permutation punsort = p.compose(unsort);
       return new CharList(sorted, punsort.sorts(sorted), punsort.invert(), punsort);
     } else {
-      char[] a = p.comp(super.unsort).apply(sorted);
+      char[] a = p.compose(super.unsort).apply(sorted);
       return createNewList(a, Permutation.sort(a));
     }
   }
