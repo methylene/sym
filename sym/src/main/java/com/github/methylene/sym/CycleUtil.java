@@ -17,7 +17,8 @@ public final class CycleUtil {
   private CycleUtil() {}
 
   /**
-   * Get the indexes that are moved by the cycle.
+   * Get the indexes that are moved by the input cycle.
+   *
    * @param cycle a cycle in cycle notation
    * @return the indexes that are moved by the cycle
    * @throws java.lang.IllegalArgumentException if the input does not define a cycle
@@ -38,6 +39,7 @@ public final class CycleUtil {
 
   /**
    * Check if the input defines a cycle.
+   *
    * @param a an array
    * @return true if the input defines a cycle, because it contains no negative
    * numbers or duplicates
@@ -56,8 +58,9 @@ public final class CycleUtil {
 
   /**
    * Create a ranking from a cycle in cycle notation.
+   *
    * @param cycle a cycle in cycle notation
-   * @return the cycle as a ranking
+   * @return a ranking that represents the cycle
    * @throws java.lang.IllegalArgumentException if the input does not define a cycle
    * @see #isCycle
    */
@@ -69,8 +72,15 @@ public final class CycleUtil {
     return ranking;
   }
 
+  /**
+   * Calculate the order of an index in the input ranking.
+   * This method does not check if the input is indeed a valid ranking and will have unexpected results otherwise.
+   *
+   * @param ranking a ranking
+   * @param i an integer
+   * @return
+   */
   public static int order(int[] ranking, final int i) {
-    Rankings.checkRanking(ranking);
     int length = 1;
     int j = i;
     while ((j = ranking[j]) != i)
@@ -79,7 +89,9 @@ public final class CycleUtil {
   }
 
   /**
-   * Calculate the orbit of an index
+   * Calculate the orbit of an index.
+   * This method does not check if the input is indeed a valid ranking and will have unexpected results otherwise.
+   *
    * @param ranking a ranking
    * @param i an non-negative integer
    * @return the orbit of {@code i}
@@ -98,12 +110,20 @@ public final class CycleUtil {
 
   }
 
+  /**
+   * Check if this ranking has at most a single orbit.
+   * This method does not check if the input is indeed a valid ranking and will have unexpected results otherwise.
+   *
+   * @param ranking a ranking
+   * @return true if the input is a cycle
+   */
   public static boolean isCyclicRanking(int[] ranking) {
     int[] candidate = null;
     for (int i = 0; i < ranking.length; i += 1) {
       if (ranking[i] != i) {
         if (candidate == null) {
-          candidate = Util.sortedCopy(orbit(ranking, i));
+          candidate = orbit(ranking, i);
+          Arrays.sort(candidate);
         } else {
           if (Arrays.binarySearch(candidate, i) < 0) {
             return false;
@@ -114,7 +134,13 @@ public final class CycleUtil {
     return true;
   }
 
-
+  /**
+   * Find all nontrivial cycles in the input ranking.
+   * This method does not check if the input is indeed a valid ranking and will have unexpected results otherwise.
+   *
+   * @param ranking a ranking
+   * @return an array of all nontrivial orbits in the input ranking
+   */
   public static int[][] toOrbits(int[] ranking) {
     int[][] orbits = new int[ranking.length / 2][];
     boolean[] done = new boolean[ranking.length];
@@ -133,31 +159,6 @@ public final class CycleUtil {
       }
     }
     return orbits.length == cnt ? orbits : Arrays.copyOf(orbits, cnt);
-  }
-
-  /**
-   * Write the input ranking as a list of transpositions.
-   * This method does not check if the input is indeed a valid ranking and may have unexpected results otherwise.
-   * @param ranking a ranking
-   * @param factory a transposition factory
-   * @return a list of transpositions that is equivalent to the input {@code ranking}
-   */
-  public static List<Transposition> toTranspositions(int[] ranking, Transposition.TranspositionFactory factory) {
-    ArrayList<Transposition> transpositions = new ArrayList<Transposition>(ranking.length);
-    for (int[] orbit : toOrbits(ranking))
-      for (int i = 0; i < orbit.length - 1; i++)
-        transpositions.add(factory.swap(orbit[i], orbit[i + 1]));
-    return transpositions;
-  }
-
-  /**
-   * Write the input ranking as a list of transpositions.
-   * This method does not check if the input is indeed a valid ranking and may have unexpected results otherwise.
-   * @param ranking a ranking
-   * @return a list of transpositions that is equivalent to the input {@code ranking}
-   */
-  public static List<Transposition> toTranspositions(int[] ranking) {
-    return toTranspositions(ranking, Transposition.NON_CACHING_FACTORY);
   }
 
 }

@@ -75,6 +75,35 @@ public final class Transposition {
   }
 
   /**
+   * Return a random transposition that can be applied to arrays of the specified length.
+   *
+   * @param length an integer not less than {@code 2}
+   * @param factory a transposition factory
+   * @return a random transposition of length {@code length} or less
+   * @throws IllegalArgumentException if {@code length} is less than {@code 2}
+   */
+  public static Transposition random(TranspositionFactory factory, int length) {
+    if (length < 2)
+      throw new IllegalArgumentException("minimum length of a transposition is 2");
+    int j = (int) (length * Math.random());
+    int k = (int) (length * Math.random());
+    if (j == k)
+      k  = j == 0 ? 1 : j - 1;
+    return factory.swap(j, k);
+  }
+
+  /**
+   * Return a random transposition that can be applied to arrays of the specified length.
+   *
+   * @param length an integer not less than {@code 2}
+   * @return a random transposition of length {@code length} or less
+   * @throws IllegalArgumentException if {@code length} is less than {@code 2}
+   */
+  public static Transposition random(int length) {
+    return random(NON_CACHING_FACTORY, length);
+  }
+
+  /**
    * Return an operation that swaps the elements at the given indexes.
    *
    * @param j a non-negative number
@@ -338,7 +367,7 @@ public final class Transposition {
    * @return true if {@code this.apply(other.apply(i)) == other.apply(this.apply(i))} for all integers {@code i}
    */
   public boolean commutesWith(Transposition other) {
-    return (this.j != other.j && this.k != other.k)
+    return (this.j != other.j && this.k != other.k && this.j != other.k && this.k != other.j)
         || (this.j == other.j && this.k == other.k);
   }
 

@@ -15,35 +15,21 @@ import java.util.List;
 public final class Util {
 
   /** An empty array of Bytes */
-  public static final Byte[] BOX_BYTE_0 = new Byte[0];
+  static final Byte[] BOX_BYTE_0 = new Byte[0];
   /** An empty array of Shorts */
-  public static final Short[] BOX_SHORT_0 = new Short[0];
+  static final Short[] BOX_SHORT_0 = new Short[0];
   /** An empty array of Characters */
-  public static final Character[] BOX_CHAR_0 = new Character[0];
+  static final Character[] BOX_CHAR_0 = new Character[0];
   /** An empty array of Longs */
-  public static final Long[] BOX_LONG_0 = new Long[0];
+  static final Long[] BOX_LONG_0 = new Long[0];
   /** An empty array of Floats */
-  public static final Float[] BOX_FLOAT_0 = new Float[0];
+  static final Float[] BOX_FLOAT_0 = new Float[0];
   /** An empty array of Doubles */
-  public static final Double[] BOX_DOUBLE_0 = new Double[0];
+  static final Double[] BOX_DOUBLE_0 = new Double[0];
   /** An empty array of Integers */
-  public static final Integer[] BOX_INT_0 = new Integer[0];
-  /** An empty array of Objects */
-  public static final Object[] OBJ_0 = new Object[0];
-  /** An empty array of bytes */
-  public static final byte[] BYTE_0 = new byte[0];
-  /** An empty array of shorts */
-  public static final short[] SHORT_0 = new short[0];
-  /** An empty array of chars */
-  public static final char[] CHAR_0 = new char[0];
-  /** An empty array of longs */
-  public static final long[] LONG_0 = new long[0];
-  /** An empty array of floats */
-  public static final float[] FLOAT_0 = new float[0];
-  /** An empty array of doubles */
-  public static final double[] DOUBLE_0 = new double[0];
+  static final Integer[] BOX_INT_0 = new Integer[0];
   /** An empty array of ints */
-  public static final int[] INT_0 = new int[0];
+  public static final int[] INT_0 = new int[]{};
 
   private Util() {}
 

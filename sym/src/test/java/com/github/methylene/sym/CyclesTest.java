@@ -23,4 +23,11 @@ public class CyclesTest {
     assertArrayEquals(Util.sequence(100), a);
   }
 
+  @Test
+  public void testProduct() {
+    Permutation p = Permutation.random(100);
+    Permutation q = Permutation.random(100);
+    Permutation compose = p.compose(q);
+  }
+
 }

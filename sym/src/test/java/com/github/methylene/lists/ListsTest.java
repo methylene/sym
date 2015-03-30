@@ -1,12 +1,12 @@
 package com.github.methylene.lists;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import com.github.methylene.sym.Permutation;
 import static com.github.methylene.sym.Permutation.define;
+import static com.github.methylene.lists.LookupList.*;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
+import static org.junit.Assert.*;
+
 import com.github.methylene.sym.Rankings;
 import com.github.methylene.sym.TestUtil;
 import com.github.methylene.sym.Util;
@@ -47,7 +47,7 @@ public class ListsTest {
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       int el = a[pair[0]];
-      int i = LookupList.of(a).indexOf(el);
+      int i = of(a).indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -79,7 +79,7 @@ public class ListsTest {
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       int el = a[pair[0]];
-      int i = LookupList.of(a).lastIndexOf(el);
+      int i = of(a).lastIndexOf(el);
       assertEquals(a[i], el);
       for (int j = i + 1; j < a.length; j += 1)
         assertNotEquals(a[j], el);
@@ -100,7 +100,7 @@ public class ListsTest {
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       MyInt el = a[pair[0]];
-      int i = LookupList.copyOf(MyInt.COMP, a).indexOf(el);
+      int i = copyOf(MyInt.COMP, a).indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -121,7 +121,7 @@ public class ListsTest {
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
       MyInt el = a[pair[0]];
-      int i = LookupList.copyOf(MyInt.COMP, a).lastIndexOf(el);
+      int i = copyOf(MyInt.COMP, a).lastIndexOf(el);
       assertEquals(a[i], el);
       for (int j = i + 1; j < i; j += 1)
         assertNotEquals(a[j], el);
@@ -133,7 +133,7 @@ public class ListsTest {
     for (int __ = 0; __ < 1000; __ += 1) {
       int maxNumber = (int) (Math.random() * 100);
       int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
-      LookupList<Integer> searchable = LookupList.of(a);
+      LookupList<Integer> searchable = of(a);
       int el = (int) (maxNumber * Math.random());
       int i = searchable.indexOf(el);
       if (i == -1) {
@@ -150,13 +150,13 @@ public class ListsTest {
 
   @Test(expected = NullPointerException.class)
   public void testNullComparable() throws Exception {
-    LookupList.of("a", null);
+    of("a", null);
   }
 
 
   @Test(expected = NullPointerException.class)
   public void testNull() throws Exception {
-    LookupList.of(1, 2, null);
+    of(1, 2, null);
   }
 
 
@@ -164,7 +164,7 @@ public class ListsTest {
   public void testReadme() {
     String string = "An array with an .indexOf method.";
     byte[] bytes = string.getBytes(Charset.forName("UTF-8"));
-    LookupList<Byte> a = LookupList.of(bytes);
+    LookupList<Byte> a = of(bytes);
     assertEquals(17, a.indexOf((byte) '.'));
   }
 
@@ -172,7 +172,7 @@ public class ListsTest {
   @Test
   public void testModify() {
     int[] a = {1, 2, 3};
-    LookupList<Integer> integers = LookupList.of(a);
+    LookupList<Integer> integers = of(a);
     a[0] = 5;
     assertEquals(1, integers.get(0).intValue());
   }
@@ -182,7 +182,7 @@ public class ListsTest {
     for (int __ = 0; __ < 100; __ += 1) {
       int size = 100;
       int[] a = Util.randomNumbers(1000, size);
-      LookupList<Integer> lookupList = LookupList.of(a);
+      LookupList<Integer> lookupList = of(a);
       ArrayList<Integer> jdk = new ArrayList<Integer>(a.length);
       Collections.addAll(jdk, Util.box(a));
       int from = (int) ((size / 2) * Math.random());
@@ -204,7 +204,7 @@ public class ListsTest {
       int size = 10;
       int maxNumber = 4;
       int[] a = Util.randomNumbers(maxNumber, size);
-      LookupList<Integer> lookupList = LookupList.of(a);
+      LookupList<Integer> lookupList = of(a);
       int el = (int) (Math.random() * maxNumber);
       int[] els = lookupList.indexOf(el, -1);
       assertTrue(Util.isSorted(els));
@@ -226,7 +226,7 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       int[] a = Util.randomNumbers(maxNumber, size);
-      IntList lookupList = (IntList) LookupList.of(a);
+      IntList lookupList = (IntList) of(a);
       int el = (int) (Math.random() * maxNumber);
       int limit = (int) (10 * Math.random());
       int[] els = lookupList.indexOf(el, limit);
@@ -254,7 +254,7 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       Integer[] a = Util.box(Util.randomNumbers(maxNumber, size));
-      LookupList<Integer> lookupList = LookupList.copyOf(a);
+      LookupList<Integer> lookupList = copyOf(a);
       Integer el = (int) (Math.random() * maxNumber);
       int[] els = lookupList.indexOf(el, -1);
       assertTrue(Util.isSorted(els));
@@ -274,7 +274,7 @@ public class ListsTest {
       int size = 1000;
       int maxNumber = 100;
       MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, size));
-      LookupList<MyInt> lookupList = LookupList.copyOf(MyInt.COMP, a);
+      LookupList<MyInt> lookupList = copyOf(MyInt.COMP, a);
       MyInt el = new MyInt((int) (Math.random() * maxNumber));
       int[] els = lookupList.indexOf(el, -1);
       assertTrue(Util.isSorted(els));
@@ -314,7 +314,7 @@ public class ListsTest {
   public void testFindDuplicate() {
     for (int __ = 0; __ < 100; __++) {
       int[] a = Util.randomNumbers(100, 50);
-      int[] duplicate = findDuplicate(LookupList.of(a));
+      int[] duplicate = findDuplicate(of(a));
       if (duplicate == null) {
         for (int i : a)
           assertEquals(0, count(a, i));
@@ -328,7 +328,7 @@ public class ListsTest {
   public void testFindDuplicateComparable() {
     for (int __ = 0; __ < 100; __++) {
       Integer[] a = Util.box(Util.randomNumbers(100, 50));
-      int[] duplicate = findDuplicate(LookupList.copyOf(a));
+      int[] duplicate = findDuplicate(copyOf(a));
       if (duplicate == null) {
         for (Integer i : a)
           assertEquals(0, count(a, i));
@@ -342,7 +342,7 @@ public class ListsTest {
   public void testFindDuplicateComparator() {
     for (int __ = 0; __ < 100; __++) {
       MyInt[] a = MyInt.box(Util.randomNumbers(100, 50));
-      int[] duplicate = findDuplicate(LookupList.copyOf(MyInt.COMP, a));
+      int[] duplicate = findDuplicate(copyOf(MyInt.COMP, a));
       if (duplicate == null) {
         for (MyInt i : a)
           assertEquals(0, count(a, i));
@@ -359,7 +359,7 @@ public class ListsTest {
     int[] part_1 = {3, 4, 5, 9};
     int[] part_2 = {8};
     int[] part_3 = {2};
-    IntList list = (IntList) LookupList.of(a);
+    IntList list = (IntList) of(a);
     assertArrayEquals(part_0, list.group().get(0));
     assertArrayEquals(part_1, list.group().get(1));
     assertArrayEquals(part_2, list.group().get(2));
@@ -372,7 +372,7 @@ public class ListsTest {
     for (int __ = 0; __ < 100; __++) {
       int size = 100;
       int[] a = Util.randomNumbers(1000, size);
-      IntList lookupList = (IntList) LookupList.of(a);
+      IntList lookupList = (IntList) of(a);
       int idx = (int) (Math.random() * size);
       assertArrayEquals(lookupList.indexOf(a[idx], -1), lookupList.group().get(a[idx]));
     }
@@ -383,7 +383,7 @@ public class ListsTest {
     for (int __ = 0; __ < 100; __++) {
       int size = 100;
       MyInt[] a = MyInt.box(Util.randomNumbers(1000, size));
-      LookupList<MyInt> lookupList = LookupList.copyOf(MyInt.COMP, a);
+      LookupList<MyInt> lookupList = copyOf(MyInt.COMP, a);
       int idx = (int) (Math.random() * size);
       assertArrayEquals(lookupList.indexOf(a[idx], -1), lookupList.group().get(a[idx]));
     }
@@ -394,7 +394,7 @@ public class ListsTest {
     int[] a = {0, 0, 3, 1, 1, 1, 0, 0, 2, 1};
     int[] sorted = {0, 0, 0, 0, 1, 1, 1, 1, 2, 3};
     int[] uniqued = {0, 1, 2, 3};
-    IntList list = (IntList) LookupList.of(a);
+    IntList list = (IntList) of(a);
     assertArrayEquals(Util.box(sorted), list.sort().toArray(new Integer[1]));
     assertArrayEquals(Util.box(uniqued), list.sortUnique().toArray(new Integer[1]));
   }
@@ -404,7 +404,7 @@ public class ListsTest {
     for (int __ = 0; __ < 100; __++) {
       int size = 1000;
       int[] a = Util.randomNumbers(100, size);
-      LookupList<Integer> lookupList = LookupList.of(a);
+      LookupList<Integer> lookupList = of(a);
       assertTrue(Util.isSorted(lookupList.sort()));
       List<Integer> unique = lookupList.sortUnique();
       assertTrue(Util.isSorted(unique));
@@ -419,7 +419,7 @@ public class ListsTest {
     for (int __ = 0; __ < 100; __++) {
       int size = 1000;
       int[] a = Util.randomNumbers(100, size);
-      LookupList<MyInt> lookupList = LookupList.copyOf(MyInt.COMP, MyInt.box(a));
+      LookupList<MyInt> lookupList = copyOf(MyInt.COMP, MyInt.box(a));
       assertTrue(Util.isSorted(MyInt.COMP, lookupList.sort()));
       List<MyInt> unique = lookupList.sortUnique();
       assertTrue(Util.isSorted(MyInt.COMP, unique));
@@ -434,7 +434,7 @@ public class ListsTest {
     int[] a = {0, 0, 3, 1, 1, 1, 0, 0, 2, 1};
     int[] sorted = {0, 0, 0, 0, 1, 1, 1, 1, 2, 3};
     int[] uniqued = {0, 1, 2, 3};
-    LookupList<Integer> list = LookupList.copyOf(Util.box(a));
+    LookupList<Integer> list = copyOf(Util.box(a));
     assertArrayEquals(Util.box(sorted), list.sort().toArray(new Integer[1]));
     assertArrayEquals(Util.box(uniqued), list.sortUnique().toArray(new Integer[1]));
   }
@@ -444,7 +444,7 @@ public class ListsTest {
     int[] a = {0, 0, 3, 1, 1, 1, 0, 0, 2, 1};
     int[] sorted = {0, 0, 0, 0, 1, 1, 1, 1, 2, 3};
     int[] uniqued = {0, 1, 2, 3};
-    LookupList<MyInt> list = LookupList.copyOf(MyInt.COMP, MyInt.box(a));
+    LookupList<MyInt> list = copyOf(MyInt.COMP, MyInt.box(a));
     assertArrayEquals(MyInt.box(sorted), list.sort().toArray(new MyInt[1]));
     assertArrayEquals(MyInt.box(uniqued), list.sortUnique().toArray(new MyInt[1]));
   }
@@ -452,7 +452,7 @@ public class ListsTest {
   @Test
   public void testShuffle() {
     int[] a = Util.randomNumbers(20, 10);
-    IntList list = (IntList) LookupList.of(a);
+    IntList list = (IntList) of(a);
     Permutation p = Permutation.random(a.length);
     int[] ranking = p.getRanking();
     Integer[] expected = Util.box(Rankings.apply(ranking, a));
@@ -468,7 +468,7 @@ public class ListsTest {
       int[] ranking = Rankings.random(b.length);
       int[] a = Rankings.apply(ranking, b);
       int el = a[TestUtil.duplicateIndexes(a)[0]];
-      IntList list = ((IntList) LookupList.of(b)).shuffle(define(ranking));
+      IntList list = ((IntList) of(b)).shuffle(define(ranking));
       int i = list.indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
@@ -483,7 +483,7 @@ public class ListsTest {
       int[] ranking = Rankings.random(b.length);
       int[] a = Rankings.apply(ranking, b);
       int el = a[((int) (Math.random() * b.length))];
-      IntList list = ((IntList) LookupList.of(b)).shuffle(define(ranking));
+      IntList list = ((IntList) of(b)).shuffle(define(ranking));
       int i = list.indexOf(el);
       assertEquals(a[i], el);
       for (int j = 0; j < i; j += 1)
@@ -493,7 +493,7 @@ public class ListsTest {
 
   @Test
   public void testEmpty() {
-    LookupList<Comparable> empty = LookupList.of();
+    LookupList<Comparable> empty = of();
     LookupList<Comparable> shuffled = empty.shuffle(Permutation.identity());
     assertTrue(empty.isEmpty());
     assertTrue(shuffled.isEmpty());
@@ -503,8 +503,29 @@ public class ListsTest {
     assertTrue(shuffled.isUnique());
     assertEquals(empty, shuffled);
     assertEquals(-1, shuffled.indexOf("a"));
-    assertArrayEquals(new int[0], shuffled.indexOf("a", -1));
+    assertArrayEquals(new int[]{}, shuffled.indexOf("a", 0));
+    assertArrayEquals(new int[]{}, shuffled.indexOf("a", 1));
+    assertArrayEquals(new int[]{}, shuffled.indexOf("a", -1));
+    assertEquals(EmptyLookupList.class, of().getClass());
   }
 
+  @Test
+  public void testSingleton() {
+    assertEquals(singletonList(1), of(1));
+    assertEquals(singletonList(1), of(1).subList(0, 1));
+    assertFalse(of(1).isEmpty());
+    assertTrue(of(1).isSorted());
+    assertTrue(of(1).isUnique());
+    assertEquals(singletonMap(1, new int[]{0}).keySet(), of(1).group().keySet());
+    assertEquals(0, of(1).indexOf(1));
+    assertEquals(-1, of(1).indexOf(2));
+    assertArrayEquals(new int[]{}, of(1).indexOf(1, 0));
+    assertArrayEquals(new int[]{0}, of(1).indexOf(1, 1));
+    assertArrayEquals(new int[]{0}, of(1).indexOf(1, -1));
+    assertArrayEquals(new int[]{}, of(1).indexOf(2, 0));
+    assertArrayEquals(new int[]{}, of(1).indexOf(2, 1));
+    assertArrayEquals(new int[]{}, of(1).indexOf(2, -1));
+    assertEquals(SingleElementLookupList.class, of(1).getClass());
+  }
 
 }

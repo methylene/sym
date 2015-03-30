@@ -364,13 +364,13 @@ public class PermutationTest {
     int sign = 0;
     for (Permutation p : TestUtil.sym(5)) {
       int order = p.order();
-      sign += p.signature();
+      sign += p.toCycles().signature();
       Cycles cycles = p.toCycles();
 //      assertEquals(p, CompiledPermutation.product(cycles));
       assertEquals(p, p.toCycles().toPermutation());
       if (p.reverses(5)) {
         assertEquals(2, order);
-        assertEquals(1, p.signature());
+        assertEquals(1, p.toCycles().signature());
       }
       if (order > 5) {
         assertEquals(6, order);

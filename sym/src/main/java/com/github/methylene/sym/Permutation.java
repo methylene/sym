@@ -244,29 +244,6 @@ public final class Permutation implements Comparable<Permutation> {
   public boolean isCycle() {
     return CycleUtil.isCyclicRanking(ranking);
   }
-
-
-  /**
-   * Write this permutation as a product of transpositions.
-   * @return a decomposition of this permutation into transpositions
-   * @param factory transposition factory
-   * @see Permutation#product
-   */
-  public List<Transposition> toTranspositions(Transposition.TranspositionFactory factory) {
-    if (this.ranking.length == 0)
-      return Collections.emptyList();
-    return CycleUtil.toTranspositions(ranking, factory);
-  }
-
-  /**
-   * Write this permutation as a product of transpositions.
-   * @return a decomposition of this permutation into transpositions
-   * @see Permutation#product
-   */
-  public List<Transposition> toTranspositions() {
-    return toTranspositions(Transposition.NON_CACHING_FACTORY);
-  }
-
   /**
    * Get a cycle based version of this operation, which can be used to change arrays in place.
    * @return a cycle based version of this operation
@@ -277,24 +254,6 @@ public final class Permutation implements Comparable<Permutation> {
     return Cycles.create(new Orbits(CycleUtil.toOrbits(ranking)));
   }
 
-  /**
-   * Calculate the <a href="http://en.wikipedia.org/wiki/Parity_of_a_permutation">signature</a> of this permutation.
-   * @return {@code 1} if this permutation can be written as an even number of transpositions, {@code -1} otherwise
-   * @see #toTranspositions
-   */
-  public int signature() {
-    return signature(Transposition.NON_CACHING_FACTORY);
-  }
-
-  /**
-   * Calculate the <a href="http://en.wikipedia.org/wiki/Parity_of_a_permutation">signature</a> of this permutation.
-   * @param factory the transposition factory
-   * @return {@code 1} if this permutation can be written as an even number of transpositions, {@code -1} otherwise
-   * @see #toTranspositions
-   */
-  public int signature(Transposition.TranspositionFactory factory) {
-    return toTranspositions(factory).size() % 2 == 0 ? 1 : -1;
-  }
 
   /**
    * <p>Returns a permutation that reverses its input. Example:</p>

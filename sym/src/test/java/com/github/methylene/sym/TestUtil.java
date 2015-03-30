@@ -183,7 +183,7 @@ public class TestUtil {
   static int signatureSum(List<Permutation> permutations) {
     int result = 0;
     for (Permutation p : permutations)
-      result += p.signature();
+      result += p.toCycles().signature();
     return result;
   }
 
