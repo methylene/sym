@@ -78,7 +78,7 @@ public final class CycleUtil {
    *
    * @param ranking a ranking
    * @param i an integer
-   * @return
+   * @return the order of {@code i}
    */
   public static int order(int[] ranking, final int i) {
     int length = 1;
