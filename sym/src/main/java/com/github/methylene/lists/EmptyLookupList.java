@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class EmptyLookupList<E> extends LookupList<E> {
+class EmptyLookupList<E> extends LookupList<E> {
 
   static final LookupList<Object> INSTANCE = new EmptyLookupList<Object>();
 

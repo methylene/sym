@@ -8,7 +8,7 @@ Maven dependency:
 <dependency>
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>1.9.4</version>
+  <version>2.0</version>
 </dependency>
 ````
 
