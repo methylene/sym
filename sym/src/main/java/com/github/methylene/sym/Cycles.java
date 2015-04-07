@@ -571,7 +571,7 @@ public final class Cycles {
       return "[]";
     StringBuilder sb = new StringBuilder();
     for (int[] cycle : cycles)
-      sb.append(Arrays.toString(cycle)).append(' ');
+      sb.append(' ').append(Arrays.toString(cycle));
     return '[' + sb.substring(1) + ']';
   }
 
@@ -635,6 +635,24 @@ public final class Cycles {
       if (cycle.length % 2 == 0)
         even = !even;
     return even ? 1 : -1;
+  }
+
+  /**
+   * Check if this is an even permutation.
+   * @return true if the signature of this permutation is {@code 1}
+   * @see #signature()
+   */
+  public boolean isEven() {
+    return signature() == 1;
+  }
+
+  /**
+   * Check if this is an odd permutation.
+   * @return true if the signature of this permutation is {@code -11}
+   * @see #signature()
+   */
+  public boolean isOdd() {
+    return signature() == -1;
   }
 
 }

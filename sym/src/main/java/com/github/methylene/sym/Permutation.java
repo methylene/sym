@@ -59,7 +59,7 @@ public final class Permutation implements Comparable<Permutation> {
    * @throws java.lang.IllegalArgumentException if {@code cycle} contains negative numbers or duplicates
    */
   public static Permutation defineCycle(int... cycle) {
-    return define(CycleUtil.asRanking(cycle), false);
+    return define(CycleUtil.cyclic(cycle), false);
   }
 
 
@@ -244,6 +244,7 @@ public final class Permutation implements Comparable<Permutation> {
   public boolean isCycle() {
     return CycleUtil.isCyclicRanking(ranking);
   }
+
   /**
    * Get a cycle based version of this operation, which can be used to change arrays in place.
    * @return a cycle based version of this operation

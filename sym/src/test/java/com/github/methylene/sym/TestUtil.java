@@ -294,4 +294,12 @@ public class TestUtil {
     return seed;
   }
 
+  static Permutation[] findCommutator(Permutation permutation, List<Permutation> group) {
+    for (Permutation[] p: cartesian(group, group)) {
+      if (Permutation.product(p[0].invert(), p[1].invert(), p[0], p[1]).equals(permutation))
+        return p;
+    }
+    return null;
+  }
+
 }

@@ -1,11 +1,15 @@
 package com.github.methylene.sym;
 
+import static com.github.methylene.sym.CycleUtil.cyclic;
+import static com.github.methylene.sym.Permutation.product;
 import static com.github.methylene.sym.TestUtil.*;
+import static com.github.methylene.sym.Permutation.define;
 import static com.github.methylene.sym.Util.join;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -160,6 +164,20 @@ public class UtilTest {
     int[] a = Util.sequence(2);
     int[] b = Util.add(a, 2);
     assertArrayEquals(Util.sequence(4), join(a, b));
+  }
+
+  @Test
+  public void testFindCommutator() {
+    Permutation p = define(cyclic(1, 2));
+    Permutation q = define(cyclic(0, 1));
+    assertEquals(define(1, 2, 0), product(p.invert(), q.invert(), p, q));
+  }
+
+  @Test
+  public void testEvenCommutator() {
+    Permutation p = define(cyclic(0, 4, 1));
+    Permutation q = define(cyclic(0, 3, 2, 1, 4));
+    assertEquals(define(1, 2, 0), product(p.invert(), q.invert(), p, q));
   }
 
 }

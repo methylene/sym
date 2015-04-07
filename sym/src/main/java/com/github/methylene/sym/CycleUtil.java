@@ -64,7 +64,7 @@ public final class CycleUtil {
    * @throws java.lang.IllegalArgumentException if the input does not define a cycle
    * @see #isCycle
    */
-  public static int[] asRanking(int... cycle) {
+  public static int[] cyclic(int... cycle) {
     boolean[] moved = movedIndexes(cycle);
     int[] ranking = new int[moved.length];
     for (int i = 0; i < moved.length; i += 1)
