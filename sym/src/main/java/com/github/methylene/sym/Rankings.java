@@ -5,10 +5,7 @@ import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * A collection of methods that return rankings, or operate on rankings.
@@ -119,6 +116,12 @@ public final class Rankings {
     return a;
   }
 
+  /**
+   * Calculate the inverse ranking.
+   * This method does not check if the input is indeed a ranking and may have unexpected results otherwise.
+   * @param ranking a ranking
+   * @return the inverse ranking
+   */
   public static int[] invert(int[] ranking) {
     int[][] rankingWithIndex = withIndex(ranking);
     Arrays.sort(rankingWithIndex, COMPARE_FIRST);
@@ -128,8 +131,24 @@ public final class Rankings {
     return inverted;
   }
 
+  /**
+   * Generate a random ranking of given length.
+   * @param length a non-negative integer
+   * @return a random ranking
+   * @throws IllegalArgumentException if {@code length} is negative
+   */
   public static int[] random(int length) {
-    return sort(distinctInts(length, 4));
+    Random r = new Random();
+    int[] ranking = Util.sequence(length);
+    for (int i = ranking.length - 1; i > 0; i--) {
+      int j = r.nextInt(i + 1);
+      if (j != i) {
+        int tmp = ranking[j];
+        ranking[j] = ranking[i];
+        ranking[i] = tmp;
+      }
+    }
+    return ranking;
   }
 
   /**
