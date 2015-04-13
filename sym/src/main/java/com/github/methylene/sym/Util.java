@@ -4,10 +4,7 @@ import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * A collection of array related utilities
@@ -62,6 +59,7 @@ public final class Util {
       result[i] = start + direction * i;
     return result;
   }
+
 
   /**
    * Creates an array of the numbers {@code 0} (included) to {@code end} (excluded) in sequence.
@@ -127,22 +125,23 @@ public final class Util {
     return maxIndex;
   }
 
+
   /**
-   * Add sequence numbers at the end of given array. If the input array is not shorter than the input,
-   * it is returned. Otherwise a new array is created.
+   * Shuffle the input array in place.
    * @param a an array
-   * @param targetLength a non negative number
-   * @return the array {@code b} defined as {@code b[i] = a[i]} if {@code i < a.length},
-   * and {@code b[i] = i} if {@code a.length <= i < targetLength}
+   * @return the shuffled array
    */
-  public static int[] padding(int[] a, int targetLength) {
-    if (targetLength <= a.length)
-      return a;
-    int[] result = new int[targetLength];
-    System.arraycopy(a, 0, result, 0, a.length);
-    for (int i = a.length; i < targetLength; i += 1)
-      result[i] = i;
-    return result;
+  public static int[] shuffle(int[] a) {
+    Random r = new Random();
+    for (int i = a.length - 1; i > 0; i--) {
+      int j = r.nextInt(i + 1);
+      if (j != i) {
+        int tmp = a[j];
+        a[j] = a[i];
+        a[i] = tmp;
+      }
+    }
+    return a;
   }
 
 
@@ -1014,26 +1013,5 @@ public final class Util {
         return false;
     return true;
   }
-
-  /* ================= join ================= */
-
-  /**
-   * Concatenates multiple input arrays into one.
-   * @param src some arrays
-   * @return the concatenation of the input
-   */
-  public static int[] join(int[]... src) {
-    int length = 0;
-    for (int[] a : src)
-      length += a.length;
-    int[] target = new int[length];
-    int offset = 0;
-    for (int[] a: src) {
-      arraycopy(a, 0, target, offset, a.length);
-      offset += a.length;
-    }
-    return target;
-  }
-
 
 }

@@ -4,8 +4,6 @@ import static com.github.methylene.sym.CycleUtil.cyclic;
 import static com.github.methylene.sym.Permutation.product;
 import static com.github.methylene.sym.TestUtil.*;
 import static com.github.methylene.sym.Permutation.define;
-import static com.github.methylene.sym.Util.join;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -157,13 +155,6 @@ public class UtilTest {
     assertEquals(120, factorial(5));
     assertEquals(19, factorial(19) / factorial(18));
     assertEquals(20, factorial(20) / factorial(19));
-  }
-
-  @Test
-  public void testJoin() {
-    int[] a = Util.sequence(2);
-    int[] b = Util.add(a, 2);
-    assertArrayEquals(Util.sequence(4), join(a, b));
   }
 
   @Test

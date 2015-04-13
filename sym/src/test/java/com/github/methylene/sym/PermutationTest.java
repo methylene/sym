@@ -117,19 +117,6 @@ public class PermutationTest {
     Permutation.define(-1, 0, 1);
   }
 
-  /* test defining property of padding */
-  @Test
-  public void testPad() {
-    int[] p = Rankings.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
-    int[] padded = Util.padding(p, 100);
-    for (int i = 0; i < 100; i += 1) {
-      if (i < p.length)
-        assertEquals(p[i], padded[i]);
-      else
-        assertEquals(i, padded[i]);
-    }
-  }
-
   @Test
   public void testInvert() throws Exception {
     Permutation p = Permutation.define(1, 2, 0);

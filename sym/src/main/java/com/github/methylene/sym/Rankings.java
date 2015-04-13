@@ -138,17 +138,7 @@ public final class Rankings {
    * @throws IllegalArgumentException if {@code length} is negative
    */
   public static int[] random(int length) {
-    Random r = new Random();
-    int[] ranking = Util.sequence(length);
-    for (int i = ranking.length - 1; i > 0; i--) {
-      int j = r.nextInt(i + 1);
-      if (j != i) {
-        int tmp = ranking[j];
-        ranking[j] = ranking[i];
-        ranking[i] = tmp;
-      }
-    }
-    return ranking;
+    return Util.shuffle(sequence(length));
   }
 
   /**
@@ -824,8 +814,6 @@ public final class Rankings {
         return null;
       ranking[i] = unsort[idx + unshift(offset)];
       offsets[idx] = offset;
-//      if (!a[i].equals(b[ranking[i]]))
-//        slotFailure();
     }
     return ranking;
   }
@@ -1211,12 +1199,6 @@ public final class Rankings {
     for (int i = 0; i < length; i += 1)
       result.set(apply(ranking, i), input.get(i));
     return result;
-  }
-
-  /* ================= shuffle ================= */
-
-  public static int[] shuffle(int[] ranking, int[]... args) {
-    return apply(ranking, join(args));
   }
 
   /* ================= sorts ================= */
