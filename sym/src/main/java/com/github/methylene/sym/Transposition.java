@@ -3,14 +3,18 @@ package com.github.methylene.sym;
 import static com.github.methylene.sym.Util.checkLength;
 import static com.github.methylene.sym.Util.negativeFailure;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.RandomAccess;
 
 /**
  * An operation that swaps two elements of an array or list.
  */
-public final class Transposition {
+public final class Transposition implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   /**
    * A factory that creates transpositions.
@@ -22,8 +26,8 @@ public final class Transposition {
 
   public static final TranspositionFactory NON_CACHING_FACTORY = new DefaultTranspositionFactory(0);
 
-  final int j;
-  final int k;
+  private final int j;
+  private final int k;
 
   /**
    * A simple caching factory that maintains a permanent cache of transpositions below the configured length.

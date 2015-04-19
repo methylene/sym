@@ -180,4 +180,11 @@ public class UtilTest {
     assertEquals(define(1, 2, 0), product(p.invert(), q.invert(), p, q));
   }
 
+  @Test
+  public void testEvenCommutator2() {
+    Permutation p = define(cyclic(0, 3, 1));
+    Permutation q = define(cyclic(0, 4, 2, 1, 3));
+    assertEquals(define(1, 2, 0), product(p.invert(), q.invert(), p, q));
+  }
+
 }

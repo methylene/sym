@@ -4,6 +4,7 @@ import static com.github.methylene.sym.Util.checkLength;
 import static com.github.methylene.sym.Util.negativeFailure;
 import com.github.methylene.lists.LookupList;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -14,7 +15,9 @@ import java.util.*;
  *
  * @see #toCycles
  */
-public final class Permutation implements Comparable<Permutation> {
+public final class Permutation implements Comparable<Permutation>, Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   public static final Transposition[] DESTRUCTIVE_0 = new Transposition[0];
 

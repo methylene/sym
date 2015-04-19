@@ -2,6 +2,7 @@ package com.github.methylene.lists;
 
 import com.github.methylene.sym.Permutation;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -24,18 +25,12 @@ import java.util.*;
  * <p>The speedup of the search methods depends on the size of the list, and also on the cost of the
  * {@code equals} method of its elements.</p>
  */
-public abstract class LookupList<E> extends AbstractList<E> implements RandomAccess {
+public abstract class LookupList<E> extends AbstractList<E> {
 
   static final int[] EMPTY_INT_ARRAY = new int[0];
 
   protected final Permutation unsort;
   protected final Permutation sort;
-
-  static int checkNonnegative(int i) {
-    if (i < 0)
-      throw new IllegalArgumentException("negative number is not allowed");
-    return i;
-  }
 
   protected LookupList(Permutation sort, Permutation unsort) {
     this.sort = sort;

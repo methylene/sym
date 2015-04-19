@@ -11,17 +11,15 @@ import static java.util.Arrays.copyOf;
 import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Comparable based lookup list.
  */
-public final class ComparableList<E extends Comparable> extends LookupList<E> {
+public final class ComparableList<E extends Comparable> extends LookupList<E> implements RandomAccess, Serializable {
 
+  private static final long serialVersionUID = 1L;
   private final Comparable[] sorted;
 
   private final boolean unique;

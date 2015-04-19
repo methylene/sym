@@ -3,12 +3,15 @@ package com.github.methylene.lists;
 import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.RandomAccess;
 
-class EmptyLookupList<E> extends LookupList<E> {
+class EmptyLookupList<E> extends LookupList<E> implements RandomAccess, Serializable {
 
+  private static final long serialVersionUID = 1L;
   static final LookupList<Object> INSTANCE = new EmptyLookupList<Object>();
 
   private EmptyLookupList() {

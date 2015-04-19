@@ -13,14 +13,18 @@ import static java.util.Arrays.copyOf;
 import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.RandomAccess;
 
 /**
  * Primitive based lookup list.
  */
-public final class LongList extends LookupList<Long> {
+public final class LongList extends LookupList<Long> implements RandomAccess, Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   private final long[] sorted;
   private final boolean unique;

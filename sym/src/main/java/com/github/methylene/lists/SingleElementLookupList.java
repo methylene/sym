@@ -3,9 +3,12 @@ package com.github.methylene.lists;
 import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
+import java.io.Serializable;
 import java.util.*;
 
-class SingleElementLookupList<E> extends LookupList<E> {
+class SingleElementLookupList<E> extends LookupList<E> implements RandomAccess, Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   final E el;
 

@@ -2,9 +2,11 @@ package com.github.methylene.sym;
 
 import static com.github.methylene.sym.Util.checkLength;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.RandomAccess;
 
 /**
  * <p>
@@ -24,7 +26,9 @@ import java.util.List;
  *
  * @see Permutation#toCycles()
  */
-public final class Cycles {
+public final class Cycles implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   private static final Cycles IDENTITY = new Cycles(Permutation.Orbits.EMPTY, 0);
 

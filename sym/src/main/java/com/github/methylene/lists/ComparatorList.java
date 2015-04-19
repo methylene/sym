@@ -10,19 +10,16 @@ import static java.util.Arrays.copyOf;
 import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.Serializable;
+import java.util.*;
 
 
 /**
  * Comparator based lookup list.
  */
-public final class ComparatorList<E> extends LookupList<E> {
+public final class ComparatorList<E> extends LookupList<E> implements RandomAccess, Serializable {
 
+  private static final long serialVersionUID = 1L;
   private final Object[] sorted;
   private final Comparator<E> comparator;
   private final boolean unique;

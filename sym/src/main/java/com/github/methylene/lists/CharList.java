@@ -12,14 +12,16 @@ import static java.util.Arrays.copyOf;
 import com.github.methylene.sym.Permutation;
 import com.github.methylene.sym.Util;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.RandomAccess;
 
 /**
  * Primitive based lookup list.
  */
-public final class CharList extends LookupList<Character> {
+public final class CharList extends LookupList<Character> implements RandomAccess, Serializable {
 
   private final char[] sorted;
   private final boolean unique;
