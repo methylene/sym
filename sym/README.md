@@ -30,15 +30,6 @@ public <E> int[] findDuplicate(LookupList<E> list) {
 <b>Permutations</b> are objects that encapsulate certain operations on arrays and lists,
 such as sorting, shuffling, swapping two elements, or moving an element.
 
-This library is available as a maven artifact:
-
-````xml
-<dependency>
-  <groupId>com.github.methylene</groupId>
-  <artifactId>sym</artifactId>
-  <version>2.0</version>
-</dependency>
-````
 
 ### Shuffling an array
 
