@@ -421,7 +421,7 @@ public final class Transposition implements Serializable {
     int maxIndex = 0;
     for (Transposition t : transpositions)
       maxIndex = Math.max(maxIndex, t.j);
-    int[] ranking = ArrayUtil.sequence(maxIndex + 1);
+    int[] ranking = ArrayUtil.range(maxIndex + 1);
     for (Transposition t: transpositions) {
       int temp = ranking[t.k];
       ranking[t.k] = ranking[t.j];

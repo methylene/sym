@@ -523,7 +523,7 @@ public final class Cycles implements Serializable {
    * @return a ranking-based version of this operation
    */
   public Permutation toPermutation() {
-    int[] ranking = ArrayUtil.sequence(length);
+    int[] ranking = ArrayUtil.range(length);
     unclobber(ranking);
     return Permutation.define(ranking);
   }

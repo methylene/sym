@@ -199,7 +199,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    * @see #defineCycle
    */
   public static Permutation move(int delete, int insert) {
-    return defineCycle(ArrayUtil.sequence(insert, delete, true));
+    return defineCycle(ArrayUtil.range(insert, delete, true));
   }
 
   /**

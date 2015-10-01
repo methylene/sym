@@ -177,17 +177,38 @@ public class ArrayUtilTest {
   }
 
   @Test
+  public void testRange() {
+    assertArrayEquals(new int[]{10, 9, 8, 7}, ArrayUtil.range(10, 7, true));
+    assertArrayEquals(new int[]{10, 9, 8}, ArrayUtil.range(10, 7, false));
+    assertArrayEquals(new int[]{7, 8, 9, 10}, ArrayUtil.range(7, 10, true));
+    assertArrayEquals(new int[]{7, 8, 9}, ArrayUtil.range(7, 10, false));
+    assertArrayEquals(new int[]{7}, ArrayUtil.range(7, 7, true));
+    assertArrayEquals(new int[]{}, ArrayUtil.range(7, 7, false));
+  }
+
+  @Test
   public void testUnique() {
     int[] a = {8, 5, 7, 2, 9, 4, 1, 6, 0, 3};
     assertTrue(ArrayUtil.isUnique(a));
   }
 
   @Test
-  public void testRemove() {
+  public void testCut() {
     int[] a = {8, 5, 7, 2, 9, 4, 1, 6, 0, 3};
-    assertArrayEquals(new int []{5, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.remove(a, 0));
-    assertArrayEquals(new int []{8, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.remove(a, 1));
-    assertArrayEquals(new int []{8, 5, 7, 2, 9, 4, 1, 6, 0}, ArrayUtil.remove(a, 9));
+    assertArrayEquals(new int []{5, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.cut(a, 0));
+    assertArrayEquals(new int []{8, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.cut(a, 1));
+    assertArrayEquals(new int []{8, 5, 7, 2, 9, 4, 1, 6, 0}, ArrayUtil.cut(a, 9));
   }
+
+  @Test
+  public void testPaste() {
+    int[] a = {8, 5, 7, 2, 9, 4, 1, 6, 0, 3};
+    assertArrayEquals(new int []{0, 8, 5, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.paste(a, 0, 0));
+    assertArrayEquals(new int []{8, 0, 5, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.paste(a, 1, 0));
+    assertArrayEquals(new int []{8, 5, 7, 2, 9, 4, 1, 6, 0, 0, 3}, ArrayUtil.paste(a, 9, 0));
+    assertArrayEquals(new int []{8, 5, 7, 2, 9, 4, 1, 6, 0, 3, 0}, ArrayUtil.paste(a, 10, 0));
+  }
+
+
 
 }

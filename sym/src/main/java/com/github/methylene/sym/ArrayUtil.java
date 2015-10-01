@@ -1,6 +1,5 @@
 package com.github.methylene.sym;
 
-import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
@@ -44,34 +43,50 @@ public final class ArrayUtil {
 
   /**
    * Creates an array of the numbers {@code start} to {@code end} in sequence.
+   * If {@code start == end}, an empty array is returned. If {@code end} is negative, the range
+   * will be descending.
    * @param start a number
    * @param end a number
-   * @param inclusive whether or not the greater of {@code start} and {@code end}
-   *                  should be included in the result
+   * @param inclusive whether or not {@code end} should be included in the result
    * @return the sequence from {@code start} to {@code end}
    */
-  public static int[] sequence(int start, int end, boolean inclusive) {
-    int direction = start < end ? 1 : -1;
-    if (inclusive)
-      end += direction;
-    int[] result = new int[direction * (end - start)];
-    for (int i = 0; i < result.length; i += 1)
-      result[i] = start + direction * i;
-    return result;
+  public static int[] range(int start, int end, boolean inclusive) {
+    if (!inclusive)
+      return range(start, end);
+    return range(start, end >= start ? ++end : --end);
   }
 
 
   /**
    * Creates an array of the numbers {@code 0} (included) to {@code end} (excluded) in sequence.
-   * If {@code end == 0} an empty array is returned.
+   * If {@code end == 0} an empty array is returned. If {@code end} is negative, the range
+   * will be descending.
+   * @param end a number
+   * @return an array of length {@code | end | }
+   */
+  public static int[] range(int end) {
+    return range(0, end);
+  }
+
+  /**
+   * Creates an array of the numbers {@code 0} (included) to {@code end} (excluded) in sequence.
+   * If {@code start == end}, an empty array is returned. If {@code end} is negative, the range
+   * will be descending.
    * @param end a non-negative number
-   * @return an array of length {@code end}
+   * @return an array of length {@code | start - end | }
    * @throws java.lang.IllegalArgumentException if {@code end} is negative
    */
-  public static int[] sequence(int end) {
-    if (end < 0)
-      throw new IllegalArgumentException("illegal end: " + end);
-    return sequence(0, end, false);
+  public static int[] range(int start, int end) {
+    if (start == end)
+      return INT_0;
+    int[] result = new int[Math.abs(start - end)];
+    if (start < end)
+      for (int i = 0; i < result.length; i++)
+        result[i] = start++;
+    else
+      for (int i = 0; i < result.length; i++)
+        result[i] = start--;
+    return result;
   }
 
   /**
@@ -574,11 +589,12 @@ public final class ArrayUtil {
    * @return true if the {@code input} is sorted
    * @throws java.lang.NullPointerException if the input contains null
    */
-  public static <E extends Comparable<E>> boolean isSorted(E[] input) {
+  @SuppressWarnings("unchecked")
+  public static boolean isSorted(Comparable[] input) {
     if (input.length == 0) {return true;}
-    E test = input[0];
+    Comparable test = input[0];
     if (test == null) {throw new NullPointerException("null is not allowed");}
-    for (E i : input) {
+    for (Comparable i : input) {
       if (i.compareTo(test) < 0) {return false;}
       test = i;
     }
@@ -1100,17 +1116,33 @@ public final class ArrayUtil {
   }
 
   /**
-   * Remove element at index {@code i}
+   * Remove an element at index {@code i}.
    * @param a an array
-   * @param i must be non negative and less than {@code a.length}
+   * @param i cut point, must be non negative and less than {@code a.length}
    * @return an array of length {@code a.length - 1}
    */
-  public static int[] remove(int[] a, int i) {
+  public static int[] cut(int[] a, int i) {
     if (i < 0 || i >= a.length)
       throw new IllegalArgumentException("i must be non netative and less than " + a.length);
     int[] result = new int[a.length - 1];
     System.arraycopy(a, 0, result, 0, i);
     System.arraycopy(a, i + 1, result, i, a.length - i - 1);
+    return result;
+  }
+  /**
+   * Insert an element at index {@code i}.
+   * @param a an array
+   * @param i insertion point, must be non negative and not greater than {@code a.length}
+   * @param el new element to be inserted
+   * @return an array of length {@code a.length + 1}, this will have {@code el} at position {@code i}
+   */
+  public static int[] paste(int[] a, int i, int el) {
+    if (i < 0 || i > a.length)
+      throw new IllegalArgumentException("i must be non negative and not greater than " + a.length);
+    int[] result = new int[a.length + 1];
+    System.arraycopy(a, 0, result, 0, i);
+    result[i] = el;
+    System.arraycopy(a, i, result, i + 1, a.length - i);
     return result;
   }
 

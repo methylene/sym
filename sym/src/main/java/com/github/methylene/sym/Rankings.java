@@ -48,7 +48,7 @@ public final class Rankings {
   public static int[] identity(int length) {
     if (length == 0)
       return IDENTITY_0;
-    return ArrayUtil.sequence(length);
+    return ArrayUtil.range(length);
   }
 
   /**
@@ -138,7 +138,7 @@ public final class Rankings {
    * @throws IllegalArgumentException if {@code length} is negative
    */
   public static int[] random(int length) {
-    int[] a = sequence(length);
+    int[] a = range(length);
     ArrayUtil.shuffle(a);
     return a;
   }

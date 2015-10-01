@@ -16,11 +16,11 @@ public class CyclesTest {
 
   @Test
   public void testUnclobber() {
-    int[] a = ArrayUtil.sequence(100);
+    int[] a = ArrayUtil.range(100);
     Cycles p = Permutation.random(100).toCycles();
     p.clobber(a);
     p.unclobber(a);
-    assertArrayEquals(ArrayUtil.sequence(100), a);
+    assertArrayEquals(ArrayUtil.range(100), a);
   }
 
   @Test
