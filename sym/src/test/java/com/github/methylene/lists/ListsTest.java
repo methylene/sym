@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 
 import com.github.methylene.sym.Rankings;
 import com.github.methylene.sym.TestUtil;
-import com.github.methylene.sym.Util;
+import com.github.methylene.sym.ArrayUtil;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
@@ -42,7 +42,7 @@ public class ListsTest {
   public void testIndexOf() throws Exception {
     for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
-      int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      int[] a = ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       int[] pair = TestUtil.duplicateIndexes(a);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
@@ -74,7 +74,7 @@ public class ListsTest {
   public void testLastIndexOf() throws Exception {
     for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
-      int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      int[] a = ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       int[] pair = TestUtil.duplicateIndexes(a);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
@@ -95,7 +95,7 @@ public class ListsTest {
   public void testFirstComparator() throws Exception {
     for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
-      MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
+      MyInt[] a = MyInt.box(ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
       int[] pair = TestUtil.duplicateIndexes(a, MyInt.COMP);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
@@ -116,7 +116,7 @@ public class ListsTest {
   public void testLastComparator() throws Exception {
     for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
-      MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
+      MyInt[] a = MyInt.box(ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
       int[] pair = TestUtil.duplicateIndexes(a, MyInt.COMP);
       assertNotEquals(pair[0], pair[1]);
       assertEquals(a[pair[0]], a[pair[1]]);
@@ -132,7 +132,7 @@ public class ListsTest {
   public void testRandom() throws Exception {
     for (int __ = 0; __ < 1000; __ += 1) {
       int maxNumber = (int) (Math.random() * 100);
-      int[] a = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      int[] a = ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       LookupList<Integer> searchable = of(a);
       int el = (int) (maxNumber * Math.random());
       int i = searchable.indexOf(el);
@@ -181,10 +181,10 @@ public class ListsTest {
   public void testSubList() {
     for (int __ = 0; __ < 100; __ += 1) {
       int size = 100;
-      int[] a = Util.randomNumbers(1000, size);
+      int[] a = ArrayUtil.randomNumbers(1000, size);
       LookupList<Integer> lookupList = of(a);
       ArrayList<Integer> jdk = new ArrayList<Integer>(a.length);
-      Collections.addAll(jdk, Util.box(a));
+      Collections.addAll(jdk, ArrayUtil.box(a));
       int from = (int) ((size / 2) * Math.random());
       int to = from + (int) ((size / 2) * Math.random());
       assertEquals(jdk.subList(from, to), lookupList.subList(from, to));
@@ -203,11 +203,11 @@ public class ListsTest {
     for (int __ = 0; __ < 100; __ += 1) {
       int size = 10;
       int maxNumber = 4;
-      int[] a = Util.randomNumbers(maxNumber, size);
+      int[] a = ArrayUtil.randomNumbers(maxNumber, size);
       LookupList<Integer> lookupList = of(a);
       int el = (int) (Math.random() * maxNumber);
       int[] els = lookupList.indexOf(el, -1);
-      assertTrue(Util.isSorted(els));
+      assertTrue(ArrayUtil.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if (a[i] == el) {
           String msg = String.format("%d, %s", a[i], Arrays.toString(els));
@@ -225,13 +225,13 @@ public class ListsTest {
     for (int __ = 0; __ < 100; __ += 1) {
       int size = 1000;
       int maxNumber = 100;
-      int[] a = Util.randomNumbers(maxNumber, size);
+      int[] a = ArrayUtil.randomNumbers(maxNumber, size);
       IntList lookupList = (IntList) of(a);
       int el = (int) (Math.random() * maxNumber);
       int limit = (int) (10 * Math.random());
       int[] els = lookupList.indexOf(el, limit);
       assertTrue(els.length <= limit);
-      assertTrue(Util.isSorted(els));
+      assertTrue(ArrayUtil.isSorted(els));
       int seen = 0;
       for (int i = 0; i < a.length; i += 1) {
         if (a[i] == el) {
@@ -253,11 +253,11 @@ public class ListsTest {
     for (int __ = 0; __ < 100; __ += 1) {
       int size = 1000;
       int maxNumber = 100;
-      Integer[] a = Util.box(Util.randomNumbers(maxNumber, size));
+      Integer[] a = ArrayUtil.box(ArrayUtil.randomNumbers(maxNumber, size));
       LookupList<Integer> lookupList = copyOf(a);
       Integer el = (int) (Math.random() * maxNumber);
       int[] els = lookupList.indexOf(el, -1);
-      assertTrue(Util.isSorted(els));
+      assertTrue(ArrayUtil.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if (a[i].equals(el)) {
           assertTrue(Arrays.binarySearch(els, i) >= 0);
@@ -273,11 +273,11 @@ public class ListsTest {
     for (int __ = 0; __ < 100; __ += 1) {
       int size = 1000;
       int maxNumber = 100;
-      MyInt[] a = MyInt.box(Util.randomNumbers(maxNumber, size));
+      MyInt[] a = MyInt.box(ArrayUtil.randomNumbers(maxNumber, size));
       LookupList<MyInt> lookupList = copyOf(MyInt.COMP, a);
       MyInt el = new MyInt((int) (Math.random() * maxNumber));
       int[] els = lookupList.indexOf(el, -1);
-      assertTrue(Util.isSorted(els));
+      assertTrue(ArrayUtil.isSorted(els));
       for (int i = 0; i < a.length; i += 1) {
         if (a[i].equals(el)) {
           assertTrue(Arrays.binarySearch(els, i) >= 0);
@@ -313,7 +313,7 @@ public class ListsTest {
   @Test
   public void testFindDuplicate() {
     for (int __ = 0; __ < 100; __++) {
-      int[] a = Util.randomNumbers(100, 50);
+      int[] a = ArrayUtil.randomNumbers(100, 50);
       int[] duplicate = findDuplicate(of(a));
       if (duplicate == null) {
         for (int i : a)
@@ -327,7 +327,7 @@ public class ListsTest {
   @Test
   public void testFindDuplicateComparable() {
     for (int __ = 0; __ < 100; __++) {
-      Integer[] a = Util.box(Util.randomNumbers(100, 50));
+      Integer[] a = ArrayUtil.box(ArrayUtil.randomNumbers(100, 50));
       int[] duplicate = findDuplicate(copyOf(a));
       if (duplicate == null) {
         for (Integer i : a)
@@ -341,7 +341,7 @@ public class ListsTest {
   @Test
   public void testFindDuplicateComparator() {
     for (int __ = 0; __ < 100; __++) {
-      MyInt[] a = MyInt.box(Util.randomNumbers(100, 50));
+      MyInt[] a = MyInt.box(ArrayUtil.randomNumbers(100, 50));
       int[] duplicate = findDuplicate(copyOf(MyInt.COMP, a));
       if (duplicate == null) {
         for (MyInt i : a)
@@ -371,7 +371,7 @@ public class ListsTest {
   public void testPartitions2() {
     for (int __ = 0; __ < 100; __++) {
       int size = 100;
-      int[] a = Util.randomNumbers(1000, size);
+      int[] a = ArrayUtil.randomNumbers(1000, size);
       IntList lookupList = (IntList) of(a);
       int idx = (int) (Math.random() * size);
       assertArrayEquals(lookupList.indexOf(a[idx], -1), lookupList.group().get(a[idx]));
@@ -382,7 +382,7 @@ public class ListsTest {
   public void testPartitionsBoxed() {
     for (int __ = 0; __ < 100; __++) {
       int size = 100;
-      MyInt[] a = MyInt.box(Util.randomNumbers(1000, size));
+      MyInt[] a = MyInt.box(ArrayUtil.randomNumbers(1000, size));
       LookupList<MyInt> lookupList = copyOf(MyInt.COMP, a);
       int idx = (int) (Math.random() * size);
       assertArrayEquals(lookupList.indexOf(a[idx], -1), lookupList.group().get(a[idx]));
@@ -395,19 +395,19 @@ public class ListsTest {
     int[] sorted = {0, 0, 0, 0, 1, 1, 1, 1, 2, 3};
     int[] uniqued = {0, 1, 2, 3};
     IntList list = (IntList) of(a);
-    assertArrayEquals(Util.box(sorted), list.sort().toArray(new Integer[1]));
-    assertArrayEquals(Util.box(uniqued), list.sortUnique().toArray(new Integer[1]));
+    assertArrayEquals(ArrayUtil.box(sorted), list.sort().toArray(new Integer[1]));
+    assertArrayEquals(ArrayUtil.box(uniqued), list.sortUnique().toArray(new Integer[1]));
   }
 
   @Test
   public void testUnique2() {
     for (int __ = 0; __ < 100; __++) {
       int size = 1000;
-      int[] a = Util.randomNumbers(100, size);
+      int[] a = ArrayUtil.randomNumbers(100, size);
       LookupList<Integer> lookupList = of(a);
-      assertTrue(Util.isSorted(lookupList.sort()));
+      assertTrue(ArrayUtil.isSorted(lookupList.sort()));
       List<Integer> unique = lookupList.sortUnique();
-      assertTrue(Util.isSorted(unique));
+      assertTrue(ArrayUtil.isSorted(unique));
       Set<Integer> set = new HashSet<Integer>(lookupList.size());
       for (Integer i : unique)
         assertTrue(set.add(i));
@@ -418,11 +418,11 @@ public class ListsTest {
   public void testUnique3() {
     for (int __ = 0; __ < 100; __++) {
       int size = 1000;
-      int[] a = Util.randomNumbers(100, size);
+      int[] a = ArrayUtil.randomNumbers(100, size);
       LookupList<MyInt> lookupList = copyOf(MyInt.COMP, MyInt.box(a));
-      assertTrue(Util.isSorted(MyInt.COMP, lookupList.sort()));
+      assertTrue(ArrayUtil.isSorted(MyInt.COMP, lookupList.sort()));
       List<MyInt> unique = lookupList.sortUnique();
-      assertTrue(Util.isSorted(MyInt.COMP, unique));
+      assertTrue(ArrayUtil.isSorted(MyInt.COMP, unique));
       HashSet<MyInt> set = new HashSet<MyInt>(lookupList.size());
       for (MyInt i : unique)
         assertTrue(set.add(i));
@@ -434,9 +434,9 @@ public class ListsTest {
     int[] a = {0, 0, 3, 1, 1, 1, 0, 0, 2, 1};
     int[] sorted = {0, 0, 0, 0, 1, 1, 1, 1, 2, 3};
     int[] uniqued = {0, 1, 2, 3};
-    LookupList<Integer> list = copyOf(Util.box(a));
-    assertArrayEquals(Util.box(sorted), list.sort().toArray(new Integer[1]));
-    assertArrayEquals(Util.box(uniqued), list.sortUnique().toArray(new Integer[1]));
+    LookupList<Integer> list = copyOf(ArrayUtil.box(a));
+    assertArrayEquals(ArrayUtil.box(sorted), list.sort().toArray(new Integer[1]));
+    assertArrayEquals(ArrayUtil.box(uniqued), list.sortUnique().toArray(new Integer[1]));
   }
 
   @Test
@@ -451,11 +451,11 @@ public class ListsTest {
 
   @Test
   public void testShuffle() {
-    int[] a = Util.randomNumbers(20, 10);
+    int[] a = ArrayUtil.randomNumbers(20, 10);
     IntList list = (IntList) of(a);
     Permutation p = Permutation.random(a.length);
     int[] ranking = p.getRanking();
-    Integer[] expected = Util.box(Rankings.apply(ranking, a));
+    Integer[] expected = ArrayUtil.box(Rankings.apply(ranking, a));
     Integer[] actuals = list.shuffle(p).toArray(new Integer[a.length]);
     assertArrayEquals(expected, actuals);
   }
@@ -464,7 +464,7 @@ public class ListsTest {
   public void testIndexOfShuffle() throws Exception {
     for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
-      int[] b = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      int[] b = ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       int[] ranking = Rankings.random(b.length);
       int[] a = Rankings.apply(ranking, b);
       int el = a[TestUtil.duplicateIndexes(a)[0]];
@@ -479,7 +479,7 @@ public class ListsTest {
   @Test
   public void testIndexOfShuffleUnique() throws Exception {
     for (int __ = 0; __ < 10000; __ += 1) {
-      int[] b = Util.distinctInts(100, 2);
+      int[] b = ArrayUtil.distinctInts(100, 2);
       int[] ranking = Rankings.random(b.length);
       int[] a = Rankings.apply(ranking, b);
       int el = a[((int) (Math.random() * b.length))];

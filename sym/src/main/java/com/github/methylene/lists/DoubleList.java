@@ -4,13 +4,13 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
-import static com.github.methylene.sym.Util.box;
-import static com.github.methylene.sym.Util.unique;
+import static com.github.methylene.sym.ArrayUtil.box;
+import static com.github.methylene.sym.ArrayUtil.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Util;
+import com.github.methylene.sym.ArrayUtil;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -32,13 +32,13 @@ public final class DoubleList extends LookupList<Double> implements RandomAccess
     super(sort, unsort);
     this.sorted = sorted;
     this.ordered = ordered;
-    this.unique = Util.isUnique(sorted);
+    this.unique = ArrayUtil.isUnique(sorted, true);
   }
 
   static DoubleList createNewList(double[] a, Permutation sort) {
     double[] applied = sort.apply(a);
     double[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
-    return new DoubleList(sorted, Util.isSorted(a), sort, sort.invert());
+    return new DoubleList(sorted, ArrayUtil.isSorted(a), sort, sort.invert());
   }
 
   public static DoubleList createNewList(double[] a) {

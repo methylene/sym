@@ -5,12 +5,12 @@ import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
 import static com.github.methylene.sym.Rankings.sort;
-import static com.github.methylene.sym.Util.box;
-import static com.github.methylene.sym.Util.unique;
+import static com.github.methylene.sym.ArrayUtil.box;
+import static com.github.methylene.sym.ArrayUtil.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Util;
+import com.github.methylene.sym.ArrayUtil;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -33,13 +33,13 @@ public final class IntList extends LookupList<Integer> implements RandomAccess, 
     super(sort, unsort);
     this.sorted = sorted;
     this.ordered = ordered;
-    this.unique = Util.isUnique(sorted);
+    this.unique = ArrayUtil.isUnique(sorted, true);
   }
 
   static IntList createNewList(int[] a, Permutation sort) {
     int[] applied = sort.apply(a);
     int[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
-    return new IntList(sorted, Util.isSorted(a), sort, sort.invert());
+    return new IntList(sorted, ArrayUtil.isSorted(a), sort, sort.invert());
   }
 
   public static IntList createNewList(int[] a) {

@@ -1,6 +1,6 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Util.randomNumbers;
+import static com.github.methylene.sym.ArrayUtil.randomNumbers;
 import static com.github.methylene.sym.MyInt.box;
 import static com.github.methylene.sym.Rankings.*;
 import static org.junit.Assert.*;
@@ -23,20 +23,20 @@ public class TestRankingsComparator {
     MyInt[] a;
     for (int __ = 0; __ < REPEAT; __ += 1) {
       a = box(randomNumbers(100, 200));
-      assertArrayEquals(Util.sortedCopy(a, MyInt.COMP), Permutation.sort(a, MyInt.COMP).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sort(a, MyInt.COMP).apply(a));
     }
     for (int i = 0; i < REPEAT; i += 1) {
       a = box(randomNumbers(100, 200));
-      assertArrayEquals(Util.sortedCopy(a, MyInt.COMP), Permutation.sort(a, MyInt.COMP).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sort(a, MyInt.COMP).apply(a));
     }
   }
 
   @Test
   public void testSortStrict() {
     for (int __ = 0; __ < REPEAT; __ += 1) {
-      String[] a = Util.symbols(100);
+      String[] a = ArrayUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(Util.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
     }
   }
 
@@ -58,7 +58,7 @@ public class TestRankingsComparator {
   @Test
   public void testFromStrict() {
     for (int __ = 0; __ < REPEAT; __ += 1) {
-      String[] a = Util.symbols(100);
+      String[] a = ArrayUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
       assertArrayEquals(a, Permutation.from(shuffled, a).apply(shuffled));
     }

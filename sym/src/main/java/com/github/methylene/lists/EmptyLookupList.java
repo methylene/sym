@@ -1,7 +1,7 @@
 package com.github.methylene.lists;
 
+import com.github.methylene.sym.ArrayUtil;
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Util;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -43,7 +43,7 @@ class EmptyLookupList<E> extends LookupList<E> implements RandomAccess, Serializ
   }
 
   @Override public int[] indexOf(E el, int size) {
-    return Util.INT_0;
+    return ArrayUtil.INT_0;
   }
 
   @Override public E get(int i) {

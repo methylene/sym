@@ -21,20 +21,20 @@ public class TestRankingsLong {
   public void testSortRandom() {
     for (int i = 0; i < 100; i += 1) {
       long[] a = randomNumbers(100, 200);
-      assertArrayEquals(Util.sortedCopy(a), Permutation.sort(a).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(a).apply(a));
     }
     for (int i = 0; i < 100; i += 1) {
       long[] a = randomNumbers(100, 20);
-      assertArrayEquals(Util.sortedCopy(a), Permutation.sort(a).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(a).apply(a));
     }
   }
 
   @Test
   public void testSortStrict() {
     for (int i = 0; i < 100; i += 1) {
-      String[] a = Util.symbols(100);
+      String[] a = ArrayUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(Util.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
     }
   }
 
@@ -55,7 +55,7 @@ public class TestRankingsLong {
   @Test
   public void testFromStrict() {
     for (int i = 0; i < 100; i += 1) {
-      String[] a = Util.symbols(100);
+      String[] a = ArrayUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
       assertArrayEquals(a, Permutation.from(shuffled, a).apply(shuffled));
     }

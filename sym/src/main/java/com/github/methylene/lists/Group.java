@@ -1,13 +1,9 @@
 package com.github.methylene.lists;
 
-import static java.lang.System.arraycopy;
-
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Util;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

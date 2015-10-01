@@ -9,7 +9,7 @@ import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Util;
+import com.github.methylene.sym.ArrayUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -29,14 +29,14 @@ public final class ComparableList<E extends Comparable> extends LookupList<E> im
     super(sort, unsort);
     this.sorted = sorted;
     this.ordered = ordered;
-    this.unique = Util.isUnique(sorted);
+    this.unique = ArrayUtil.isUnique(sorted, true);
   }
 
   @SuppressWarnings("unchecked")
   static <E extends Comparable> ComparableList<E> createNewList(Comparable[] a, Permutation sort) {
     Comparable[] applied = sort.apply(a);
     Comparable[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
-    return new ComparableList<E>(sorted, Util.isSorted(a), sort, sort.invert());
+    return new ComparableList<E>(sorted, ArrayUtil.isSorted(a), sort, sort.invert());
   }
 
   public static <E extends Comparable> ComparableList<E> createNewList(Comparable[] a) {

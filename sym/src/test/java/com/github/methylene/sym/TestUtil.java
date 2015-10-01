@@ -30,7 +30,7 @@ public class TestUtil {
     while (!stack.isEmpty()) {
       State state = stack.pop();
       if (state.suffix.length == 0) {
-        result.push(Permutation.define(Util.add(state.prefix, -1)));
+        result.push(Permutation.define(ArrayUtil.add(state.prefix, -1)));
       } else {
         for (int i = 0; i < state.suffix.length; i += 1) {
           int[] newPrefix = new int[state.prefix.length + 1];
@@ -205,7 +205,7 @@ public class TestUtil {
     int max = 0;
     for (int i: input) {
       if (i < 0)
-        Util.negativeFailure();
+        ArrayUtil.negativeFailure();
       max = Math.max(max, i);
     }
     boolean[] test = new boolean[max + 1];

@@ -2,8 +2,8 @@ package com.github.methylene.sym;
 
 import static com.github.methylene.sym.MyInt.box;
 import static com.github.methylene.sym.Permutation.*;
-import static com.github.methylene.sym.Util.distinctInts;
-import static com.github.methylene.sym.Util.randomNumbers;
+import static com.github.methylene.sym.ArrayUtil.distinctInts;
+import static com.github.methylene.sym.ArrayUtil.randomNumbers;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,8 +34,8 @@ public class PermutationTest {
   public void testComp() throws Exception {
     Permutation p = Permutation.define(1, 2, 0);
     assertEquals(define(new int[]{1, 2, 0}), p);
-    assertArrayEquals(new String[]{"c", "a", "b"}, p.apply(Util.symbols(3)));
-    assertArrayEquals(new String[]{"b", "c", "a"}, p.pow(2).apply(Util.symbols(3)));
+    assertArrayEquals(new String[]{"c", "a", "b"}, p.apply(ArrayUtil.symbols(3)));
+    assertArrayEquals(new String[]{"b", "c", "a"}, p.pow(2).apply(ArrayUtil.symbols(3)));
   }
 
   /* check defining property of composition */
@@ -134,7 +134,7 @@ public class PermutationTest {
     Assert.assertEquals(p.pow(-1), Permutation.product(p, p));
     assertEquals(p.pow(-1), p.invert());
     assertEquals(p.pow(2), p.compose(p));
-    Assert.assertArrayEquals(new String[]{"a", "b", "c"}, Permutation.product(p, p.invert()).apply(Util.symbols(3)));
+    Assert.assertArrayEquals(new String[]{"a", "b", "c"}, Permutation.product(p, p.invert()).apply(ArrayUtil.symbols(3)));
   }
 
   @Test
@@ -171,20 +171,20 @@ public class PermutationTest {
   @Test
   public void cycleApply() {
     Assert.assertArrayEquals(new String[]{"b", "c", "e", "d", "a"},
-        Permutation.cycle1(1, 5, 3, 2).apply(Util.symbols(5)));
+        Permutation.cycle1(1, 5, 3, 2).apply(ArrayUtil.symbols(5)));
     Assert.assertArrayEquals(new String[]{"c", "b", "e", "d", "a"},
-        Permutation.cycle1(1, 5, 3).apply(Util.symbols(5)));
+        Permutation.cycle1(1, 5, 3).apply(ArrayUtil.symbols(5)));
     Assert.assertArrayEquals(new String[]{"c", "a", "b"},
-        Permutation.cycle1(1, 2, 3).apply(Util.symbols(3)));
+        Permutation.cycle1(1, 2, 3).apply(ArrayUtil.symbols(3)));
   }
 
   @Test
   public void testCycleApply() throws Exception {
     Assert.assertArrayEquals(new String[]{"c", "a", "b"},
-        Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3)).apply(Util.symbols(3)));
-    Assert.assertArrayEquals(new String[]{"c", "a", "b"}, Permutation.cycle1(1, 2, 3).apply(Util.symbols(3)));
+        Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3)).apply(ArrayUtil.symbols(3)));
+    Assert.assertArrayEquals(new String[]{"c", "a", "b"}, Permutation.cycle1(1, 2, 3).apply(ArrayUtil.symbols(3)));
     Assert.assertArrayEquals(new String[]{"a", "c", "b"}, Permutation.product(Permutation.cycle1(1, 2),
-            Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))).apply(Util.symbols(3)));
+            Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))).apply(ArrayUtil.symbols(3)));
   }
 
   @Test
@@ -299,7 +299,7 @@ public class PermutationTest {
   @Test
   public void testFromQuickly() {
     Permutation p = Permutation.from(new Comparable[]{1, 2, 3}, new Comparable[]{2, 3, 1});
-    assertArrayEquals(new String[]{"b", "c", "a"}, p.apply(Util.symbols(3)));
+    assertArrayEquals(new String[]{"b", "c", "a"}, p.apply(ArrayUtil.symbols(3)));
   }
 
   /**
@@ -432,16 +432,16 @@ public class PermutationTest {
   @Test
   public void testDestructive() {
     for (int __ = 0; __ < 100; __++) {
-      int[] a = Util.randomNumbers(10, 5);
+      int[] a = ArrayUtil.randomNumbers(10, 5);
       int[] copy = Arrays.copyOf(a, a.length);
-      List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
+      List<Integer> listCopy = Arrays.asList(ArrayUtil.box(Arrays.copyOf(a, a.length)));
       Permutation p = Permutation.random(5);
       Cycles d = p.toCycles();
       d.clobber(copy);
       d.clobber(listCopy);
       int[] expected = p.apply(a);
       assertArrayEquals(expected, copy);
-      assertArrayEquals(Util.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
+      assertArrayEquals(ArrayUtil.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
       assertEquals(p, d.toPermutation());
     }
   }
@@ -458,16 +458,16 @@ public class PermutationTest {
   @Test
   public void testDestructive3() {
     for (int __ = 0; __ < 100; __++) {
-      int[] a = Util.randomNumbers(100, 100);
+      int[] a = ArrayUtil.randomNumbers(100, 100);
       int[] copy = Arrays.copyOf(a, a.length);
-      List<Integer> listCopy = Arrays.asList(Util.box(Arrays.copyOf(a, a.length)));
+      List<Integer> listCopy = Arrays.asList(ArrayUtil.box(Arrays.copyOf(a, a.length)));
       Permutation p = Permutation.random(100);
       Cycles d = p.toCycles();
       d.clobber(copy);
       d.clobber(listCopy);
       int[] expected = p.apply(a);
       assertArrayEquals(expected, copy);
-      assertArrayEquals(Util.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
+      assertArrayEquals(ArrayUtil.box(expected), listCopy.toArray(new Integer[listCopy.size()]));
       assertEquals(p, d.toPermutation());
     }
   }
@@ -475,7 +475,7 @@ public class PermutationTest {
   @Test
   public void testSorts() {
     for (int __ = 0; __ < 100; __++) {
-      int[] a = Util.randomNumbers(100, 50 + (int) (Math.random() * 100));
+      int[] a = ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100));
       Permutation p = Permutation.sort(a);
       assertTrue(p.sorts(a));
     }

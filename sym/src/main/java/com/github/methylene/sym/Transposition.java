@@ -1,13 +1,11 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Util.checkLength;
-import static com.github.methylene.sym.Util.negativeFailure;
+import static com.github.methylene.sym.ArrayUtil.checkLength;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.RandomAccess;
 
 /**
  * An operation that swaps two elements of an array or list.
@@ -59,7 +57,7 @@ public final class Transposition implements Serializable {
      */
     public Transposition swap(int j, int k) {
       if (j < 0 || k < 0)
-        Util.negativeFailure();
+        ArrayUtil.negativeFailure();
       if (j == k)
         throw new IllegalArgumentException("arguments must not be equal");
       if (k > j) {
@@ -423,7 +421,7 @@ public final class Transposition implements Serializable {
     int maxIndex = 0;
     for (Transposition t : transpositions)
       maxIndex = Math.max(maxIndex, t.j);
-    int[] ranking = Util.sequence(maxIndex + 1);
+    int[] ranking = ArrayUtil.sequence(maxIndex + 1);
     for (Transposition t: transpositions) {
       int temp = ranking[t.k];
       ranking[t.k] = ranking[t.j];

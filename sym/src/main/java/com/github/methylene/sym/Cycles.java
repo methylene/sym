@@ -1,12 +1,11 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Util.checkLength;
+import static com.github.methylene.sym.ArrayUtil.checkLength;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.RandomAccess;
 
 /**
  * <p>
@@ -524,7 +523,7 @@ public final class Cycles implements Serializable {
    * @return a ranking-based version of this operation
    */
   public Permutation toPermutation() {
-    int[] ranking = Util.sequence(length);
+    int[] ranking = ArrayUtil.sequence(length);
     unclobber(ranking);
     return Permutation.define(ranking);
   }

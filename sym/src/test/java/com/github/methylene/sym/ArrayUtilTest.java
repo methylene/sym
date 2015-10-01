@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class UtilTest {
+public class ArrayUtilTest {
 
   @Test
   public void testCombinations() throws Exception {
@@ -104,7 +104,7 @@ public class UtilTest {
   @Test
   public void testDistinctInts() {
     for (int i = 0; i < 1000; i += 1) {
-      int[] ints = Util.distinctInts((int) (Math.random() * 1024), (int) (Math.random() * 10) + 2);
+      int[] ints = ArrayUtil.distinctInts((int) (Math.random() * 1024), (int) (Math.random() * 10) + 2);
       assertTrue(isDistinct(ints));
     }
   }
@@ -120,11 +120,11 @@ public class UtilTest {
   public void testDuplicateIndexes2() throws Exception {
     for (int i = 0; i < 1000; i += 1) {
       int maxNumber = 100;
-      int[] ints = Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
+      int[] ints = ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20));
       int[] pair = duplicateIndexes(ints, 0);
       assertTrue(count(ints, ints[pair[0]]) > 1);
       assertEquals(ints[pair[0]], ints[pair[1]]);
-      assertEquals(Util.indexOf(ints, ints[pair[0]], 0), pair[0]);
+      assertEquals(ArrayUtil.indexOf(ints, ints[pair[0]], 0), pair[0]);
     }
   }
 
@@ -138,7 +138,7 @@ public class UtilTest {
   public void testDuplicateIndexes4() throws Exception {
     for (int i = 0; i < 1000; i += 1) {
       int maxNumber = 100;
-      MyInt[] ints = MyInt.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
+      MyInt[] ints = MyInt.box(ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
       int[] pair = duplicateIndexes(ints, MyInt.COMP);
       assertTrue(count(ints, ints[pair[0]]) > 1);
       assertEquals(ints[pair[0]], ints[pair[1]]);

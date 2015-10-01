@@ -8,7 +8,7 @@ import static com.github.methylene.sym.Rankings.sort;
 import static java.util.Arrays.copyOf;
 
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Util;
+import com.github.methylene.sym.ArrayUtil;
 
 import java.io.Serializable;
 import java.util.*;
@@ -30,13 +30,13 @@ public final class ComparatorList<E> extends LookupList<E> implements RandomAcce
     this.comparator = comparator;
     this.sorted = sorted;
     this.ordered = ordered;
-    this.unique = Util.isUnique(sorted);
+    this.unique = ArrayUtil.isUnique(sorted, comparator, true);
   }
 
   static <E> ComparatorList<E> createNewList(Comparator<E> comparator, Object[] a, Permutation sort) {
     Object[] applied = sort.apply(a);
     Object[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
-    return new ComparatorList<E>(sorted, Util.isSorted(comparator, a), sort, sort.invert(), comparator);
+    return new ComparatorList<E>(sorted, ArrayUtil.isSorted(comparator, a), sort, sort.invert(), comparator);
   }
 
   public static <E> ComparatorList<E> createNewList(Comparator<E> comparator, Object[] a) {

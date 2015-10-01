@@ -2,7 +2,8 @@ package com.github.methylene.lists;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import com.github.methylene.sym.Util;
+
+import com.github.methylene.sym.ArrayUtil;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class ListBuilderTest {
   public void testBuilder() {
     for (int __ = 0; __ < 10000; __ += 1) {
       int maxNumber = 10;
-      Integer[] a = Util.box(Util.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
+      Integer[] a = ArrayUtil.box(ArrayUtil.randomNumbers(maxNumber, maxNumber + 2 + (int) (Math.random() * 20)));
       List<Integer> asList = LookupList.copyOf(a);
       List<Integer> addAll = LookupList.<Integer>builder().addAll(a).build();
       List<Integer> jdk = Arrays.asList(a);

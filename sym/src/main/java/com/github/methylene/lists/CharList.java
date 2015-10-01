@@ -4,13 +4,13 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
-import static com.github.methylene.sym.Util.box;
-import static com.github.methylene.sym.Util.unique;
+import static com.github.methylene.sym.ArrayUtil.box;
+import static com.github.methylene.sym.ArrayUtil.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.ArrayUtil;
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Util;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -31,13 +31,13 @@ public final class CharList extends LookupList<Character> implements RandomAcces
     super(sort, unsort);
     this.sorted = sorted;
     this.ordered = ordered;
-    this.unique = Util.isUnique(sorted);
+    this.unique = ArrayUtil.isUnique(sorted, true);
   }
 
   static CharList createNewList(char[] a, Permutation sort) {
     char[] applied = sort.apply(a);
     char[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
-    return new CharList(sorted, Util.isSorted(a), sort, sort.invert());
+    return new CharList(sorted, ArrayUtil.isSorted(a), sort, sort.invert());
   }
 
   public static CharList createNewList(char[] a) {

@@ -1,7 +1,7 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Util.checkLength;
-import static com.github.methylene.sym.Util.negativeFailure;
+import static com.github.methylene.sym.ArrayUtil.checkLength;
+import static com.github.methylene.sym.ArrayUtil.negativeFailure;
 import com.github.methylene.lists.LookupList;
 
 import java.io.Serializable;
@@ -19,7 +19,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   private static final long serialVersionUID = 1L;
 
-  public static final Transposition[] DESTRUCTIVE_0 = new Transposition[0];
+  private static final Transposition[] DESTRUCTIVE_0 = new Transposition[0];
 
   /*
    *  An array of N integers where each of the integers between 0 and N-1 appears exactly once.
@@ -73,7 +73,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    * @see com.github.methylene.sym.Permutation#defineCycle
    */
   public static Permutation cycle1(int... cycle1based) {
-    return defineCycle(Util.add(cycle1based, -1));
+    return defineCycle(ArrayUtil.add(cycle1based, -1));
   }
 
   /**
@@ -199,7 +199,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    * @see #defineCycle
    */
   public static Permutation move(int delete, int insert) {
-    return defineCycle(Util.sequence(insert, delete, true));
+    return defineCycle(ArrayUtil.sequence(insert, delete, true));
   }
 
   /**

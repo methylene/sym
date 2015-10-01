@@ -1,7 +1,7 @@
 package com.github.methylene.lists;
 
+import com.github.methylene.sym.ArrayUtil;
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Util;
 
 import java.io.Serializable;
 import java.util.*;
@@ -98,6 +98,6 @@ class SingleElementLookupList<E> extends LookupList<E> implements RandomAccess, 
   @Override public int[] indexOf(E el, int size) {
     if (size != 0 && this.el.equals(el))
       return new int[]{0};
-    return Util.INT_0;
+    return ArrayUtil.INT_0;
   }
 }

@@ -1,6 +1,6 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Util.*;
+import static com.github.methylene.sym.ArrayUtil.*;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.binarySearch;
 
@@ -48,7 +48,7 @@ public final class Rankings {
   public static int[] identity(int length) {
     if (length == 0)
       return IDENTITY_0;
-    return Util.sequence(length);
+    return ArrayUtil.sequence(length);
   }
 
   /**
@@ -138,7 +138,7 @@ public final class Rankings {
    * @throws IllegalArgumentException if {@code length} is negative
    */
   public static int[] random(int length) {
-    return Util.shuffle(sequence(length));
+    return ArrayUtil.shuffle(sequence(length));
   }
 
   /**
@@ -463,12 +463,12 @@ public final class Rankings {
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el, 0) == unsort[idx]
+   *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
    * @see #apply(int[], int[])
-   * @see com.github.methylene.sym.Util#indexOf
+   * @see ArrayUtil#indexOf
    */
   public static int[] sort(int[] a) {
     int[] sorted = sortedCopy(a);
@@ -497,12 +497,12 @@ public final class Rankings {
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el, 0) == unsort[idx]
+   *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
    * @see #apply(int[], byte[])
-   * @see com.github.methylene.sym.Util#indexOf
+   * @see ArrayUtil#indexOf
    */
   public static int[] sort(byte[] a) {
     byte[] sorted = sortedCopy(a);
@@ -531,12 +531,12 @@ public final class Rankings {
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el, 0) == unsort[idx]
+   *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
    * @see #apply(int[], short[])
-   * @see com.github.methylene.sym.Util#indexOf
+   * @see ArrayUtil#indexOf
    */
   public static int[] sort(short[] a) {
     short[] sorted = sortedCopy(a);
@@ -565,12 +565,12 @@ public final class Rankings {
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el, 0) == unsort[idx]
+   *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
    * @see #apply(int[], long[])
-   * @see com.github.methylene.sym.Util#indexOf
+   * @see ArrayUtil#indexOf
    */
   public static int[] sort(long[] a) {
     long[] sorted = sortedCopy(a);
@@ -599,12 +599,12 @@ public final class Rankings {
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el, 0) == unsort[idx]
+   *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
    * @see #apply(int[], float[])
-   * @see com.github.methylene.sym.Util#indexOf
+   * @see ArrayUtil#indexOf
    */
   public static int[] sort(float[] a) {
     float[] sorted = sortedCopy(a);
@@ -632,12 +632,12 @@ public final class Rankings {
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el, 0) == unsort[idx]
+   *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
    * @see #apply(int[], double[])
-   * @see com.github.methylene.sym.Util#indexOf
+   * @see ArrayUtil#indexOf
    */
   public static int[] sort(double[] a) {
     double[] sorted = sortedCopy(a);
@@ -666,12 +666,12 @@ public final class Rankings {
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el, 0) == unsort[idx]
+   *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
    * @see #apply(int[], char[])
-   * @see com.github.methylene.sym.Util#indexOf
+   * @see ArrayUtil#indexOf
    */
   public static int[] sort(char[] a) {
     char[] sorted = sortedCopy(a);
@@ -699,11 +699,11 @@ public final class Rankings {
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el, 0) == unsort[idx]
+   *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @return a ranking that sorts the input
-   * @see com.github.methylene.sym.Util#indexOf
+   * @see ArrayUtil#indexOf
    * @throws java.lang.NullPointerException if {@code a} is {@code null} or contains a {@code null} element
    */
   public static <E extends Comparable> int[] sort(E[] a) {
@@ -733,13 +733,13 @@ public final class Rankings {
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
    * <pre><code>
-   *   Util.indexOf(a, el, 0) == unsort[idx]
+   *   ArrayUtil.indexOf(a, el, 0) == unsort[idx]
    * </code></pre>
    * @param a an array
    * @param comp a comparator
    * @return a ranking that sorts the input
    * @see #apply(int[], Object[])
-   * @see com.github.methylene.sym.Util#indexOf
+   * @see ArrayUtil#indexOf
    * @throws java.lang.NullPointerException if {@code a} is {@code null} or contains a {@code null} element
    */
   public static <E> int[] sort(Object[] a, Comparator<E> comp) {

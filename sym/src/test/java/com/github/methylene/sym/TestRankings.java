@@ -1,6 +1,6 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Util.randomNumbers;
+import static com.github.methylene.sym.ArrayUtil.randomNumbers;
 import static com.github.methylene.sym.Rankings.*;
 import static org.junit.Assert.*;
 
@@ -14,20 +14,20 @@ public class TestRankings {
   public void testSortRandom() {
     for (int __ = 0; __ < 100; __ += 1) {
       int[] a = randomNumbers(100, 200);
-      assertArrayEquals(Util.sortedCopy(a), Permutation.sort(a).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(a).apply(a));
     }
     for (int __ = 0; __ < 100; __ += 1) {
       int[] a = randomNumbers(100, 20);
-      assertArrayEquals(Util.sortedCopy(a), Permutation.sort(a).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(a).apply(a));
     }
   }
 
   @Test
   public void testSortStrict() {
     for (int __ = 0; __ < 100; __ += 1) {
-      String[] a = Util.symbols(100);
+      String[] a = ArrayUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(Util.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
     }
   }
 
@@ -48,7 +48,7 @@ public class TestRankings {
   @Test
   public void testFromStrict() {
     for (int __ = 0; __ < 100; __ += 1) {
-      String[] a = Util.symbols(100);
+      String[] a = ArrayUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
       assertArrayEquals(a, Permutation.from(shuffled, a).apply(shuffled));
     }
@@ -99,15 +99,15 @@ public class TestRankings {
   @Test
   public void testSort() {
     for (int __ = 0; __ < 100; __++) {
-      int[] a = Util.randomNumbers(100, (int) (Math.random() * 1000));
+      int[] a = ArrayUtil.randomNumbers(100, (int) (Math.random() * 1000));
       int[] sort = sort(a);
       int[] sorted = apply(sort, a);
       int[] unsort = invert(sort);
       int[] hopefullyIdentity = comp(sort, unsort);
-      assertTrue(Util.isSorted(hopefullyIdentity));
-      assertTrue(Util.isSorted(sorted));
+      assertTrue(ArrayUtil.isSorted(hopefullyIdentity));
+      assertTrue(ArrayUtil.isSorted(sorted));
       for (int el : a) {
-        assertEquals(Util.indexOf(a, el, 0), unsort[Arrays.binarySearch(sorted, el)]);
+        assertEquals(ArrayUtil.indexOf(a, el, 0), unsort[Arrays.binarySearch(sorted, el)]);
       }
     }
   }
@@ -139,16 +139,16 @@ public class TestRankings {
   public void testSorts() {
     int[] ranking = {0, 3, 1, 4, 2};
     int[] a = {0, 4, 2, 4, 3};
-    assertTrue(Util.isSorted(Rankings.apply(ranking, a)));
+    assertTrue(ArrayUtil.isSorted(Rankings.apply(ranking, a)));
     assertTrue(Rankings.sorts(ranking, a));
   }
 
   @Test
   public void testSorts2() {
     for (int __ = 0; __ < 100; __++) {
-      int[] a = Util.randomNumbers(100, 100 + (int) (100 * (Math.random() - 0.8)));
+      int[] a = ArrayUtil.randomNumbers(100, 100 + (int) (100 * (Math.random() - 0.8)));
       int[] ranking = Rankings.sort(a);
-      assertTrue(Util.isSorted(Rankings.apply(ranking, a)));
+      assertTrue(ArrayUtil.isSorted(Rankings.apply(ranking, a)));
       assertTrue(Rankings.sorts(ranking, a));
     }
   }

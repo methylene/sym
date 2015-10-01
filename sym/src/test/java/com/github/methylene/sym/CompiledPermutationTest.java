@@ -10,7 +10,7 @@ public class CompiledPermutationTest {
   @Test
   public void testUnclobber() throws Exception {
     for (int __ = 0; __ < 100; __++) {
-      int[] a = Util.sequence(100);
+      int[] a = ArrayUtil.sequence(100);
       int[] b = Arrays.copyOf(a, a.length);
       Cycles p = Permutation.random(a.length).toCycles();
       p.clobber(a);
@@ -23,7 +23,7 @@ public class CompiledPermutationTest {
   @Test
   public void testApply() {
     for (int __ = 0; __ < 100; __++) {
-      int[] a = Util.sequence(100);
+      int[] a = ArrayUtil.sequence(100);
       int[] b = Arrays.copyOf(a, a.length);
       Cycles p = Permutation.random(a.length - 10).toCycles();
       int[] c = p.apply(a);

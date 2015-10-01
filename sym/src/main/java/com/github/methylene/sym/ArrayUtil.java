@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * A collection of array related utilities
  */
-public final class Util {
+public final class ArrayUtil {
 
   /** An empty array of Bytes */
   static final Byte[] BOX_BYTE_0 = new Byte[0];
@@ -28,7 +28,7 @@ public final class Util {
   /** An empty array of ints */
   public static final int[] INT_0 = new int[]{};
 
-  private Util() {}
+  private ArrayUtil() {}
 
   /**
    * Creates an array of [element, index] pairs from given array.
@@ -448,10 +448,6 @@ public final class Util {
           + ", but input length is " + inputLength);
   }
 
-  static void indexFailure() {
-    throw new IllegalArgumentException("index out of bounds");
-  }
-
   static void slotFailure() {
     throw new IllegalArgumentException("could not find a free spot");
   }
@@ -650,70 +646,6 @@ public final class Util {
     return true;
   }
 
-  static int exceptionalBinarySearch(int[] sorted, int el) {
-    final int idx = binarySearch(sorted, el);
-    if (idx < 0)
-      slotFailure();
-    return idx;
-  }
-
-  static int exceptionalBinarySearch(byte[] sorted, byte el) {
-    final int idx = binarySearch(sorted, el);
-    if (idx < 0)
-      slotFailure();
-    return idx;
-  }
-
-  static int exceptionalBinarySearch(short[] sorted, short el) {
-    final int idx = binarySearch(sorted, el);
-    if (idx < 0)
-      slotFailure();
-    return idx;
-  }
-
-  static int exceptionalBinarySearch(long[] sorted, long el) {
-    final int idx = binarySearch(sorted, el);
-    if (idx < 0)
-      slotFailure();
-    return idx;
-  }
-
-  static int exceptionalBinarySearch(float[] sorted, float el) {
-    final int idx = binarySearch(sorted, el);
-    if (idx < 0)
-      slotFailure();
-    return idx;
-  }
-
-  static int exceptionalBinarySearch(double[] sorted, double el) {
-    final int idx = binarySearch(sorted, el);
-    if (idx < 0)
-      slotFailure();
-    return idx;
-  }
-
-  static int exceptionalBinarySearch(char[] sorted, char el) {
-    final int idx = binarySearch(sorted, el);
-    if (idx < 0)
-      slotFailure();
-    return idx;
-  }
-
-  static int exceptionalBinarySearch(Comparable[] sorted, Comparable el) {
-    final int idx = binarySearch(sorted, el);
-    if (idx < 0)
-      slotFailure();
-    return idx;
-  }
-
-  static <E> int exceptionalBinarySearch(Object[] sorted, E el, Comparator<E> comparator) {
-    @SuppressWarnings("unchecked")
-    final int idx = binarySearch(sorted, el, (Comparator) comparator);
-    if (idx < 0)
-      slotFailure();
-    return idx;
-  }
-
   static void checkEqualLength(int[] a, int[] b) {
     if (a.length != b.length)
       lengthFailure();
@@ -892,123 +824,290 @@ public final class Util {
   /* ================= isUnique ================= */
 
   /**
-   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
-   * @param sorted a sorted array
+   * Test if the input contains duplicates. This method always returns the correct result,
+   * whether or not the input is sorted.
+   * @param a an array
    * @return true if the input contains no duplicate element
    */
-  public static boolean isUnique(int[] sorted) {
-    if (sorted.length < 2)
+  public static boolean isUnique(int[] a) {
+    return isUnique(a, false);
+  }
+
+  /**
+   * Test if the input contains duplicates.
+   * @param a an array
+   * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
+   *                  to improve performance.
+   *                  If set to true, but the input is not sorted, this method will not return
+   *                  the correct result.
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(int[] a, boolean omitCheck) {
+    if (a.length < 2)
       return true;
-    int previous = sorted[0];
-    for (int i : sorted)
+    if (!omitCheck && !isSorted(a))
+      a = sortedCopy(a);
+    int previous = a[0];
+    for (int i : a)
       if (i == previous)
         return false;
     return true;
   }
 
   /**
-   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
-   * @param sorted a sorted array
+   * Test if the input contains duplicates. This method always returns the correct result,
+   * whether or not the input is sorted.
+   * @param a an array
    * @return true if the input contains no duplicate element
    */
-  public static boolean isUnique(byte[] sorted) {
-    if (sorted.length < 2)
+  public static boolean isUnique(byte[] a) {
+    return isUnique(a, false);
+  }
+
+  /**
+   * Test if the input contains duplicates.
+   * @param a an array
+   * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
+   *                  to improve performance.
+   *                  If set to true, but the input is not sorted, this method will not return
+   *                  the correct result.
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(byte[] a, boolean omitCheck) {
+    if (a.length < 2)
       return true;
-    byte previous = sorted[0];
-    for (byte i : sorted)
+    if (!omitCheck && !isSorted(a))
+      a = sortedCopy(a);
+    byte previous = a[0];
+    for (byte i : a)
       if (i == previous)
         return false;
     return true;
   }
 
   /**
-   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
-   * @param sorted a sorted array
+   * Test if the input contains duplicates. This method always returns the correct result,
+   * whether or not the input is sorted.
+   * @param a an array
    * @return true if the input contains no duplicate element
    */
-  public static boolean isUnique(short[] sorted) {
-    if (sorted.length < 2)
+  public static boolean isUnique(short[] a) {
+    return isUnique(a, false);
+  }
+
+  /**
+   * Test if the input contains duplicates.
+   * @param a an array
+   * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
+   *                  to improve performance.
+   *                  If set to true, but the input is not sorted, this method will not return
+   *                  the correct result.
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(short[] a, boolean omitCheck) {
+    if (a.length < 2)
       return true;
-    short previous = sorted[0];
-    for (short i : sorted)
+    if (!omitCheck && !isSorted(a))
+      a = sortedCopy(a);
+    short previous = a[0];
+    for (short i : a)
       if (i == previous)
         return false;
     return true;
   }
 
   /**
-   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
-   * @param sorted a sorted array
+   * Test if the input contains duplicates. This method always returns the correct result,
+   * whether or not the input is sorted.
+   * @param a an array
    * @return true if the input contains no duplicate element
    */
-  public static boolean isUnique(char[] sorted) {
-    if (sorted.length < 2)
+  public static boolean isUnique(char[] a) {
+    return isUnique(a, false);
+  }
+
+  /**
+   * Test if the input contains duplicates.
+   * @param a an array
+   * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
+   *                  to improve performance.
+   *                  If set to true, but the input is not sorted, this method will not return
+   *                  the correct result.
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(char[] a, boolean omitCheck) {
+    if (a.length < 2)
       return true;
-    char previous = sorted[0];
-    for (char i : sorted)
+    if (!omitCheck && !isSorted(a))
+      a = sortedCopy(a);
+    char previous = a[0];
+    for (char i : a)
       if (i == previous)
         return false;
     return true;
   }
 
   /**
-   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
-   * @param sorted a sorted array
+   * Test if the input contains duplicates. This method always returns the correct result,
+   * whether or not the input is sorted.
+   * @param a an array
    * @return true if the input contains no duplicate element
    */
-  public static boolean isUnique(long[] sorted) {
-    if (sorted.length < 2)
+  public static boolean isUnique(long[] a) {
+    return isUnique(a, false);
+  }
+
+  /**
+   * Test if the input contains duplicates.
+   * @param a an array
+   * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
+   *                  to improve performance.
+   *                  If set to true, but the input is not sorted, this method will not return
+   *                  the correct result.
+   * @return true if the input contains no duplicate element
+   */
+  public  /**/ static boolean isUnique(long[] a, boolean omitCheck) {
+    if (a.length < 2)
       return true;
-    long previous = sorted[0];
-    for (long i : sorted)
+    if (!omitCheck && !isSorted(a))
+      a = sortedCopy(a);
+    long previous = a[0];
+    for (long i : a)
       if (i == previous)
         return false;
     return true;
   }
 
   /**
-   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
-   * @param sorted a sorted array
+   * Test if the input contains duplicates. This method always returns the correct result,
+   * whether or not the input is sorted.
+   * @param a an array
    * @return true if the input contains no duplicate element
    */
-  public static boolean isUnique(double[] sorted) {
-    if (sorted.length < 2)
+  public static boolean isUnique(double[] a) {
+    return isUnique(a, false);
+  }
+
+  /**
+   * Test if the input contains duplicates.
+   * @param a an array
+   * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
+   *                  to improve performance.
+   *                  If set to true, but the input is not sorted, this method will not return
+   *                  the correct result.
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(double[] a, boolean omitCheck) {
+    if (a.length < 2)
       return true;
-    double previous = sorted[0];
-    for (double i : sorted)
+    if (!omitCheck && !isSorted(a))
+      a = sortedCopy(a);
+    double previous = a[0];
+    for (double i : a)
       if (i == previous)
         return false;
     return true;
   }
 
   /**
-   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
-   * @param sorted a sorted array
+   * Test if the input contains duplicates. This method always returns the correct result,
+   * whether or not the input is sorted.
+   * @param a an array
    * @return true if the input contains no duplicate element
    */
-  public static boolean isUnique(float[] sorted) {
-    if (sorted.length < 2)
+  public static boolean isUnique(float[] a) {
+    return isUnique(a, false);
+  }
+
+  /**
+   * Test if the input contains duplicates.
+   * @param a an array
+   * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
+   *                  to improve performance.
+   *                  If set to true, but the input is not sorted, this method will not return
+   *                  the correct result.
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(float[] a, boolean omitCheck) {
+    if (a.length < 2)
       return true;
-    float previous = sorted[0];
-    for (float i : sorted)
+    if (!omitCheck && !isSorted(a))
+      a = sortedCopy(a);
+    float previous = a[0];
+    for (float i : a)
       if (i == previous)
         return false;
     return true;
   }
 
   /**
-   * Test if the input contains duplicates. This may give an incorrect answer if the input is not sorted.
-   * @param sorted a sorted array
+   * Test if the input contains duplicates. This method always returns the correct result,
+   * whether or not the input is sorted.
+   * @param a an array
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(Comparable[] a) {
+    return isUnique(a, false);
+  }
+
+  /**
+   * Test if the input contains duplicates.
+   * @param a an array
+   * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
+   *                  to improve performance.
+   *                  If set to true, but the input is not sorted, this method will not return
+   *                  the correct result.
+   * @return true if the input contains no duplicate element
+   */
+  public static boolean isUnique(Comparable[] a, boolean omitCheck) {
+    if (a.length < 2)
+      return true;
+    if (!omitCheck && !isSorted(a))
+      a = sortedCopy(a);
+    Comparable previous = a[0];
+    if (previous == null)
+      nullFailure();
+    for (Comparable el : a)
+      if (el.equals(previous))
+        return false;
+    return true;
+  }
+
+  /**
+   * Test if the input contains duplicates. This method always returns the correct result,
+   * whether or not the input is sorted.
+   * Null elements are not allowed.
+   * @param a an array
+   * @param comparator a Comparator
    * @return true if the input contains no duplicate element
    * @throws java.lang.NullPointerException if the input contains a {@code null} element
    */
-  public static <E> boolean isUnique(E[] sorted) {
-    if (sorted.length < 2)
+  @SuppressWarnings("unchecked")
+  public static boolean isUnique(Object[] a, Comparator comparator) {
+    return isUnique(a, comparator, false);
+  }
+
+  /**
+   * Test if the input contains duplicates.
+   * @param a an array
+   * @param comparator a Comparator
+   * @param omitCheck omit sorted check. Set this to true if it is known that {@code a} is sorted,
+   *                  to improve performance.
+   *                  If set to true, but the input is not sorted, this method will not return
+   *                  the correct result.
+   * @return true if the input contains no duplicate element
+   * @throws java.lang.NullPointerException if the input contains a {@code null} element
+   */
+  @SuppressWarnings("unchecked")
+  public static boolean isUnique(Object[] a, Comparator comparator, boolean omitCheck) {
+    if (a.length < 2)
       return true;
-    E previous = sorted[0];
+    if (!omitCheck && !isSorted(comparator, a))
+      a = sortedCopy(a, comparator);
+    Object previous = a[0];
     if (previous == null)
       nullFailure();
-    for (E el : sorted)
+    for (Object el : a)
       if (el.equals(previous))
         return false;
     return true;

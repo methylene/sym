@@ -1,7 +1,8 @@
 package com.github.methylene.lists;
 
 import static java.lang.System.nanoTime;
-import com.github.methylene.sym.Util;
+
+import com.github.methylene.sym.ArrayUtil;
 import org.junit.Test;
 
 import java.io.PrintStream;
@@ -26,10 +27,10 @@ public class PerformanceTest {
     int repeat = 50;
     int size = 10000; // list size
     int maxNumber = 20000;
-    int[] a = Util.randomNumbers(maxNumber, size);
+    int[] a = ArrayUtil.randomNumbers(maxNumber, size);
     Integer candidate = (int) (Math.random() * maxNumber);
     IntList asList = (IntList) LookupList.of(a);
-    List<Integer> jdk = Arrays.asList(Util.box(a));
+    List<Integer> jdk = Arrays.asList(ArrayUtil.box(a));
     long check;
     for (int __ = 0; __ < repeat; __ += 1) {
 
@@ -55,7 +56,7 @@ public class PerformanceTest {
     PrintStream out = System.out;
     out.println("== list size: " + size);
     out.println("== repeat: " + repeat);
-    out.println("== return value of .indexOf: " + Util.indexOf(a, candidate, 0));
+    out.println("== return value of .indexOf: " + ArrayUtil.indexOf(a, candidate, 0));
     out.format("indexOf:            %1$" + width + "s%n", cutoff((double) index / repeat, width));
     out.format("indexOfjdK:         %1$" + width + "s%n", cutoff((double) indexJdk / repeat, width));
     out.format("lastIndexOf:        %1$" + width + "s%n", cutoff((double) lastIndex / repeat, width));

@@ -4,13 +4,13 @@ import static com.github.methylene.lists.ListBuilder.DEFAULT_INITIAL_CAPACITY;
 import static com.github.methylene.lists.ListBuilder.ensureCapacity;
 import static com.github.methylene.sym.Rankings.apply;
 import static com.github.methylene.sym.Rankings.nextOffset;
-import static com.github.methylene.sym.Util.box;
-import static com.github.methylene.sym.Util.unique;
+import static com.github.methylene.sym.ArrayUtil.box;
+import static com.github.methylene.sym.ArrayUtil.unique;
 import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
+import com.github.methylene.sym.ArrayUtil;
 import com.github.methylene.sym.Permutation;
-import com.github.methylene.sym.Util;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -33,13 +33,13 @@ public final class ByteList extends LookupList<Byte> implements RandomAccess, Se
     super(sort, unsort);
     this.sorted = sorted;
     this.ordered = ordered;
-    this.unique = Util.isUnique(sorted);
+    this.unique = ArrayUtil.isUnique(sorted, true);
   }
 
   static ByteList createNewList(byte[] a, Permutation sort) {
     byte[] applied = sort.apply(a);
     byte[] sorted = applied == a ? Arrays.copyOf(a, a.length) : applied;
-    return new ByteList(sorted, Util.isSorted(a), sort, sort.invert());
+    return new ByteList(sorted, ArrayUtil.isSorted(a), sort, sort.invert());
   }
 
   public static ByteList createNewList(byte[] a) {

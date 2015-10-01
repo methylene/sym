@@ -1,13 +1,10 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.Util.duplicateFailure;
-import static com.github.methylene.sym.Util.indexOf;
-import static com.github.methylene.sym.Util.negativeFailure;
+import static com.github.methylene.sym.ArrayUtil.duplicateFailure;
+import static com.github.methylene.sym.ArrayUtil.indexOf;
+import static com.github.methylene.sym.ArrayUtil.negativeFailure;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * A collection of methods that return cycles or operate on cycles.
@@ -26,7 +23,7 @@ public final class CycleUtil {
   public static boolean[] movedIndexes(int[] cycle) {
     if (cycle.length == 0)
       return new boolean[0];
-    boolean[] moved = new boolean[Util.max(cycle) + 1];
+    boolean[] moved = new boolean[ArrayUtil.max(cycle) + 1];
     for (int el : cycle) {
       if (el < 0)
         negativeFailure();
@@ -45,7 +42,7 @@ public final class CycleUtil {
    * numbers or duplicates
    */
   public static boolean isCycle(int[] a) {
-    boolean[] used = new boolean[Util.max(a) + 1];
+    boolean[] used = new boolean[ArrayUtil.max(a) + 1];
     for (int i : a) {
       if (i < 0)
         return false;
