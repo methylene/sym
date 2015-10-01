@@ -4,9 +4,7 @@ import static com.github.methylene.sym.CycleUtil.cyclic;
 import static com.github.methylene.sym.Permutation.product;
 import static com.github.methylene.sym.TestUtil.*;
 import static com.github.methylene.sym.Permutation.define;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -184,5 +182,12 @@ public class ArrayUtilTest {
     assertTrue(ArrayUtil.isUnique(a));
   }
 
+  @Test
+  public void testRemove() {
+    int[] a = {8, 5, 7, 2, 9, 4, 1, 6, 0, 3};
+    assertArrayEquals(new int []{5, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.remove(a, 0));
+    assertArrayEquals(new int []{8, 7, 2, 9, 4, 1, 6, 0, 3}, ArrayUtil.remove(a, 1));
+    assertArrayEquals(new int []{8, 5, 7, 2, 9, 4, 1, 6, 0}, ArrayUtil.remove(a, 9));
+  }
 
 }

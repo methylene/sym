@@ -1099,4 +1099,19 @@ public final class ArrayUtil {
     return true;
   }
 
+  /**
+   * Remove element at index {@code i}
+   * @param a an array
+   * @param i must be non negative and less than {@code a.length}
+   * @return an array of length {@code a.length - 1}
+   */
+  public static int[] remove(int[] a, int i) {
+    if (i < 0 || i >= a.length)
+      throw new IllegalArgumentException("i must be non netative and less than " + a.length);
+    int[] result = new int[a.length - 1];
+    System.arraycopy(a, 0, result, 0, i);
+    System.arraycopy(a, i + 1, result, i, a.length - i - 1);
+    return result;
+  }
+
 }
