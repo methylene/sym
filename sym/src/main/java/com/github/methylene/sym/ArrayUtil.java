@@ -847,9 +847,8 @@ public final class ArrayUtil {
       return true;
     if (!omitCheck && !isSorted(a))
       a = sortedCopy(a);
-    int previous = a[0];
-    for (int i : a)
-      if (i == previous)
+    for (int i = 1; i < a.length; i++)
+      if (a[i] == a[i - 1])
         return false;
     return true;
   }
@@ -878,9 +877,8 @@ public final class ArrayUtil {
       return true;
     if (!omitCheck && !isSorted(a))
       a = sortedCopy(a);
-    byte previous = a[0];
-    for (byte i : a)
-      if (i == previous)
+    for (int i = 1; i < a.length; i++)
+      if (a[i] == a[i - 1])
         return false;
     return true;
   }
@@ -909,9 +907,8 @@ public final class ArrayUtil {
       return true;
     if (!omitCheck && !isSorted(a))
       a = sortedCopy(a);
-    short previous = a[0];
-    for (short i : a)
-      if (i == previous)
+    for (int i = 1; i < a.length; i++)
+      if (a[i] == a[i - 1])
         return false;
     return true;
   }
@@ -940,9 +937,8 @@ public final class ArrayUtil {
       return true;
     if (!omitCheck && !isSorted(a))
       a = sortedCopy(a);
-    char previous = a[0];
-    for (char i : a)
-      if (i == previous)
+    for (int i = 1; i < a.length; i++)
+      if (a[i] == a[i - 1])
         return false;
     return true;
   }
@@ -966,14 +962,13 @@ public final class ArrayUtil {
    *                  the correct result.
    * @return true if the input contains no duplicate element
    */
-  public  /**/ static boolean isUnique(long[] a, boolean omitCheck) {
+  public static boolean isUnique(long[] a, boolean omitCheck) {
     if (a.length < 2)
       return true;
     if (!omitCheck && !isSorted(a))
       a = sortedCopy(a);
-    long previous = a[0];
-    for (long i : a)
-      if (i == previous)
+    for (int i = 1; i < a.length; i++)
+      if (a[i] == a[i - 1])
         return false;
     return true;
   }
@@ -1003,8 +998,8 @@ public final class ArrayUtil {
     if (!omitCheck && !isSorted(a))
       a = sortedCopy(a);
     double previous = a[0];
-    for (double i : a)
-      if (i == previous)
+    for (int i = 1; i < a.length; i++)
+      if (a[i] == a[i - 1])
         return false;
     return true;
   }
@@ -1034,8 +1029,8 @@ public final class ArrayUtil {
     if (!omitCheck && !isSorted(a))
       a = sortedCopy(a);
     float previous = a[0];
-    for (float i : a)
-      if (i == previous)
+    for (int i = 1; i < a.length; i++)
+      if (a[i] == a[i - 1])
         return false;
     return true;
   }
@@ -1064,11 +1059,8 @@ public final class ArrayUtil {
       return true;
     if (!omitCheck && !isSorted(a))
       a = sortedCopy(a);
-    Comparable previous = a[0];
-    if (previous == null)
-      nullFailure();
-    for (Comparable el : a)
-      if (el.equals(previous))
+    for (int i = 1; i < a.length; i++)
+      if (a[i] != a[i - 1] && !a[i].equals(a[i - 1]))
         return false;
     return true;
   }
@@ -1080,7 +1072,6 @@ public final class ArrayUtil {
    * @param a an array
    * @param comparator a Comparator
    * @return true if the input contains no duplicate element
-   * @throws java.lang.NullPointerException if the input contains a {@code null} element
    */
   @SuppressWarnings("unchecked")
   public static boolean isUnique(Object[] a, Comparator comparator) {
@@ -1096,7 +1087,6 @@ public final class ArrayUtil {
    *                  If set to true, but the input is not sorted, this method will not return
    *                  the correct result.
    * @return true if the input contains no duplicate element
-   * @throws java.lang.NullPointerException if the input contains a {@code null} element
    */
   @SuppressWarnings("unchecked")
   public static boolean isUnique(Object[] a, Comparator comparator, boolean omitCheck) {
@@ -1104,11 +1094,8 @@ public final class ArrayUtil {
       return true;
     if (!omitCheck && !isSorted(comparator, a))
       a = sortedCopy(a, comparator);
-    Object previous = a[0];
-    if (previous == null)
-      nullFailure();
-    for (Object el : a)
-      if (el.equals(previous))
+    for (int i = 1; i < a.length; i++)
+      if (a[i] != a[i - 1] && !a[i].equals(a[i - 1]))
         return false;
     return true;
   }

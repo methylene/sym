@@ -178,4 +178,11 @@ public class ArrayUtilTest {
     assertEquals(define(1, 2, 0), product(p.invert(), q.invert(), p, q));
   }
 
+  @Test
+  public void testUnique() {
+    int[] a = {8, 5, 7, 2, 9, 4, 1, 6, 0, 3};
+    assertTrue(ArrayUtil.isUnique(a));
+  }
+
+
 }
