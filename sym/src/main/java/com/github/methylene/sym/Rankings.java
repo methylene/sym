@@ -138,7 +138,9 @@ public final class Rankings {
    * @throws IllegalArgumentException if {@code length} is negative
    */
   public static int[] random(int length) {
-    return ArrayUtil.shuffle(sequence(length));
+    int[] a = sequence(length);
+    ArrayUtil.shuffle(a);
+    return a;
   }
 
   /**

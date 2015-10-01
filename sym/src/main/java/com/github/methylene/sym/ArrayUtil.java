@@ -127,11 +127,11 @@ public final class ArrayUtil {
 
 
   /**
-   * Shuffle the input array in place.
+   * Shuffle the input array in place, using a random permutation.
+   * This method will modify the input array.
    * @param a an array
-   * @return the shuffled array
    */
-  public static int[] shuffle(int[] a) {
+  public static void shuffle(int[] a) {
     Random r = new Random();
     for (int i = a.length - 1; i > 0; i--) {
       int j = r.nextInt(i + 1);
@@ -141,7 +141,6 @@ public final class ArrayUtil {
         a[i] = tmp;
       }
     }
-    return a;
   }
 
 
