@@ -251,6 +251,23 @@ public final class ArrayUtil {
     return result;
   }
 
+  /**
+   * Produce {@code length} random numbers between {@code minNumber} and {@code maxNumber}
+   * @param minNumber lower bound of random numbers
+   * @param maxNumber upper bound of random numbers
+   * @param length result length
+   * @return an array of random numbers
+   */
+  public static int[] randomNumbers(int minNumber, int maxNumber, int length) {
+    int[] result = new int[length];
+    Random random = new Random();
+    for (int i = 0; i < length; i += 1) {
+      double r = random.nextDouble();
+      result[i] = (int) (r * maxNumber - r * minNumber + minNumber);
+    }
+    return result;
+  }
+
   /* ================= box ================= */
 
   /**
