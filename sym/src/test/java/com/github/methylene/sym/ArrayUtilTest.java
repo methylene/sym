@@ -102,11 +102,10 @@ public class ArrayUtilTest {
   @Test
   public void testDistinctInts() {
     for (int i = 0; i < 1000; i += 1) {
-      int[] ints = ArrayUtil.distinctInts((int) (Math.random() * 1024), (int) (Math.random() * 10) + 2);
+      int[] ints = Rankings.random((int) (Math.random() * 1024));
       assertTrue(isDistinct(ints));
     }
   }
-
 
   @Test
   public void testDuplicateIndexes() {

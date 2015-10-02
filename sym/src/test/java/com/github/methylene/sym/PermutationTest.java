@@ -2,7 +2,6 @@ package com.github.methylene.sym;
 
 import static com.github.methylene.sym.MyInt.box;
 import static com.github.methylene.sym.Permutation.*;
-import static com.github.methylene.sym.ArrayUtil.distinctInts;
 import static com.github.methylene.sym.ArrayUtil.randomNumbers;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -34,8 +33,8 @@ public class PermutationTest {
   public void testComp() throws Exception {
     Permutation p = Permutation.define(1, 2, 0);
     assertEquals(define(new int[]{1, 2, 0}), p);
-    assertArrayEquals(new String[]{"c", "a", "b"}, p.apply(ArrayUtil.symbols(3)));
-    assertArrayEquals(new String[]{"b", "c", "a"}, p.pow(2).apply(ArrayUtil.symbols(3)));
+    assertArrayEquals(new String[]{"c", "a", "b"}, p.apply(TestUtil.symbols(3)));
+    assertArrayEquals(new String[]{"b", "c", "a"}, p.pow(2).apply(TestUtil.symbols(3)));
   }
 
   /* check defining property of composition */
@@ -134,7 +133,7 @@ public class PermutationTest {
     Assert.assertEquals(p.pow(-1), Permutation.product(p, p));
     assertEquals(p.pow(-1), p.invert());
     assertEquals(p.pow(2), p.compose(p));
-    Assert.assertArrayEquals(new String[]{"a", "b", "c"}, Permutation.product(p, p.invert()).apply(ArrayUtil.symbols(3)));
+    Assert.assertArrayEquals(new String[]{"a", "b", "c"}, Permutation.product(p, p.invert()).apply(TestUtil.symbols(3)));
   }
 
   @Test
@@ -171,20 +170,20 @@ public class PermutationTest {
   @Test
   public void cycleApply() {
     Assert.assertArrayEquals(new String[]{"b", "c", "e", "d", "a"},
-        Permutation.cycle1(1, 5, 3, 2).apply(ArrayUtil.symbols(5)));
+        Permutation.cycle1(1, 5, 3, 2).apply(TestUtil.symbols(5)));
     Assert.assertArrayEquals(new String[]{"c", "b", "e", "d", "a"},
-        Permutation.cycle1(1, 5, 3).apply(ArrayUtil.symbols(5)));
+        Permutation.cycle1(1, 5, 3).apply(TestUtil.symbols(5)));
     Assert.assertArrayEquals(new String[]{"c", "a", "b"},
-        Permutation.cycle1(1, 2, 3).apply(ArrayUtil.symbols(3)));
+        Permutation.cycle1(1, 2, 3).apply(TestUtil.symbols(3)));
   }
 
   @Test
   public void testCycleApply() throws Exception {
     Assert.assertArrayEquals(new String[]{"c", "a", "b"},
-        Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3)).apply(ArrayUtil.symbols(3)));
-    Assert.assertArrayEquals(new String[]{"c", "a", "b"}, Permutation.cycle1(1, 2, 3).apply(ArrayUtil.symbols(3)));
+        Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3)).apply(TestUtil.symbols(3)));
+    Assert.assertArrayEquals(new String[]{"c", "a", "b"}, Permutation.cycle1(1, 2, 3).apply(TestUtil.symbols(3)));
     Assert.assertArrayEquals(new String[]{"a", "c", "b"}, Permutation.product(Permutation.cycle1(1, 2),
-            Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))).apply(ArrayUtil.symbols(3)));
+            Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))).apply(TestUtil.symbols(3)));
   }
 
   @Test
@@ -246,7 +245,7 @@ public class PermutationTest {
   @Test
   public void testSortRandom() {
     int size = (int) (100 * Math.random());
-    int[] distinct = distinctInts(size, 8);
+    int[] distinct = Rankings.random(size);
     int[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
     Permutation p = Permutation.sort(distinct);
@@ -286,7 +285,7 @@ public class PermutationTest {
   /* Another way of checking that duplicateRejectingFactory().sort(a).apply(a) sorts a, for distinct array a */
   @Test
   public void testSort1024() {
-    int[] a = distinctInts(1024, 8);
+    int[] a = Rankings.random(1024);
     assertArrayEquals(classicSort(a), Permutation.sort(a).apply(a));
   }
 
@@ -299,7 +298,7 @@ public class PermutationTest {
   @Test
   public void testFromQuickly() {
     Permutation p = Permutation.from(new Comparable[]{1, 2, 3}, new Comparable[]{2, 3, 1});
-    assertArrayEquals(new String[]{"b", "c", "a"}, p.apply(ArrayUtil.symbols(3)));
+    assertArrayEquals(new String[]{"b", "c", "a"}, p.apply(TestUtil.symbols(3)));
   }
 
   /**
@@ -308,7 +307,7 @@ public class PermutationTest {
    * @return Random array of {@code size} distinct integers between {@code 0} and {@code size * maxFactor}
    */
   static MyInt[] distinctMyInts(int size, int maxFactor) {
-    int[] ints = distinctInts(size, maxFactor);
+    int[] ints = Rankings.random(size);
     MyInt[] result = new MyInt[size];
     for (int i = 0; i < size; i += 1) {
       result[i] = new MyInt(ints[i]);
@@ -319,7 +318,7 @@ public class PermutationTest {
   /* check defining property of from */
   private void testFromQuickly2() {
     int size = 2048;
-    int[] a = distinctInts(size, 8);
+    int[] a = Rankings.random(size);
     Permutation random;
     do {
       random = Permutation.random((int) (Math.random() * size));

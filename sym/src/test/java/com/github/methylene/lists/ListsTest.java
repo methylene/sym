@@ -479,7 +479,7 @@ public class ListsTest {
   @Test
   public void testIndexOfShuffleUnique() throws Exception {
     for (int __ = 0; __ < 10000; __ += 1) {
-      int[] b = ArrayUtil.distinctInts(100, 2);
+      int[] b = Rankings.random(100);
       int[] ranking = Rankings.random(b.length);
       int[] a = Rankings.apply(ranking, b);
       int el = a[((int) (Math.random() * b.length))];

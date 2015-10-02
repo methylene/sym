@@ -31,8 +31,8 @@ public final class ArrayUtil {
 
   /**
    * Creates an array of [element, index] pairs from given array.
-   * @param a an array
-   * @return an array of the [element, index] pairs in {@code a}
+   * @param a an array of length {@code n}
+   * @return a two dimensional array of length {@code n} which contains the  [element, index] pairs in {@code a}
    */
   public static int[][] withIndex(int[] a) {
     int[][] result = new int[a.length][];
@@ -158,112 +158,34 @@ public final class ArrayUtil {
     }
   }
 
-
   /**
-   * Produce an array of distinct random numbers.
-   * @param size      length of array to generate
-   * @param maxFactor controls the size of random numbers that are generated. All generated numbers will be
-   *                  smaller than {@code size * maxFactor}.
-   *                  This number must be not be less than 2.
-   * @return a random array of {@code size} distinct nonnegative integers, all less than {@code size * maxFactor}
-   * @throws java.lang.IllegalArgumentException if {@code factor} is less than 2
-   */
-  public static int[] distinctInts(int size, int maxFactor) {
-    if (maxFactor < 2)
-      throw new IllegalArgumentException("must not be less than 2: " + maxFactor);
-    boolean[] test = new boolean[size * maxFactor];
-    int[] result = new int[size];
-    for (int i = 0; i < size; i += 1) {
-      double random = Math.random();
-      int candidate = (int) (size * maxFactor * random);
-      int direction = candidate % 2 == 0 ? -1 : 1;
-      while (test[candidate]) {
-        candidate += direction;
-        if (candidate == test.length)
-          candidate = 0;
-        else if (candidate == -1)
-          candidate = test.length - 1;
-      }
-      test[candidate] = true;
-      result[i] = candidate;
-    }
-    return result;
-  }
-
-  /**
-   * Generates an array of distinct strings of the requested length. 
-   * The array always starts with {@code "a"} and then all lower case one letter strings in lexicographic order.
-   * Next come all lowercase two letter
-   * strings starting with {@code "aa"}, in lexicographic order.
-   * Note that the array returned by this method is sorted if and only if {@code n < 27},
-   * because {@code "b".compareTo("aa") > 0}.
-   * @param n length of array to generate
-   * @return a list of distinct strings of length n
-   */
-  public static String[] symbols(int n) {
-    String[] r = new String[n];
-    String s = "a";
-    for (int i = 0; i < n; i += 1) {
-      r[i] = s;
-      s = nextString(s);
-    }
-    return r;
-  }
-
-  /**
-   * Utility method used by symbols method.
-   * @param s a string
-   * @return a string that's different from {@code s}
-   */
-  private static String nextString(String s) {
-    char last = s.charAt(s.length() - 1);
-    if (last == 'z') {
-      int nflip = 1;
-      while (s.length() > nflip && s.charAt(s.length() - 1 - nflip) == 'z')
-        nflip += 1;
-      if (nflip == s.length()) {
-        StringBuilder news = new StringBuilder();
-        for (int i = 0; i < nflip; i += 1)
-          news.append('a');
-        return news.append('a').toString();
-      } else {
-        StringBuilder news = new StringBuilder(s.substring(0, s.length() - nflip - 1));
-        news.append((char) (s.charAt(s.length() - 1 - nflip) + 1));
-        for (int i = 0; i < nflip; i += 1)
-          news.append('a');
-        return news.toString();
-      }
-    } else {
-      return s.substring(0, s.length() - 1) + ((char) (last + 1));
-    }
-  }
-
-  /**
-   * Produce {@code length} random numbers between {@code 0} and {@code maxNumber}
+   * Produce {@code length} random numbers between {@code 0} and {@code maxNumber} (inclusive)
    * @param maxNumber upper bound of random numbers
    * @param length result length
    * @return an array of random numbers
    */
   public static int[] randomNumbers(int maxNumber, int length) {
-    int[] result = new int[length];
-    for (int i = 0; i < length; i += 1)
-      result[i] = (int) (maxNumber * Math.random());
-    return result;
+    return randomNumbers(0, maxNumber, length);
   }
 
   /**
-   * Produce {@code length} random numbers between {@code minNumber} and {@code maxNumber}
+   * Produce {@code length} random numbers between {@code minNumber} and {@code maxNumber} (inclusive)
    * @param minNumber lower bound of random numbers
    * @param maxNumber upper bound of random numbers
    * @param length result length
    * @return an array of random numbers
    */
   public static int[] randomNumbers(int minNumber, int maxNumber, int length) {
+    if (minNumber > maxNumber) {
+      throw new IllegalArgumentException("minNumber must be less than or equal to maxNumber");
+    }
     int[] result = new int[length];
     Random random = new Random();
-    for (int i = 0; i < length; i += 1) {
+    for (int i = 0; i < length; i++) {
       double r = random.nextDouble();
-      result[i] = (int) (r * maxNumber - r * minNumber + minNumber);
+      r *= (maxNumber - minNumber + 1);
+      r += minNumber;
+      result[i] = (int) Math.floor(r);
     }
     return result;
   }

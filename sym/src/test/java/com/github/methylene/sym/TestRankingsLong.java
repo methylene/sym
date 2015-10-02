@@ -32,7 +32,7 @@ public class TestRankingsLong {
   @Test
   public void testSortStrict() {
     for (int i = 0; i < 100; i += 1) {
-      String[] a = ArrayUtil.symbols(100);
+      String[] a = TestUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
       assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
     }
@@ -55,7 +55,7 @@ public class TestRankingsLong {
   @Test
   public void testFromStrict() {
     for (int i = 0; i < 100; i += 1) {
-      String[] a = ArrayUtil.symbols(100);
+      String[] a = TestUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
       assertArrayEquals(a, Permutation.from(shuffled, a).apply(shuffled));
     }
