@@ -181,9 +181,10 @@ public final class ArrayUtil {
     }
     int[] result = new int[length];
     Random random = new Random();
+    int inflate = maxNumber - minNumber + 1;
     for (int i = 0; i < length; i++) {
       double r = random.nextDouble();
-      r *= (maxNumber - minNumber + 1);
+      r *= inflate;
       r += minNumber;
       result[i] = (int) Math.floor(r);
     }

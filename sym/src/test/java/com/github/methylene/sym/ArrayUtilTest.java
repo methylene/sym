@@ -108,6 +108,52 @@ public class ArrayUtilTest {
   }
 
   @Test
+  public void testRandomExtreme() {
+    int radius = (int) (50 * Math.random()) + 50;
+    HashSet<Integer> seen = new HashSet<Integer>(radius);
+    for (int i = 0; i < 1000; i += 1) {
+      int[] ints = ArrayUtil.randomNumbers(Integer.MIN_VALUE, Integer.MIN_VALUE + radius, 100);
+      for (int a: ints) {
+        assertTrue(String.format("%d %d %d", radius, a, Integer.MIN_VALUE + radius), a <= Integer.MIN_VALUE + radius);
+        seen.add(a);
+      }
+    }
+    for (int i = 0; i < radius; i++) {
+      assertTrue(seen.contains(Integer.MIN_VALUE + i));
+    }
+    seen = new HashSet<Integer>(radius);
+    for (int i = 0; i < 1000; i += 1) {
+      int[] ints = ArrayUtil.randomNumbers(Integer.MAX_VALUE - radius, Integer.MAX_VALUE, 100);
+      for (int a: ints) {
+        assertTrue((Integer.MAX_VALUE - a) + " " + radius, a >= Integer.MAX_VALUE - radius);
+        seen.add(a);
+      }
+    }
+    for (int i = 0; i < radius; i++) {
+      assertTrue(seen.contains(Integer.MAX_VALUE - radius));
+    }
+  }
+
+  @Test
+  public void testRandom() {
+    for (int radius = 3; radius < 10; radius++) {
+      for (int low = -10; low < 4; low++) {
+        HashSet<Integer> seen = new HashSet<Integer>(radius);
+        for (int i = 0; i < 100; i += 1) {
+          int[] ints = ArrayUtil.randomNumbers(low, low + radius, 10);
+          for (int a: ints) {
+            assertTrue(String.format("%d %d", low, a), a <= low + radius);
+            seen.add(a);
+          }
+        }
+        for (int i = 0; i < radius; i++) {
+          assertTrue(seen.contains(low + i));
+        }
+      }
+    }
+  }
+
+  @Test
   public void testDuplicateIndexes() {
     int[] ints = duplicateIndexes(new int[]{1, 2, 1});
     assertTrue(Arrays.equals(new int[]{0, 2}, ints) || Arrays.equals(new int[]{2, 0}, ints));
