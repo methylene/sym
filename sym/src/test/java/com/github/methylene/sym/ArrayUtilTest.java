@@ -118,7 +118,7 @@ public class ArrayUtilTest {
         seen.add(a);
       }
     }
-    for (int i = 0; i < radius; i++) {
+    for (int i = 0; i <= radius; i++) {
       assertTrue(seen.contains(Integer.MIN_VALUE + i));
     }
     seen = new HashSet<Integer>(radius);
@@ -129,7 +129,7 @@ public class ArrayUtilTest {
         seen.add(a);
       }
     }
-    for (int i = 0; i < radius; i++) {
+    for (int i = 0; i <= radius; i++) {
       assertTrue(seen.contains(Integer.MAX_VALUE - radius));
     }
   }
@@ -146,7 +146,7 @@ public class ArrayUtilTest {
             seen.add(a);
           }
         }
-        for (int i = 0; i < radius; i++) {
+        for (int i = 0; i <= radius; i++) {
           assertTrue(seen.contains(low + i));
         }
       }

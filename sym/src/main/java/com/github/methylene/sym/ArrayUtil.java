@@ -4,6 +4,9 @@ import static java.util.Arrays.binarySearch;
 import static java.util.Arrays.copyOf;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 /**
  * A collection of array related utilities
@@ -169,7 +172,7 @@ public final class ArrayUtil {
   }
 
   /**
-   * Produce {@code length} random numbers between {@code minNumber} and {@code maxNumber} (inclusive)
+   * Generate {@code length} random numbers between {@code minNumber} and {@code maxNumber} (inclusive)
    * @param minNumber lower bound of random numbers
    * @param maxNumber upper bound of random numbers
    * @param length result length
@@ -179,16 +182,18 @@ public final class ArrayUtil {
     if (minNumber > maxNumber) {
       throw new IllegalArgumentException("minNumber must be less than or equal to maxNumber");
     }
-    int[] result = new int[length];
-    Random random = new Random();
-    int inflate = maxNumber - minNumber + 1;
-    for (int i = 0; i < length; i++) {
-      double r = random.nextDouble();
-      r *= inflate;
-      r += minNumber;
-      result[i] = (int) Math.floor(r);
+    Random random = ThreadLocalRandom.current();
+    if (maxNumber < Integer.MAX_VALUE) {
+      IntStream ints = random.ints(length, minNumber, maxNumber + 1);
+      return ints.toArray();
+    } else {
+      LongStream longs = random.longs(length, minNumber, (long) maxNumber + 1l);
+      int[] result = new int[length];
+      long[] longArray = longs.toArray();
+      for (int i = 0; i < longArray.length; i++)
+        result[i] = Math.toIntExact(longArray[i]);
+      return result;
     }
-    return result;
   }
 
   /* ================= box ================= */
