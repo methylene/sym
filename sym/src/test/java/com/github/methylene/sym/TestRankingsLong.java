@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import java.util.stream.Collectors;
+
 /* like PermutationFactoryTest, but use the long versions of sort and from */
 public class TestRankingsLong {
 
@@ -77,6 +79,14 @@ public class TestRankingsLong {
 
     // null because b is not a rearrangement of a
     assertNull(from(a, b));
+  }
+
+  @Test
+  public void testNum() {
+    for (Permutation p: Permutation.symmetricGroup(4).collect(Collectors.toList())) {
+      System.out.print(p.apply("7319") + ", ");
+    }
+
   }
 
 }

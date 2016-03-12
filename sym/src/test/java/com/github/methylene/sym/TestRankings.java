@@ -3,10 +3,14 @@ package com.github.methylene.sym;
 import static com.github.methylene.sym.ArrayUtil.randomNumbers;
 import static com.github.methylene.sym.Rankings.*;
 import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
 
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class TestRankings {
 

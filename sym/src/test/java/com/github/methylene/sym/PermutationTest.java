@@ -3,10 +3,10 @@ package com.github.methylene.sym;
 import static com.github.methylene.sym.MyInt.box;
 import static com.github.methylene.sym.Permutation.*;
 import static com.github.methylene.sym.ArrayUtil.randomNumbers;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Legacy tests.
@@ -153,7 +154,8 @@ public class PermutationTest {
   }
 
   /* Check defining property of inverse */
-  @Test public void testInverse2() {
+  @Test
+  public void testInverse2() {
     Permutation p = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
     for (int i = 0; i < p.length(); i += 1) {
       assertEquals(i, p.invert().apply(p.apply(i)));
@@ -183,21 +185,21 @@ public class PermutationTest {
         Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3)).apply(TestUtil.symbols(3)));
     Assert.assertArrayEquals(new String[]{"c", "a", "b"}, Permutation.cycle1(1, 2, 3).apply(TestUtil.symbols(3)));
     Assert.assertArrayEquals(new String[]{"a", "c", "b"}, Permutation.product(Permutation.cycle1(1, 2),
-            Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))).apply(TestUtil.symbols(3)));
+        Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))).apply(TestUtil.symbols(3)));
   }
 
   @Test
   public void testCycleEquals() throws Exception {
     assertTrue(Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 1)).isIdentity());
     Assert.assertEquals(Permutation.cycle1(2, 3), Permutation.product(Permutation.cycle1(1, 2),
-            Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))));
+        Permutation.product(Permutation.cycle1(1, 2), Permutation.cycle1(2, 3))));
   }
 
   @Test
   public void testCycleLaw() throws Exception {
     Permutation longest = Permutation.cycle1(2, 4, 1, 11, 3);
     Assert.assertEquals(Permutation.product(Permutation.cycle1(2, 4),
-            Permutation.cycle1(4, 1, 11, 3)), longest);
+        Permutation.cycle1(4, 1, 11, 3)), longest);
   }
 
   @Test
@@ -348,7 +350,7 @@ public class PermutationTest {
   @Test
   public void testCyclesAndTranspositions() {
     int sign = 0;
-    for (Permutation p : TestUtil.sym(5)) {
+    for (Permutation p : Permutation.symmetricGroup(5).collect(Collectors.toList())) {
       int order = p.order();
       sign += p.toCycles().signature();
       Cycles cycles = p.toCycles();
@@ -447,7 +449,7 @@ public class PermutationTest {
 
   @Test
   public void testNonDestructive() {
-    int[] a = {0,1,2,3,4};
+    int[] a = {0, 1, 2, 3, 4};
     Permutation p = define(1, 2, 0, 3, 4).compose(define(0, 1, 2, 4, 3));
     Cycles d = p.toCycles();
     assertArrayEquals(p.apply(a), d.apply(a));
@@ -480,4 +482,21 @@ public class PermutationTest {
     }
   }
 
+  @Test
+  public void testSymmetricGroupDistinct() {
+    for (int n = 1; n < 8; n++) {
+      List<Permutation> sym = Permutation.symmetricGroup(n).collect(Collectors.toList());
+      long count = sym.stream().count();
+      assertThat(sym.stream().distinct().count(), is(count));
+      assertThat(count, is(TestUtil.factorial(n)));
+    }
+    assertThat(Permutation.symmetricGroup(9).count(), is(TestUtil.factorial(9)));
+    String[] a = {"Check", "out", "this", "swish", "library"};
+    a = Permutation.random(a.length).apply(a);
+    System.out.println(Arrays.toString(a));
+// => [swish, library, Check, this, out]
+  }
+
+
 }
+

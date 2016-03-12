@@ -4,6 +4,7 @@ import static com.github.methylene.sym.CycleUtil.cyclic;
 import static com.github.methylene.sym.Permutation.product;
 import static com.github.methylene.sym.TestUtil.*;
 import static com.github.methylene.sym.Permutation.define;
+import static com.github.methylene.sym.Permutation.symmetricGroup;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -12,18 +13,19 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ArrayUtilTest {
 
   @Test
   public void testCombinations() throws Exception {
-    List<Permutation> permutations = sym(3);
+    List<Permutation> permutations = symmetricGroup(3).collect(Collectors.toList());
     assertEquals(6, permutations.size());
     Set<Permutation> perms = new HashSet<Permutation>();
     for (Permutation perm : permutations) {
       assertTrue(perms.add(perm));
     }
-    for (Permutation perm : sym(3)) {
+    for (Permutation perm : symmetricGroup(3).collect(Collectors.toList())) {
       assertFalse(perms.add(perm));
     }
   }
@@ -32,7 +34,7 @@ public class ArrayUtilTest {
   public void testCartesian() throws Exception {
     int total = 0;
     int offDiagonal = 0;
-    List<Permutation> a = sym(3);
+    List<Permutation> a = symmetricGroup(3).collect(Collectors.toList());
     for (Permutation[] permutation : cartesian(a, a)) {
       total += 1;
       if (permutation[0] != permutation[1]) {
@@ -45,7 +47,7 @@ public class ArrayUtilTest {
 
   @Test
   public void testCenter() throws Exception {
-    List<Permutation> a = sym(5);
+    List<Permutation> a = symmetricGroup(5).collect(Collectors.toList());
     List<Permutation> center = center(a);
     assertEquals(1, center.size());
     assertTrue(center.get(0).isIdentity());
@@ -69,30 +71,30 @@ public class ArrayUtilTest {
 
   @Test
   public void testCommutator5() throws Exception {
-    assertEquals(120, sym(5).size());
-    assertTrue(isClosed(sym(5)));
-    assertEquals(60, commutator(sym(5)).size());
-    assertTrue(isClosed(commutator(sym(5))));
-    assertEquals(60, commutator(commutator(sym(5))).size());
-    assertTrue(isClosed(commutator(commutator(sym(5)))));
+    assertEquals(120l, symmetricGroup(5).count());
+    assertTrue(isClosed(symmetricGroup(5).collect(Collectors.toList())));
+    assertEquals(60, commutator(symmetricGroup(5).collect(Collectors.toList())).size());
+    assertTrue(isClosed(commutator(symmetricGroup(5).collect(Collectors.toList()))));
+    assertEquals(60, commutator(commutator(symmetricGroup(5).collect(Collectors.toList()))).size());
+    assertTrue(isClosed(commutator(commutator(symmetricGroup(5).collect(Collectors.toList())))));
   }
 
   @Test
   public void testCommutator4() throws Exception {
-    assertEquals(24, sym(4).size());
-    assertTrue(isClosed(sym(4)));
-    assertEquals(12, commutator(sym(4)).size());
-    assertTrue(isClosed(commutator(sym(4))));
-    assertEquals(4, commutator(commutator(sym(4))).size());
-    assertTrue(isClosed(commutator(commutator(sym(4)))));
-    assertEquals(1, commutator(commutator(commutator(sym(4)))).size());
-    assertTrue(isClosed(commutator(commutator(commutator(sym(4))))));
+    assertEquals(24, symmetricGroup(4).collect(Collectors.toList()).size());
+    assertTrue(isClosed(symmetricGroup(4).collect(Collectors.toList())));
+    assertEquals(12, commutator(symmetricGroup(4).collect(Collectors.toList())).size());
+    assertTrue(isClosed(commutator(symmetricGroup(4).collect(Collectors.toList()))));
+    assertEquals(4, commutator(commutator(symmetricGroup(4).collect(Collectors.toList()))).size());
+    assertTrue(isClosed(commutator(commutator(symmetricGroup(4).collect(Collectors.toList())))));
+    assertEquals(1, commutator(commutator(commutator(symmetricGroup(4).collect(Collectors.toList())))).size());
+    assertTrue(isClosed(commutator(commutator(commutator(symmetricGroup(4).collect(Collectors.toList()))))));
   }
 
   @Test
   public void testCommutatorEven() throws Exception {
     for (int i = 3; i < 7; i += 1) {
-      List<Permutation> sym = sym(i);
+      List<Permutation> sym = symmetricGroup(i).collect(Collectors.toList());
       assertEquals(factorial(i), sym.size());
       assertEquals(0, signatureSum(sym));
       assertEquals(sym.size() / 2, signatureSum(commutator(sym)));
@@ -253,7 +255,5 @@ public class ArrayUtilTest {
     assertArrayEquals(new int []{8, 5, 7, 2, 9, 4, 1, 6, 0, 0, 3}, ArrayUtil.paste(a, 9, 0));
     assertArrayEquals(new int []{8, 5, 7, 2, 9, 4, 1, 6, 0, 3, 0}, ArrayUtil.paste(a, 10, 0));
   }
-
-
 
 }

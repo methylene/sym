@@ -20,7 +20,6 @@ import java.util.List;
  * <p/>
  * <p>
  * Applying it to a single index is {@code O(n)} whereas {@link Permutation} does this in constant time.
- * For this reason, {@link com.github.methylene.lists.LookupList} does not use this implementation internally.
  * </p>
  *
  * @see Permutation#toCycles()

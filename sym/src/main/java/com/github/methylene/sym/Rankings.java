@@ -6,6 +6,8 @@ import static java.util.Arrays.binarySearch;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * A collection of methods that return rankings, or operate on rankings.
@@ -1533,5 +1535,60 @@ public final class Rankings {
     }
     return true;
   }
+
+  private static final class State {
+    private final int[] prefix;
+    private final int[] suffix;
+
+    private State(int[] prefix, int[] suffix) {
+      this.prefix = prefix;
+      this.suffix = suffix;
+    }
+  }
+
+
+  /**
+   * Returns all possible permutations of given length
+   * @param n length of permutations to generate
+   * @return all possible permutations of length {@code n}; this will contain {@code n!}
+   * different permutations
+   */
+  public static Stream<int[]> symmetricGroup(int n) {
+    int[] start = new int[n];
+    for (int i = 0; i < n; i += 1) {
+      start[i] = i + 1;
+    }
+    Stack<State> stack = new Stack<>();
+    stack.push(new State(new int[0], start));
+    Iterable<int[]> it = () -> new Iterator<int[]>() {
+
+      @Override
+      public boolean hasNext() {
+        return !stack.isEmpty();
+      }
+
+      @Override
+      public int[] next() {
+        State state = stack.pop();
+        while (state.suffix.length > 0) {
+          for (int i = 0; i < state.suffix.length; i += 1) {
+            int[] newPrefix = new int[state.prefix.length + 1];
+            arraycopy(state.prefix, 0, newPrefix, 0, state.prefix.length);
+            newPrefix[state.prefix.length] = state.suffix[i];
+            int[] newSuffix = new int[state.suffix.length - 1];
+            if (i != 0)
+              arraycopy(state.suffix, 0, newSuffix, 0, i);
+            if (i < state.suffix.length - 1)
+              arraycopy(state.suffix, i + 1, newSuffix, i, state.suffix.length - 1 - i);
+            stack.push(new State(newPrefix, newSuffix));
+          }
+          state = stack.pop();
+        }
+        return ArrayUtil.add(state.prefix, -1);
+      }
+    };
+    return StreamSupport.stream(it.spliterator(), false);
+  }
+
 
 }

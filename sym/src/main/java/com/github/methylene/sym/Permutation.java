@@ -1,11 +1,11 @@
 package com.github.methylene.sym;
 
-import static com.github.methylene.sym.ArrayUtil.checkLength;
-import static com.github.methylene.sym.ArrayUtil.negativeFailure;
-import com.github.methylene.lists.LookupList;
-
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Stream;
+
+import static com.github.methylene.sym.ArrayUtil.checkLength;
+import static com.github.methylene.sym.ArrayUtil.negativeFailure;
 
 /**
  * An ranking based permutation operation that can be used to shuffle arrays and lists.
@@ -568,8 +568,6 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
       return input;
     int length = input.size();
     checkLength(ranking.length, length);
-    if (input instanceof LookupList)
-      return ((LookupList<E>) input).shuffle(this);
     return Rankings.apply(ranking, input);
   }
 
@@ -847,6 +845,10 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
     static Orbits EMPTY = new Orbits(new int[0][]);
     final int[][] orbits;
     private Orbits(int[][] orbits) {this.orbits = orbits;}
+  }
+
+  public static Stream<Permutation> symmetricGroup(int n) {
+    return Rankings.symmetricGroup(n).map(Permutation::define);
   }
 
 }
