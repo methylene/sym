@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.util.stream.Collectors;
 
-/* like PermutationFactoryTest, but use the long versions of sort and from */
+/* like PermutationFactoryTest, but use the long versions of sorting and from */
 public class TestRankingsLong {
 
   static long[] randomNumbers(int maxNumber, int length) {
@@ -23,11 +23,11 @@ public class TestRankingsLong {
   public void testSortRandom() {
     for (int i = 0; i < 100; i += 1) {
       long[] a = randomNumbers(100, 200);
-      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(a).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(a).apply(a));
     }
     for (int i = 0; i < 100; i += 1) {
       long[] a = randomNumbers(100, 20);
-      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(a).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(a).apply(a));
     }
   }
 
@@ -36,7 +36,7 @@ public class TestRankingsLong {
     for (int i = 0; i < 100; i += 1) {
       String[] a = TestUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(shuffled).apply(shuffled));
     }
   }
 

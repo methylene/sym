@@ -572,106 +572,106 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
   }
 
   /**
-   * Returns a certain permutation that sorts the input array.
+   * Returns a permutation that sorts the input array.
    * @param input an array, not necessarily distinct
    * @return a permutation that sorts the input
    * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sort(byte[])
+   * @see Rankings#sorting(byte[])
    */
-  public static Permutation sort(byte[] input) {
-    return define(Rankings.sort(input), false);
+  public static Permutation sorting(byte[] input) {
+    return define(Rankings.sorting(input), false);
   }
 
   /**
-   * Returns a certain permutation that sorts the input array.
+   * Returns a permutation that sorts the input array.
    * @param input an array, not necessarily distinct
    * @return a permutation that sorts the input
    * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sort(short[])
+   * @see Rankings#sorting(short[])
    */
-  public static Permutation sort(short[] input) {
-    return define(Rankings.sort(input), false);
+  public static Permutation sorting(short[] input) {
+    return define(Rankings.sorting(input), false);
   }
 
   /**
-   * Returns a certain permutation that sorts the input array.
+   * Returns a permutation that sorts the input array.
    * @param input an array, not necessarily distinct
    * @return a permutation that sorts the input
    * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sort(long[])
+   * @see Rankings#sorting(long[])
    */
-  public static Permutation sort(long[] input) {
-    return define(Rankings.sort(input), false);
+  public static Permutation sorting(long[] input) {
+    return define(Rankings.sorting(input), false);
   }
 
   /**
-   * Returns a certain permutation that sorts the input array.
+   * Returns a permutation that sorts the input array.
    * @param input an array, not necessarily distinct
    * @return a permutation that sorts the input
    * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sort(float[])
+   * @see Rankings#sorting(float[])
    */
-  public static Permutation sort(float[] input) {
-    return define(Rankings.sort(input), false);
-  }
-
-
-  /**
-   * Returns a certain permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sort(double[])
-   */
-  public static Permutation sort(double[] input) {
-    return define(Rankings.sort(input), false);
-  }
-
-  /**
-   * Returns a certain permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sort(Comparable[])
-   */
-  public static <E extends Comparable> Permutation sort(E[] input) {
-    return define(Rankings.sort(input), false);
+  public static Permutation sorting(float[] input) {
+    return define(Rankings.sorting(input), false);
   }
 
 
   /**
-   * Returns a certain permutation that sorts the input array.
+   * Returns a permutation that sorts the input array.
    * @param input an array, not necessarily distinct
    * @return a permutation that sorts the input
    * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sort(char[])
+   * @see Rankings#sorting(double[])
    */
-  public static Permutation sort(char[] input) {
-    return define(Rankings.sort(input), false);
+  public static Permutation sorting(double[] input) {
+    return define(Rankings.sorting(input), false);
   }
 
   /**
-   * Returns a certain permutation that sorts the input array.
+   * Returns a permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sorting(Comparable[])
+   */
+  public static <E extends Comparable> Permutation sorting(E[] input) {
+    return define(Rankings.sorting(input), false);
+  }
+
+
+  /**
+   * Returns a permutation that sorts the input array.
+   * @param input an array, not necessarily distinct
+   * @return a permutation that sorts the input
+   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
+   * @see Rankings#sorting(char[])
+   */
+  public static Permutation sorting(char[] input) {
+    return define(Rankings.sorting(input), false);
+  }
+
+  /**
+   * Returns a permutation that sorts the input array.
    * @param input an array, not necessarily distinct
    * @param comp a Comparator for the elements in the input
    * @return a permutation that sorts the input
    * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sort(Object[], Comparator)
+   * @see Rankings#sorting(Object[], Comparator)
    */
-  public static <E> Permutation sort(Object[] input, Comparator<E> comp) {
-    return define(Rankings.sort(input, comp), false);
+  public static <E> Permutation sorting(Object[] input, Comparator<E> comp) {
+    return define(Rankings.sorting(input, comp), false);
   }
 
 
   /**
-   * Returns a certain permutation that sorts the input array.
+   * Returns a permutation that sorts the input array.
    * @param input an array, not necessarily distinct
    * @return a permutation that sorts the input
    * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sort(int[])
+   * @see Rankings#sorting(int[])
    */
-  public static Permutation sort(int[] input) {
-    return define(Rankings.sort(input), false);
+  public static Permutation sorting(int[] input) {
+    return define(Rankings.sorting(input), false);
   }
 
   /**
@@ -679,10 +679,10 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    * @param s a string
    * @return a permutation that sorts {@code s}
    */
-  public static Permutation sort(String s) {
+  public static Permutation sorting(String s) {
     char[] chars = new char[s.length()];
     s.getChars(0, chars.length, chars, 0);
-    return sort(chars);
+    return sorting(chars);
   }
 
   /**
@@ -758,7 +758,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
   }
 
   /**
-   * Check if this permutation will sort the input when applied to it.
+   * Check if this permutation will sorting the input when applied to it.
    * @param a an array
    * @return true if {@code this.apply(a)} is sorted
    */

@@ -452,7 +452,7 @@ public final class Rankings {
     return offset == 0 ? 0 : shift(offset);
   }
 
-  /* ================= sort ================= */
+  /* ================= sorting ================= */
 
   /**
    * Produce a particular ranking that sorts the input when applied to it.
@@ -460,9 +460,9 @@ public final class Rankings {
    * satisfies the following property.
    * Let
    * <pre><code>
-   *   int[] sort = sort(a);
-   *   int[] sorted = apply(sort, a);
-   *   int[] unsort = invert(sort);
+   *   int[] sorting = sorting(a);
+   *   int[] sorted = apply(sorting, a);
+   *   int[] unsort = invert(sorting);
    *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
@@ -474,7 +474,7 @@ public final class Rankings {
    * @see #apply(int[], int[])
    * @see ArrayUtil#indexOf
    */
-  public static int[] sort(int[] a) {
+  public static int[] sorting(int[] a) {
     int[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
@@ -494,9 +494,9 @@ public final class Rankings {
    * satisfies the following property.
    * Let
    * <pre><code>
-   *   int[] sort = sort(a);
-   *   int[] sorted = apply(sort, a);
-   *   int[] unsort = invert(sort);
+   *   int[] sorting = sorting(a);
+   *   int[] sorted = apply(sorting, a);
+   *   int[] unsort = invert(sorting);
    *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
@@ -508,7 +508,7 @@ public final class Rankings {
    * @see #apply(int[], byte[])
    * @see ArrayUtil#indexOf
    */
-  public static int[] sort(byte[] a) {
+  public static int[] sorting(byte[] a) {
     byte[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
@@ -528,9 +528,9 @@ public final class Rankings {
    * satisfies the following property.
    * Let
    * <pre><code>
-   *   int[] sort = sort(a);
-   *   int[] sorted = apply(sort, a);
-   *   int[] unsort = invert(sort);
+   *   int[] sorting = sorting(a);
+   *   int[] sorted = apply(sorting, a);
+   *   int[] unsort = invert(sorting);
    *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
@@ -542,7 +542,7 @@ public final class Rankings {
    * @see #apply(int[], short[])
    * @see ArrayUtil#indexOf
    */
-  public static int[] sort(short[] a) {
+  public static int[] sorting(short[] a) {
     short[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
@@ -562,9 +562,9 @@ public final class Rankings {
    * satisfies the following property.
    * Let
    * <pre><code>
-   *   int[] sort = sort(a);
-   *   int[] sorted = apply(sort, a);
-   *   int[] unsort = invert(sort);
+   *   int[] sorting = sorting(a);
+   *   int[] sorted = apply(sorting, a);
+   *   int[] unsort = invert(sorting);
    *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
@@ -576,7 +576,7 @@ public final class Rankings {
    * @see #apply(int[], long[])
    * @see ArrayUtil#indexOf
    */
-  public static int[] sort(long[] a) {
+  public static int[] sorting(long[] a) {
     long[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
@@ -596,9 +596,9 @@ public final class Rankings {
    * satisfies the following property.
    * Let
    * <pre><code>
-   *   int[] sort = sort(a);
-   *   int[] sorted = apply(sort, a);
-   *   int[] unsort = invert(sort);
+   *   int[] sorting = sorting(a);
+   *   int[] sorted = apply(sorting, a);
+   *   int[] unsort = invert(sorting);
    *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
@@ -610,7 +610,7 @@ public final class Rankings {
    * @see #apply(int[], float[])
    * @see ArrayUtil#indexOf
    */
-  public static int[] sort(float[] a) {
+  public static int[] sorting(float[] a) {
     float[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
@@ -629,9 +629,9 @@ public final class Rankings {
    * satisfies the following property.
    * Let
    * <pre><code>
-   *   int[] sort = sort(a);
-   *   int[] sorted = apply(sort, a);
-   *   int[] unsort = invert(sort);
+   *   int[] sorting = sorting(a);
+   *   int[] sorted = apply(sorting, a);
+   *   int[] unsort = invert(sorting);
    *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
@@ -643,7 +643,7 @@ public final class Rankings {
    * @see #apply(int[], double[])
    * @see ArrayUtil#indexOf
    */
-  public static int[] sort(double[] a) {
+  public static int[] sorting(double[] a) {
     double[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
@@ -663,9 +663,9 @@ public final class Rankings {
    * satisfies the following property.
    * Let
    * <pre><code>
-   *   int[] sort = sort(a);
-   *   int[] sorted = apply(sort, a);
-   *   int[] unsort = invert(sort);
+   *   int[] sorting = sorting(a);
+   *   int[] sorted = apply(sorting, a);
+   *   int[] unsort = invert(sorting);
    *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
@@ -677,7 +677,7 @@ public final class Rankings {
    * @see #apply(int[], char[])
    * @see ArrayUtil#indexOf
    */
-  public static int[] sort(char[] a) {
+  public static int[] sorting(char[] a) {
     char[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
@@ -696,9 +696,9 @@ public final class Rankings {
    * satisfies the following property.
    * Let
    * <pre><code>
-   *   int[] sort = sort(a);
-   *   int[] sorted = apply(sort, a);
-   *   int[] unsort = invert(sort);
+   *   int[] sorting = sorting(a);
+   *   int[] sorted = apply(sorting, a);
+   *   int[] unsort = invert(sorting);
    *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
@@ -710,7 +710,7 @@ public final class Rankings {
    * @see ArrayUtil#indexOf
    * @throws java.lang.NullPointerException if {@code a} is {@code null} or contains a {@code null} element
    */
-  public static <E extends Comparable> int[] sort(E[] a) {
+  public static <E extends Comparable> int[] sorting(E[] a) {
     Comparable[] sorted = sortedCopy(a);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
@@ -730,9 +730,9 @@ public final class Rankings {
    * satisfies the following property.
    * Let
    * <pre><code>
-   *   int[] sort = sort(a);
-   *   int[] sorted = apply(sort, a);
-   *   int[] unsort = invert(sort);
+   *   int[] sorting = sorting(a);
+   *   int[] sorted = apply(sorting, a);
+   *   int[] unsort = invert(sorting);
    *   int idx = Arrays.binarySearch(sorted, el);
    * </code></pre>
    * then for each index {@code i < a.length}, the following is true:
@@ -746,7 +746,7 @@ public final class Rankings {
    * @see ArrayUtil#indexOf
    * @throws java.lang.NullPointerException if {@code a} is {@code null} or contains a {@code null} element
    */
-  public static <E> int[] sort(Object[] a, Comparator<E> comp) {
+  public static <E> int[] sorting(Object[] a, Comparator<E> comp) {
     Object[] sorted = sortedCopy(a, comp);
     int[] ranking = new int[a.length];
     int[] offsets = new int[a.length];
@@ -775,7 +775,7 @@ public final class Rankings {
    */
   public static int[] from(int[] a, int[] b) {
     checkEqualLength(a, b);
-    int[] sort = sort(b);
+    int[] sort = sorting(b);
     int[] unsort = invert(sort);
     int[] sorted = apply(sort, b);
     int[] ranking = new int[a.length];
@@ -804,7 +804,7 @@ public final class Rankings {
    */
   public static <E extends Comparable> int[] from(E[] a, E[] b) {
     checkEqualLength(a, b);
-    int[] sort = sort(b);
+    int[] sort = sorting(b);
     int[] unsort = invert(sort);
     Comparable[] sorted = apply(sort, b);
     int[] ranking = new int[a.length];
@@ -834,7 +834,7 @@ public final class Rankings {
    */
   public static int[] from(byte[] a, byte[] b) {
     checkEqualLength(a, b);
-    int[] sort = sort(b);
+    int[] sort = sorting(b);
     int[] unsort = invert(sort);
     byte[] sorted = apply(sort, b);
     int[] ranking = new int[a.length];
@@ -864,7 +864,7 @@ public final class Rankings {
    */
   public static int[] from(long[] a, long[] b) {
     checkEqualLength(a, b);
-    int[] sort = sort(b);
+    int[] sort = sorting(b);
     int[] unsort = invert(sort);
     long[] sorted = apply(sort, b);
     int[] ranking = new int[a.length];
@@ -894,7 +894,7 @@ public final class Rankings {
    */
   public static int[] from(float[] a, float[] b) {
     checkEqualLength(a, b);
-    int[] sort = sort(b);
+    int[] sort = sorting(b);
     int[] unsort = invert(sort);
     float[] sorted = apply(sort, b);
     int[] ranking = new int[a.length];
@@ -924,7 +924,7 @@ public final class Rankings {
    */
   public static int[] from(double[] a, double[] b) {
     checkEqualLength(a, b);
-    int[] sort = sort(b);
+    int[] sort = sorting(b);
     int[] unsort = invert(sort);
     double[] sorted = apply(sort, b);
     int[] ranking = new int[a.length];
@@ -955,7 +955,7 @@ public final class Rankings {
    */
   public static <E> int[] from(E[] a, E[] b, Comparator<E> comp) {
     checkEqualLength(a, b);
-    int[] sort = sort(b, comp);
+    int[] sort = sorting(b, comp);
     int[] unsort = invert(sort);
     Object[] sorted = apply(sort, b);
     int[] ranking = new int[a.length];

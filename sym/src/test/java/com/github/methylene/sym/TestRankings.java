@@ -8,9 +8,6 @@ import static org.hamcrest.CoreMatchers.is;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class TestRankings {
 
@@ -18,11 +15,11 @@ public class TestRankings {
   public void testSortRandom() {
     for (int __ = 0; __ < 100; __ += 1) {
       int[] a = randomNumbers(100, 200);
-      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(a).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(a).apply(a));
     }
     for (int __ = 0; __ < 100; __ += 1) {
       int[] a = randomNumbers(100, 20);
-      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(a).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(a).apply(a));
     }
   }
 
@@ -31,7 +28,7 @@ public class TestRankings {
     for (int __ = 0; __ < 100; __ += 1) {
       String[] a = TestUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(shuffled).apply(shuffled));
     }
   }
 
@@ -104,7 +101,7 @@ public class TestRankings {
   public void testSort() {
     for (int __ = 0; __ < 100; __++) {
       int[] a = ArrayUtil.randomNumbers(100, (int) (Math.random() * 1000));
-      int[] sort = sort(a);
+      int[] sort = sorting(a);
       int[] sorted = apply(sort, a);
       int[] unsort = invert(sort);
       int[] hopefullyIdentity = comp(sort, unsort);
@@ -151,7 +148,7 @@ public class TestRankings {
   public void testSorts2() {
     for (int __ = 0; __ < 100; __++) {
       int[] a = ArrayUtil.randomNumbers(100, 100 + (int) (100 * (Math.random() - 0.8)));
-      int[] ranking = Rankings.sort(a);
+      int[] ranking = Rankings.sorting(a);
       assertTrue(ArrayUtil.isSorted(Rankings.apply(ranking, a)));
       assertTrue(Rankings.sorts(ranking, a));
     }

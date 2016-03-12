@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import java.util.Comparator;
 
-/* like PermutationFactoryTest, but use the Comparator versions of sort and from */
+/* like PermutationFactoryTest, but use the Comparator versions of sorting and from */
 public class TestRankingsComparator {
 
   static final int REPEAT = 1000;
@@ -23,11 +23,11 @@ public class TestRankingsComparator {
     MyInt[] a;
     for (int __ = 0; __ < REPEAT; __ += 1) {
       a = box(randomNumbers(100, 200));
-      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sort(a, MyInt.COMP).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a, MyInt.COMP).apply(a));
     }
     for (int i = 0; i < REPEAT; i += 1) {
       a = box(randomNumbers(100, 200));
-      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sort(a, MyInt.COMP).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a, MyInt.COMP).apply(a));
     }
   }
 
@@ -36,7 +36,7 @@ public class TestRankingsComparator {
     for (int __ = 0; __ < REPEAT; __ += 1) {
       String[] a = TestUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sort(shuffled).apply(shuffled));
+      assertArrayEquals(ArrayUtil.sortedCopy(a), Permutation.sorting(shuffled).apply(shuffled));
     }
   }
 

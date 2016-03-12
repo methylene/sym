@@ -21,10 +21,10 @@ Permutation s01 = Transposition.swap(0, 1).toPermutation();
 System.out.println(s02.compose(s01).apply("bca"));            
 // = > abc
 ````
-### Cycle decomposition, orbits etc
+### Sorting, cycles
 
 ````java
-Permutation s = Permutation.sort("Hello world!");
+Permutation s = Permutation.sorting("Hello world!");
 System.out.println(s.toCycles());
 // => [[0, 2, 5] [1, 4, 8, 10, 3, 6, 11] [7, 9]]
 ````

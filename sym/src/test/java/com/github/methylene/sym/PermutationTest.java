@@ -42,7 +42,7 @@ public class PermutationTest {
   @Test
   public void testComp2() throws Exception {
     Permutation p = Permutation.define(1, 2, 0);
-    Permutation p2 = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
+    Permutation p2 = Permutation.sorting(new int[]{4, 6, 10, -5, 195, 33, 2});
     for (int i = 0; i < p.length(); i += 1) {
       assertEquals(p2.apply(p.apply(i)), p2.compose(p).apply(i));
     }
@@ -156,7 +156,7 @@ public class PermutationTest {
   /* Check defining property of inverse */
   @Test
   public void testInverse2() {
-    Permutation p = Permutation.sort(new int[]{4, 6, 10, -5, 195, 33, 2});
+    Permutation p = Permutation.sorting(new int[]{4, 6, 10, -5, 195, 33, 2});
     for (int i = 0; i < p.length(); i += 1) {
       assertEquals(i, p.invert().apply(p.apply(i)));
     }
@@ -207,7 +207,7 @@ public class PermutationTest {
     int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
-    Permutation p = Permutation.sort(x);
+    Permutation p = Permutation.sorting(x);
     for (int i = 0; i < x.length; i += 1) {
       assertEquals(x[i], y[p.apply(i)]);
     }
@@ -234,7 +234,7 @@ public class PermutationTest {
   @Test
   public void testSortInvert() {
     int[] x = new int[]{4, 6, 10, -5, 195, 33, 2};
-    Permutation unsort = Permutation.sort(x).invert();
+    Permutation unsort = Permutation.sorting(x).invert();
     int[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y);
     for (int k = 0; k < y.length; k += 1) {
@@ -243,14 +243,14 @@ public class PermutationTest {
     }
   }
 
-  /* check defining property of sort */
+  /* check defining property of sorting */
   @Test
   public void testSortRandom() {
     int size = (int) (100 * Math.random());
     int[] distinct = Rankings.random(size);
     int[] sorted = Arrays.copyOf(distinct, distinct.length);
     Arrays.sort(sorted);
-    Permutation p = Permutation.sort(distinct);
+    Permutation p = Permutation.sorting(distinct);
     for (int i = 0; i < sorted.length; i += 1) {
       distinct[i] = sorted[p.apply(i)];
     }
@@ -259,7 +259,7 @@ public class PermutationTest {
   @Test
   public void testSortInvertComparator() {
     MyInt[] x = box(new int[]{4, 6, 10, -5, 195, 33, 2});
-    Permutation unsort = Permutation.sort(x, MyInt.COMP).invert();
+    Permutation unsort = Permutation.sorting(x, MyInt.COMP).invert();
     MyInt[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y, MyInt.COMP);
     for (int k = 0; k < y.length; k += 1) {
@@ -284,11 +284,11 @@ public class PermutationTest {
     return result;
   }
 
-  /* Another way of checking that duplicateRejectingFactory().sort(a).apply(a) sorts a, for distinct array a */
+  /* Another way of checking that duplicateRejectingFactory().sorting(a).apply(a) sorts a, for distinct array a */
   @Test
   public void testSort1024() {
     int[] a = Rankings.random(1024);
-    assertArrayEquals(classicSort(a), Permutation.sort(a).apply(a));
+    assertArrayEquals(classicSort(a), Permutation.sorting(a).apply(a));
   }
 
   @Test
@@ -402,11 +402,11 @@ public class PermutationTest {
     assertEquals("Hello world!", product(Arrays.asList(c0, c1, c2)).invert().apply(" !Hdellloorw"));
   }
 
-  /* making sure sort does what we think it does */
+  /* making sure sorting does what we think it does */
   @Test
   public void testDegenerate() {
     int[] a = new int[]{3, 3, 3, 3, 3, 3, 3};
-    assertFalse(Permutation.sort(a).isIdentity());
+    assertFalse(Permutation.sorting(a).isIdentity());
   }
 
   @Test
@@ -477,7 +477,7 @@ public class PermutationTest {
   public void testSorts() {
     for (int __ = 0; __ < 100; __++) {
       int[] a = ArrayUtil.randomNumbers(100, 50 + (int) (Math.random() * 100));
-      Permutation p = Permutation.sort(a);
+      Permutation p = Permutation.sorting(a);
       assertTrue(p.sorts(a));
     }
   }
