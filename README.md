@@ -31,6 +31,16 @@ System.out.println(s.toCycles());
 
 See also the [javadoc](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html)
 
+### Maven
+
+````xml
+<dependency>
+  <groupId>com.github.methylene</groupId>
+  <artifactId>sym</artifactId>
+  <version>2.0.2</version>
+</dependency>
+````
+
 <!--
 * add Kendall tau distance
 * add rank: http://rosettacode.org/wiki/Permutations/Rank_of_a_permutation
