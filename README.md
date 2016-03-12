@@ -1,50 +1,37 @@
-# sym
-
-## Permutations and LookupList
-
-Maven dependency:
-
-````xml
-<dependency>
-  <groupId>com.github.methylene</groupId>
-  <artifactId>sym</artifactId>
-  <version>2.0.1</version>
-</dependency>
+### Getting all permutations (symmetric group)
+````java
+System.out.println(Permutation.symmetricGroup(5).count());
+// => 120
 ````
 
-<i>Permutations</i> 
-are objects that act on arrays or lists to perform certain operations,
-such as sorting, shuffling, swapping or moving elements.
+### Shuffling an array
 
-<i>LookupList</i>
-is an immutable implementation of `java.util.List` 
-that is optimized for searching. Its implementation uses permutations internally.
+````java
+String[] a = {"Check", "out", "this", "swish", "library"};
+a = Permutation.random(a.length).apply(a);
+System.out.println(Arrays.toString(a));
+// => [this, library, Check, swish, out]
+````
 
-The  <i>indexOf</i>, <i>lastIndexOf</i> and <i>contains</i> methods of `LookupList` 
-will often perform much better than other array based lists.
+### Composition
 
-Additionally, `LookupList` provides an efficient <i>partition</i> method.
+````java
+Permutation s02 = Transposition.swap(0, 2).toPermutation();
+Permutation s01 = Transposition.swap(0, 1).toPermutation();
+System.out.println(s02.compose(s01).apply("bca"));            
+// = > abc
+````
+### Cycle decomposition, orbits etc
 
-A speed comparison between <i>LookupList</i> and <i>ArrayList</i> can be made as follows:
+````java
+Permutation s = Permutation.sort("Hello world!");
+System.out.println(s.toCycles());
+// => [[0, 2, 5] [1, 4, 8, 10, 3, 6, 11] [7, 9]]
+````
 
-    $ mvn clean test -f sym/pom.xml -Pbench
+See also the [javadoc](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html)
 
-This will run a benchmark with a random list of size 10000 and print the results.
-
-    Running com.github.methylene.lists.PerformanceTest
-    == list size: 10000
-    == repeat: 50
-    == return value of .indexOf: 2024
-    indexOf:                 2759.76
-    indexOfjdK:             97604.78
-    lastIndexOf:             2390.68
-    lastIndexOfJdk         820767.64
-    index_relative:     0.0282748447
-    lastIndex_relative: 0.0029127366
-
-Javadoc:
-
-* [Permutation](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html),
-* [LookupList](http://methylene.github.io/sym/current/com/github/methylene/lists/package-summary.html)
-
-For more information, see also the [other README](sym).
+<!--
+* add Kendall tau distance
+* add rank: http://rosettacode.org/wiki/Permutations/Rank_of_a_permutation
+-->
