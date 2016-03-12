@@ -26,7 +26,7 @@ System.out.println(s02.compose(s01).apply("bca"));
 ````java
 Permutation s = Permutation.sorting("Hello world!");
 System.out.println(s.toCycles());
-// => [[0, 2, 5] [1, 4, 8, 10, 3, 6, 11] [7, 9]]
+// => (0 2 5) (1 4 8 10 3 6 11) (7 9)
 ````
 
 See also the [javadoc](http://methylene.github.io/sym/current/com/github/methylene/sym/package-summary.html)

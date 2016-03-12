@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -570,11 +572,12 @@ public final class Cycles implements Serializable {
   @Override
   public String toString() {
     if (cycles.length == 0)
-      return "[]";
-    StringBuilder sb = new StringBuilder();
-    for (int[] cycle : cycles)
-      sb.append(' ').append(Arrays.toString(cycle));
-    return '[' + sb.substring(1) + ']';
+      return "()";
+    List<String> s = Arrays.stream(cycles).map(a ->
+        "(" + String.join(" ",
+            Arrays.stream(a).mapToObj(Integer::toString).collect(Collectors.toList()))
+            + ")").collect(Collectors.toList());
+    return String.join(" ", s);
   }
 
   /**
@@ -641,6 +644,7 @@ public final class Cycles implements Serializable {
 
   /**
    * Check if this is an even permutation.
+   *
    * @return true if the signature of this permutation is {@code 1}
    * @see #signature()
    */
@@ -650,6 +654,7 @@ public final class Cycles implements Serializable {
 
   /**
    * Check if this is an odd permutation.
+   *
    * @return true if the signature of this permutation is {@code -11}
    * @see #signature()
    */

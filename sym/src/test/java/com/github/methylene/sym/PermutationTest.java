@@ -491,12 +491,7 @@ public class PermutationTest {
       assertThat(count, is(TestUtil.factorial(n)));
     }
     assertThat(Permutation.symmetricGroup(9).count(), is(TestUtil.factorial(9)));
-    String[] a = {"Check", "out", "this", "swish", "library"};
-    a = Permutation.random(a.length).apply(a);
-    System.out.println(Arrays.toString(a));
-// => [swish, library, Check, this, out]
   }
-
 
 }
 
