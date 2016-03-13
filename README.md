@@ -37,7 +37,7 @@ See also the [javadoc](http://methylene.github.io/sym/current/com/github/methyle
 <dependency>
   <groupId>com.github.methylene</groupId>
   <artifactId>sym</artifactId>
-  <version>2.0.2</version>
+  <version>2.0.3</version>
 </dependency>
 ````
 
