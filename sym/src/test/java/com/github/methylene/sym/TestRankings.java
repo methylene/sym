@@ -37,12 +37,12 @@ public class TestRankings {
     for (int __ = 0; __ < 100; __ += 1) {
       int[] a = randomNumbers(100, 200);
       int[] b = Permutation.random(a.length).apply(a);
-      assertArrayEquals(b, Permutation.from(a, b).apply(a));
+      assertArrayEquals(b, Permutation.taking(a).to(b).apply(a));
     }
     for (int __ = 0; __ < 100; __ += 1) {
       int[] a = randomNumbers(100, 20);
       int[] b = Permutation.random(a.length).apply(a);
-      assertArrayEquals(b, Permutation.from(a, b).apply(a));
+      assertArrayEquals(b, Permutation.taking(a).to(b).apply(a));
     }
   }
 
@@ -51,7 +51,7 @@ public class TestRankings {
     for (int __ = 0; __ < 100; __ += 1) {
       String[] a = TestUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(a, Permutation.from(shuffled, a).apply(shuffled));
+      assertArrayEquals(a, Permutation.taking(shuffled).to(a).apply(shuffled));
     }
   }
 

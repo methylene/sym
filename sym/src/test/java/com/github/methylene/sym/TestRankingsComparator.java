@@ -23,11 +23,11 @@ public class TestRankingsComparator {
     MyInt[] a;
     for (int __ = 0; __ < REPEAT; __ += 1) {
       a = box(randomNumbers(100, 200));
-      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a, MyInt.COMP).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a).using(MyInt.COMP).apply(a));
     }
     for (int i = 0; i < REPEAT; i += 1) {
       a = box(randomNumbers(100, 200));
-      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a, MyInt.COMP).apply(a));
+      assertArrayEquals(ArrayUtil.sortedCopy(a, MyInt.COMP), Permutation.sorting(a).using(MyInt.COMP).apply(a));
     }
   }
 
@@ -45,13 +45,13 @@ public class TestRankingsComparator {
   public void testFromRandom() {
     for (int __ = 0; __ < REPEAT; __ += 1) {
       int[] a = randomNumbers(100, 200);
-      Object[] b = Permutation.random(a.length).apply(box(a));
-      assertArrayEquals(b, Permutation.from(box(a), b, (Comparator) MyInt.COMP).apply(box(a)));
+      MyInt[] b = Permutation.random(a.length).apply(box(a));
+      assertArrayEquals(b, Permutation.taking(box(a)).to(b).using(MyInt.COMP).apply(box(a)));
     }
     for (int i = 0; i < REPEAT; i += 1) {
-      Object[] a = randomMyInts(100, 20);
-      Object[] b = Permutation.random(a.length).apply(a);
-      assertArrayEquals(b, Permutation.from(a, b, (Comparator) MyInt.COMP).apply(a));
+      MyInt[] a = randomMyInts(100, 20);
+      MyInt[] b = Permutation.random(a.length).apply(a);
+      assertArrayEquals(b, Permutation.taking(a).to(b).using(MyInt.COMP).apply(a));
     }
   }
 
@@ -60,7 +60,7 @@ public class TestRankingsComparator {
     for (int __ = 0; __ < REPEAT; __ += 1) {
       String[] a = TestUtil.symbols(100);
       String[] shuffled = Permutation.random(a.length).apply(a);
-      assertArrayEquals(a, Permutation.from(shuffled, a).apply(shuffled));
+      assertArrayEquals(a, Permutation.taking(shuffled).to(a).apply(shuffled));
     }
   }
 

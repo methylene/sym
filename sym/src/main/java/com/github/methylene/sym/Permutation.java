@@ -9,7 +9,7 @@ import static com.github.methylene.sym.ArrayUtil.negativeFailure;
 
 /**
  * An ranking based permutation operation that can be used to shuffle arrays and lists.
- *
+ * <p/>
  * Instances of this class are immutable, and none of the apply methods modify the input.
  * The toCycles method can be used to obtain the destructive version of an instance.
  *
@@ -36,27 +36,36 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Return the permutation defined by the given array.
+   *
    * @param ranking a list of numbers that specifies the permutation in zero-based
-   *               <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
-   *               For example, {@code define(1, 2, 0)} creates the permutation
-   *               that maps {@code "abc"} to {@code "cab"}.
+   *                <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
+   *                For example, {@code define(1, 2, 0)} creates the permutation
+   *                that maps {@code "abc"} to {@code "cab"}.
    * @throws java.lang.IllegalArgumentException if the input is not a ranking
    */
   public static Permutation define(int... ranking) {
     return define(ranking, true);
   }
 
-  private static Permutation define(int[] ranking, boolean validate) {
+  private static Permutation define(int[] ranking, boolean dirty) {
+    return define(ranking, dirty, dirty);
+  }
+
+  private static Permutation define(int[] ranking, boolean validate, boolean copy) {
     int[] trimmed = Rankings.trim(ranking);
     if (trimmed.length == 0)
       return IDENTITY;
-    return new Permutation(ranking == trimmed ? Arrays.copyOf(ranking, ranking.length) : trimmed, validate);
+    if (copy && ranking == trimmed) {
+      trimmed = Arrays.copyOf(trimmed, trimmed.length);
+    }
+    return new Permutation(trimmed, validate);
   }
 
   /**
    * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycle</a>.
    * A single number {@code n} creates the identity of length {@code n + 1}.
    * An emtpy input produces the permutation of length {@code 0}.
+   *
    * @param cycle a list of distinct, non-negative numbers
    * @return the cyclic permutation defined by {@code cycle}
    * @throws java.lang.IllegalArgumentException if {@code cycle} contains negative numbers or duplicates
@@ -68,6 +77,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Creates a new <a href="http://en.wikipedia.org/wiki/Cyclic_permutation">cycle</a>.
+   *
    * @param cycle1based a list of numbers that defines a permutation in 1-based cycle notation
    * @return the cyclic permutation defined by {@code cycle1based}
    * @see com.github.methylene.sym.Permutation#defineCycle
@@ -78,6 +88,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Creates a random permutation of given length.
+   *
    * @param length the length of arrays that the result can be applied to
    * @return a random permutation that can be applied to an array of length {@code length}
    */
@@ -87,6 +98,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Return the identity permutation. It is the only permutation that can be applied to arrays of any length.
+   *
    * @return the identity permutation that can be applied to an array of length {@code length}
    * @see Permutation#isIdentity
    */
@@ -100,6 +112,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    * <pre><code>
    *   this.apply(other.apply(i)) == this.compose(other).apply(i)
    * </code></pre>
+   *
    * @param other a permutation
    * @return the product of this instance and {@code other}
    * @see #product
@@ -114,6 +127,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Take the product of the given permutations.
+   *
    * @param permutations an array of permutations
    * @return the product of the input
    * @see #compose
@@ -127,6 +141,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Take the product of the given permutations. If the input is empty, a permutation of length {@code 0} is returned.
+   *
    * @param permutations an iterable of permutations
    * @return the product of the input
    * @see #compose
@@ -152,6 +167,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    * </code></pre>
    * ({@code -n} times) is returned.
    * If {@code n} is zero, the identity permutation of length {@code this.length} is returned.
+   *
    * @param n any integer
    * @return the {@code n}th power of this permutation
    */
@@ -172,6 +188,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    * <pre><code>
    *   this.compose(this.inverse).isIdentity();
    * </code></pre>
+   *
    * @return the inverse of this permutation
    * @see #compose
    * @see #isIdentity
@@ -193,6 +210,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    *   => 14235
    * </code></pre>
    * If {@code delete == insert}, the identity of length {@code delete + 1} is returned.
+   *
    * @param delete a non-negative integer
    * @param insert a non-negative integer
    * @return a permutation of length {@code Math.max(delete, insert) + 1}
@@ -209,6 +227,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    *   i, apply(i), apply(apply(i)), ...
    * </code></pre>
    * <p>The orbit always contains at least one element, that is the start index {@code i} itself.</p>
+   *
    * @param i a non negative number which is less than {@code this.length()}
    * @return the orbit of {@code i}
    * @throws java.lang.IllegalArgumentException if {@code i < 0} or {@code i >= this.length}.
@@ -223,6 +242,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    * <pre><code>
    *   this.pow(n).isIdentity();
    * </code></pre>
+   *
    * @return the order of this permutation
    * @throws java.lang.IllegalArgumentException if {@code pos < 0} or {@code pos >= this.length}
    * @see #isIdentity
@@ -240,6 +260,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * <p>Determine whether this permutation has at most one than one nontrivial orbit.</p>
+   *
    * @return true if this permutation is a cycle
    * @see #defineCycle
    * @see #orbit
@@ -250,6 +271,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Get a cycle based version of this operation, which can be used to change arrays in place.
+   *
    * @return a cycle based version of this operation
    */
   public Cycles toCycles() {
@@ -265,6 +287,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    *   Permutation.reverse(5).apply("12345");
    *   => 54321
    * </code></pre>
+   *
    * @param length a non negative number
    * @return a permutation that reverses an array of length {@code length}
    */
@@ -278,10 +301,11 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Check if this permutation reverses its input.
-   * @return true if this permutation reverses or "flips" an input of length {@code n}
+   *
    * @param n a nonnegative number
-   * @see #reverse
+   * @return true if this permutation reverses or "flips" an input of length {@code n}
    * @throws java.lang.IllegalArgumentException if {@code n} is negative
+   * @see #reverse
    */
   public boolean reverses(int n) {
     if (ranking.length < n)
@@ -300,6 +324,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    *   p.shift(n).apply(j) = j, j < n
    *   p.shift(n).apply(n + i) = n + p.apply(i)
    * </code></pre>
+   *
    * @param n a non negative number
    * @return the shifted permutation
    * @throws java.lang.IllegalArgumentException if n is negative
@@ -312,6 +337,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Find a cycle in this permutation or return {@code null} if this is the identity.
+   *
    * @return a cycle in this permutation or {@code null} if there are no cycles because this is the identity
    */
   public int[] findCycle() {
@@ -325,6 +351,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * <p>Determine whether this permutation moves any index.</p>
+   *
    * @return true if this is the identity
    */
   public boolean isIdentity() {
@@ -334,6 +361,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
   /**
    * Return the minimum number of elements that an array or list must have, in order for this operation to
    * be applicable.
+   *
    * @return the length of this operation
    */
 
@@ -343,19 +371,23 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Convert this permutation to a human readable string. This representation may change in the future.
+   *
    * @return a String representation of this permutation.
    */
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return Arrays.toString(ranking);
   }
 
   /**
    * Equality test. In order for permutations to be equal, they must have the same length, and their effects
    * on indexes and arrays must be identical.
+   *
    * @param other another object
    * @return true if the other object is an equivalent permutation
    */
-  @Override public boolean equals(Object other) {
+  @Override
+  public boolean equals(Object other) {
     if (this == other)
       return true;
     if (other == null || getClass() != other.getClass())
@@ -371,6 +403,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
   /**
    * A compare method compatible with {@code equals}: permutations compare to {@code 0}
    * if and only they are equal.
+   *
    * @param other a permutation, not necessarily of the same length
    * @return the result of lexicographic comparison of {@code this.ranking} and {@code other.ranking}
    * @see #equals
@@ -387,6 +420,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Get a copy of the ranking that represents of this permutation.
+   *
    * @return a copy of the ranking
    */
   public int[] getRanking() {
@@ -400,6 +434,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
    *   apply(a)[apply(i)] == a[i];
    * </pre></code>
    * If the input is greater than or equal to {@code this.length()}, then the same number is returned.
+   *
    * @param i a non negative number
    * @return the moved index
    * @throws java.lang.IllegalArgumentException if the input is negative
@@ -416,6 +451,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange an array. This method does not modify its input array.
+   *
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
@@ -431,6 +467,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange an array. This method does not modify its input array.
+   *
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
@@ -445,6 +482,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange an array. This method does not modify its input array.
+   *
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
@@ -459,6 +497,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange an array. This method does not modify its input array.
+   *
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
@@ -473,6 +512,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange an array. This method does not modify its input array.
+   *
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
@@ -487,6 +527,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange an array. This method does not modify its input array.
+   *
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
@@ -501,6 +542,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange an array. This method does not modify its input array.
+   *
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
@@ -515,6 +557,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange an array. This method does not modify its input array.
+   *
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
@@ -528,6 +571,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange an array. This method does not modify its input array.
+   *
    * @param input an array of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input.length < this.length()}
@@ -542,6 +586,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange the return value of {@link String#getChars}.
+   *
    * @param s a string of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code s}
    * @throws java.lang.IllegalArgumentException if {@code s.length() < this.length()}
@@ -557,6 +602,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   /**
    * Rearrange a list. This method does not modify the input list.
+   *
    * @param input a list that must have at least {@code this.length()} elements
    * @return the result of applying this permutation to {@code input}
    * @throws java.lang.IllegalArgumentException if {@code input} has less than {@code this.length()} elements
@@ -571,284 +617,223 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
     return Rankings.apply(ranking, input);
   }
 
-  /**
-   * Returns a permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sorting(byte[])
-   */
   public static Permutation sorting(byte[] input) {
     return define(Rankings.sorting(input), false);
   }
 
-  /**
-   * Returns a permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sorting(short[])
-   */
   public static Permutation sorting(short[] input) {
     return define(Rankings.sorting(input), false);
   }
 
-  /**
-   * Returns a permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sorting(long[])
-   */
   public static Permutation sorting(long[] input) {
     return define(Rankings.sorting(input), false);
   }
 
-  /**
-   * Returns a permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sorting(float[])
-   */
   public static Permutation sorting(float[] input) {
     return define(Rankings.sorting(input), false);
   }
 
-
-  /**
-   * Returns a permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sorting(double[])
-   */
   public static Permutation sorting(double[] input) {
     return define(Rankings.sorting(input), false);
   }
 
-  /**
-   * Returns a permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sorting(Comparable[])
-   */
+  public static final class SortingBuilder<E> {
+    private final E[] a;
+
+    public SortingBuilder(E[] a) {
+      this.a = a;
+    }
+
+    public Permutation using(Comparator<E> comparator) {
+      return define(Rankings.sorting(a, comparator), false);
+    }
+  }
+
   public static <E extends Comparable> Permutation sorting(E[] input) {
     return define(Rankings.sorting(input), false);
   }
 
-
-  /**
-   * Returns a permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sorting(char[])
-   */
   public static Permutation sorting(char[] input) {
     return define(Rankings.sorting(input), false);
   }
 
-  /**
-   * Returns a permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @param comp a Comparator for the elements in the input
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sorting(Object[], Comparator)
-   */
-  public static <E> Permutation sorting(Object[] input, Comparator<E> comp) {
-    return define(Rankings.sorting(input, comp), false);
+
+  public static <E> SortingBuilder<E> sorting(E[] input) {
+    return new SortingBuilder<>(input);
   }
 
-
-  /**
-   * Returns a permutation that sorts the input array.
-   * @param input an array, not necessarily distinct
-   * @return a permutation that sorts the input
-   * @throws java.lang.IllegalArgumentException if {@code strictness} is true and {@code input} contains duplicates
-   * @see Rankings#sorting(int[])
-   */
   public static Permutation sorting(int[] input) {
     return define(Rankings.sorting(input), false);
   }
 
-  /**
-   * Returns a permutation that sorts the input string.
-   * @param s a string
-   * @return a permutation that sorts {@code s}
-   */
   public static Permutation sorting(String s) {
     char[] chars = new char[s.length()];
     s.getChars(0, chars.length, chars, 0);
     return sorting(chars);
   }
 
-  /**
-   * Returns a permutation that rearranges {@code a} into {@code b}.
-   * @param a an array
-   * @param b an array that can be obtained by changing the order of the elements of {@code a}
-   * @return a permutation so that {@code Arrays.equals(Permutation.from(a, b).apply(a), b)} is true
-   * @throws java.lang.IllegalArgumentException if {@code b} is not a rearrangement of {@code a}.
-   */
-  public static Permutation from(int[] a, int[] b) {
-    return define(Rankings.from(a, b), false);
+  public static final class TakingBuilder<E extends Comparable> {
+    private final E[] from;
+
+    private TakingBuilder(E[] from) {
+      this.from = from;
+    }
+
+    public Permutation to(E[] to) {
+      return define(Rankings.from(from, to), false, false);
+    }
   }
 
-  /**
-   * Returns a permutation that rearranges {@code a} into {@code b}.
-   * @throws java.lang.NullPointerException if {@code a} or {@code b} contain null
-   * @see #from(int[], int[])
-   */
-  public static <E extends Comparable> Permutation from(E[] a, E[] b) {
-    return define(Rankings.from(a, b), false);
+  public static final class TakingBuilderInt {
+    private final int[] from;
+
+    private TakingBuilderInt(int[] from) {
+      this.from = from;
+    }
+
+    public Permutation to(int[] to) {
+      return define(Rankings.from(from, to), false, false);
+    }
   }
 
-  /**
-   * Returns a permutation that rearranges {@code a} into {@code b}.
-   * @see #from(int[], int[])
-   */
-  public static Permutation from(byte[] a, byte[] b) {
-    return define(Rankings.from(a, b), false);
+  public static final class TakingBuilderLong {
+    private final long[] from;
+
+    private TakingBuilderLong(long[] from) {
+      this.from = from;
+    }
+
+    public Permutation to(long[] to) {
+      return define(Rankings.from(from, to), false, false);
+    }
   }
 
-  /**
-   * Returns a permutation that rearranges {@code a} into {@code b}.
-   * @see #from(int[], int[])
-   */
-  public static Permutation from(long[] a, long[] b) {
-    return define(Rankings.from(a, b), false);
+  public static final class TakingBuilderDouble {
+    private final double[] from;
+
+    private TakingBuilderDouble(double[] from) {
+      this.from = from;
+    }
+
+    public Permutation to(double[] to) {
+      return define(Rankings.from(from, to), false, false);
+    }
   }
 
-  /**
-   * Returns a permutation that rearranges {@code a} into {@code b}.
-   * @see #from(int[], int[])
-   */
-  public static Permutation from(float[] a, float[] b) {
-    return define(Rankings.from(a, b), false);
+  public static final class TakingBuilderComp<E> {
+
+    private final E[] from;
+    private final E[] to;
+
+    private TakingBuilderComp(E[] from, E[] to) {
+      this.from = from;
+      this.to = to;
+    }
+
+    public Permutation using(Comparator<E> comp) {
+      return define(Rankings.from(from, to, comp), false);
+    }
+  }
+
+  public static final class TakingBuilderObj<E> {
+
+    private final E[] from;
+
+    private TakingBuilderObj(E[] from) {
+      this.from = from;
+    }
+
+    public TakingBuilderComp<E> to(E[] to) {
+      return new TakingBuilderComp<>(from, to);
+    }
+
   }
 
 
-  /**
-   * Returns a permutation that rearranges {@code a} into {@code b}.
-   * @see #from(int[], int[])
-   */
-  public static Permutation from(double[] a, double[] b) {
-    return define(Rankings.from(a, b), false);
+  public static TakingBuilderInt taking(int[] a) {
+    return new TakingBuilderInt(a);
   }
 
-  /**
-   * Returns a permutation that rearranges {@code a} into {@code b}.
-   * @see #from(int[], int[])
-   */
-  public static <E> Permutation from(E[] a, E[] b, Comparator<E> comp) {
-    return define(Rankings.from(a, b, comp), false);
+  public static <E extends Comparable> TakingBuilder<E> taking(E[] a) {
+    return new TakingBuilder<>(a);
   }
 
-  /* ================= sorts ================= */
+  public static TakingBuilderLong taking(long[] a) {
+    return new TakingBuilderLong(a);
+  }
 
-  /**
-   * Check if this permutation will sort the input when applied to it.
-   * @param a an array
-   * @return true if {@code this.apply(a)} is sorted
-   */
+  public static TakingBuilderDouble taking(double[] a) {
+    return new TakingBuilderDouble(a);
+  }
+
+  public static <E> TakingBuilderObj<E> taking(E[] a) {
+    return new TakingBuilderObj<>(a);
+  }
+
   public boolean sorts(int[] a) {
     return Rankings.sorts(ranking, a);
   }
 
-  /**
-   * Check if this permutation will sorting the input when applied to it.
-   * @param a an array
-   * @return true if {@code this.apply(a)} is sorted
-   */
   public boolean sorts(byte[] a) {
     return Rankings.sorts(ranking, a);
   }
 
-  /**
-   * Check if this permutation will sort the input when applied to it.
-   * @param a an array
-   * @return true if {@code this.apply(a)} is sorted
-   */
   public boolean sorts(short[] a) {
     return Rankings.sorts(ranking, a);
   }
 
-  /**
-   * Check if this permutation will sort the input when applied to it.
-   * @param a an array
-   * @return true if {@code this.apply(a)} is sorted
-   */
   public boolean sorts(char[] a) {
     return Rankings.sorts(ranking, a);
   }
 
-  /**
-   * Check if this permutation will sort the input when applied to it.
-   * @param a an array
-   * @return true if {@code this.apply(a)} is sorted
-   */
   public boolean sorts(long[] a) {
     return Rankings.sorts(ranking, a);
   }
 
-  /**
-   * Check if this permutation will sort the input when applied to it.
-   * @param a an array
-   * @return true if {@code this.apply(a)} is sorted
-   */
   public boolean sorts(float[] a) {
     return Rankings.sorts(ranking, a);
   }
 
-  /**
-   * Check if this permutation will sort the input when applied to it.
-   * @param a an array
-   * @return true if {@code this.apply(a)} is sorted
-   */
   public boolean sorts(double[] a) {
     return Rankings.sorts(ranking, a);
   }
 
-  /**
-   * Check if this permutation will sort the input when applied to it.
-   * @param a an array
-   * @return true if {@code this.apply(a)} is sorted
-   */
   public <E extends Comparable<E>> boolean sorts(E[] a) {
     return Rankings.sorts(ranking, a);
   }
 
-  /**
-   * Check if this permutation will sort the input when applied to it.
-   * @param a a list
-   * @return true if {@code this.apply(a)} is sorted
-   */
   public <E extends Comparable<E>> boolean sorts(List<E> a) {
     return Rankings.sorts(ranking, a);
   }
 
-  /**
-   * Check if this permutation will sort the input when applied to it.
-   * @param a an array
-   * @param comparator a Comparator
-   * @return true if {@code this.apply(a)} is sorted
-   */
-  @SuppressWarnings("unchecked")
-  public <E> boolean sorts(Comparator<E> comparator, Object[] a) {
-    return Rankings.sorts(ranking, a, (Comparator) comparator);
+  public static final class SortsBuilder<E> {
+    private final E[] a;
+    private final int[] ranking;
+
+    public SortsBuilder(E[] a, int[] ranking) {
+      this.a = a;
+      this.ranking = ranking;
+    }
+
+    public boolean using(Comparator<E> comparator) {
+      return Rankings.sorts(ranking, a, comparator);
+    }
   }
 
-  /* Transports an array safely to Cycles constructor */
+  public <E> SortsBuilder<E> sorts(E[] a) {
+    return new SortsBuilder<>(a, ranking);
+  }
+
+  /* Transport an array safely to Cycles constructor */
   static final class Orbits {
     static Orbits EMPTY = new Orbits(new int[0][]);
     final int[][] orbits;
+
     private Orbits(int[][] orbits) {this.orbits = orbits;}
   }
 
   public static Stream<Permutation> symmetricGroup(int n) {
-    return Rankings.symmetricGroup(n).map(Permutation::define);
+    return Rankings.symmetricGroup(n).map(a -> define(a, false));
   }
 
 }

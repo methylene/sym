@@ -259,7 +259,7 @@ public class PermutationTest {
   @Test
   public void testSortInvertComparator() {
     MyInt[] x = box(new int[]{4, 6, 10, -5, 195, 33, 2});
-    Permutation unsort = Permutation.sorting(x, MyInt.COMP).invert();
+    Permutation unsort = Permutation.sorting(x).using(MyInt.COMP).invert();
     MyInt[] y = Arrays.copyOf(x, x.length);
     Arrays.sort(y, MyInt.COMP);
     for (int k = 0; k < y.length; k += 1) {
@@ -299,7 +299,7 @@ public class PermutationTest {
 
   @Test
   public void testFromQuickly() {
-    Permutation p = Permutation.from(new Comparable[]{1, 2, 3}, new Comparable[]{2, 3, 1});
+    Permutation p = Permutation.taking(new int[]{1, 2, 3}).to(new int[]{2, 3, 1});
     assertArrayEquals(new String[]{"b", "c", "a"}, p.apply(TestUtil.symbols(3)));
   }
 
@@ -327,7 +327,7 @@ public class PermutationTest {
     } while (random.isIdentity());
     int[] b = random.apply(a);
     assertFalse(Arrays.equals(a, b));
-    assertArrayEquals(Permutation.from(a, b).apply(a), b);
+    assertArrayEquals(Permutation.taking(a).to(b).apply(a), b);
   }
 
   /* check defining property of from again, on non comparable objects, possibly with null */
