@@ -8,7 +8,7 @@ import static com.github.methylene.sym.ArrayUtil.checkLength;
 import static com.github.methylene.sym.ArrayUtil.negativeFailure;
 
 /**
- * An ranking based permutation operation that can be used to shuffle arrays and lists.
+ * A permutation operation that can be used to rearrange arrays and lists.
  * <p/>
  * Instances of this class are immutable, and none of the apply methods modify the input.
  * The toCycles method can be used to obtain the destructive version of an instance.
@@ -19,11 +19,10 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
 
   private static final long serialVersionUID = 1L;
 
-  private static final Transposition[] DESTRUCTIVE_0 = new Transposition[0];
-
   /*
-   *  An array of N integers where each of the integers between 0 and N-1 appears exactly once.
-   *  This array is never modified.
+   *  An array of N integers where each of the integers between 0 and N-1 appear exactly once.
+   *  This array is never modified, and no code outside of this class can have a reference to it.
+   *  Because of this, Permutation instances are effectively immutable.
    */
   private final int[] ranking;
 
@@ -34,16 +33,67 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
     this.ranking = validate ? Rankings.checkRanking(ranking) : ranking;
   }
 
-  /**
-   * Return the permutation defined by the given array.
-   *
-   * @param ranking a list of numbers that specifies the permutation in zero-based
-   *                <a href="http://en.wikipedia.org/wiki/Permutation#Definition_and_usage">one-line notation</a>.
-   *                For example, {@code define(1, 2, 0)} creates the permutation
-   *                that maps {@code "abc"} to {@code "cab"}.
-   * @throws java.lang.IllegalArgumentException if the input is not a ranking
-   */
-  public static Permutation define(int... ranking) {
+  public static Permutation define() {
+    return IDENTITY;
+  }
+
+  public static Permutation define(int a0) {
+    if (a0 == 0) {
+      return IDENTITY;
+    } else {
+      throw new IllegalArgumentException("not a ranking");
+    }
+  }
+
+  public static Permutation define(int a0, int a1) {
+    return define(new int[]{a0, a1}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2) {
+    return define(new int[]{a0, a1, a2}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2, int a3) {
+    return define(new int[]{a0, a1, a2, a3}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2, int a3, int a4) {
+    return define(new int[]{a0, a1, a2, a3, a4}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2, int a3, int a4, int a5) {
+    return define(new int[]{a0, a1, a2, a3, a4, a5}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2, int a3, int a4, int a5, int a6) {
+    return define(new int[]{a0, a1, a2, a3, a4, a5, a6}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7) {
+    return define(new int[]{a0, a1, a2, a3, a4, a5, a6, a7}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8) {
+    return define(new int[]{a0, a1, a2, a3, a4, a5, a6, a7, a8}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9) {
+    return define(new int[]{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10) {
+    return define(new int[]{a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10}, true, false);
+  }
+
+  public static Permutation define(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10, int... a11) {
+    int[] a00 = {a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10};
+    int[] a = new int[a00.length + a11.length];
+    System.arraycopy(a00, 0, a, 0, a00.length);
+    System.arraycopy(a11, 0, a, a00.length, a11.length);
+    return define(a, true, false);
+  }
+
+  public static Permutation define(int[] ranking) {
     return define(ranking, true);
   }
 
@@ -585,7 +635,7 @@ public final class Permutation implements Comparable<Permutation>, Serializable 
   }
 
   /**
-   * Rearrange the return value of {@link String#getChars}.
+   * Rearrange the characters in the string.
    *
    * @param s a string of length not less than {@code this.length()}
    * @return the result of applying this permutation to {@code s}
